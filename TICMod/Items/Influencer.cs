@@ -12,6 +12,7 @@ namespace TICMod.Items
         public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault("Influencer");
+			Tooltip.SetDefault("When given a signal, activates internal command.");
 		}
 
 		public override void SetDefaults()
@@ -27,7 +28,8 @@ namespace TICMod.Items
 			item.width = 12;
 			item.height = 12;
 			item.value = 0;
-			item.mech = true; 
+			item.mech = true;
+            item.rare = 13;
 		}
 
 		public override void AddRecipes()

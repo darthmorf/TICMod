@@ -1,3 +1,4 @@
 displayName = T.I.C. Mod
 author = darthmorf
 version = 0.1
+includePDB = true

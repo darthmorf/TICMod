@@ -12,6 +12,7 @@ namespace TICMod.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Trigger");
+            Tooltip.SetDefault("Sends a signal through top tile when internal condition is triggered.\nCan be disabled/enabled by giving signal to bottom tile.");
         }
 
         public override void SetDefaults()
@@ -28,6 +29,7 @@ namespace TICMod.Items
             item.height = 12;
             item.value = 0;
             item.mech = true;
+            item.rare = 13;
         }
 
         public override void AddRecipes()

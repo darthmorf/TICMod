@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using IL.Terraria.UI.Chat;
+using On.Terraria.Chat;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -8,11 +10,15 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using static Terraria.ModLoader.ModContent;
+using ChatLine = Terraria.UI.Chat.ChatLine;
+using ChatMessage = Terraria.Chat.ChatMessage;
 
 namespace TICMod.Tiles
 {
 	public class Trigger : ModTile
-	{
+    {
+        private bool enabled = true; // This var is shared between all instances - need individual one for tile data.
+        private bool chatOutput = true;
 		public override void SetDefaults()
         {
             Main.tileSolid[Type] = false;
@@ -32,23 +38,34 @@ namespace TICMod.Tiles
         }
 
 		public override void HitWire(int i, int j)
-		{
-			Tile tile = Main.tile[i, j];
-			int style = tile.frameY / 18;
-			Vector2 spawnPosition;
-			// This logic here corresponds to the orientation of the sprites in the spritesheet, change it if your tile is different in design.
-			int horizontalDirection = (tile.frameX == 0) ? -1 : ((tile.frameX == 18) ? 1 : 0);
-			int verticalDirection = (tile.frameX < 36) ? 0 : ((tile.frameX < 72) ? -1 : 1);
-			// Each trap style within this Tile shoots different projectiles.
-			// Wiring.CheckMech checks if the wiring cooldown has been reached. Put a longer number here for less frequent projectile spawns. 200 is the dart/flame cooldown. Spear is 90, spiky ball is 300
-			if (Wiring.CheckMech(i, j, 60))
-			{
-				spawnPosition = new Vector2(i * 16 + 8 + 0 * horizontalDirection, j * 16 + 9 + 0 * verticalDirection); // The extra numbers here help center the projectile spawn position if you need to.
+        {
+            bool isBottom = false;
+            Tile tile = Main.tile[i, j];
 
-				// In reality you should be spawning projectiles that are both hostile and friendly to do damage to both players and NPC.
-				// Make sure to change velocity, projectile, damage, and knockback.
-				Projectile.NewProjectile(spawnPosition, new Vector2(horizontalDirection, verticalDirection) * 6f, ProjectileID.IchorBullet, 20, 2f, Main.myPlayer);
-			}
-		}
+            // Check if the base of the block was triggered by wire
+            if (tile.frameY / 18 == 1)
+            {
+                isBottom = true;
+            }
+
+            if (isBottom)
+            {
+                // toggle enabled
+                enabled = !enabled;
+                short frameAdjustment = (short)(tile.frameX > 0 ? -18 : 18);
+                Main.tile[i, j].frameX += frameAdjustment;
+                Main.tile[i, j-1].frameX += frameAdjustment;
+                NetMessage.SendTileSquare(-1, i, j - 1, 2, TileChangeType.None);
+                SendChatMsg($"Enabled: {enabled.ToString()}");
+            }
+        }
+
+        public void SendChatMsg(string text)
+        {
+            if (chatOutput)
+            {
+                Main.NewText($"[Trigger@{-1},{-1}] {text}", Color.Gray);
+            }
+        }
 	}
 }
