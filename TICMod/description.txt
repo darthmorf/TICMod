@@ -1,0 +1,1 @@
+T.I.C. Mod (Trigger Influencer Condition Mod) is a mod designed for use in adventure maps that implements a system for Minecraft like Command Blocks.
