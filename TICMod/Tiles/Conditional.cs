@@ -52,19 +52,32 @@ namespace TICMod.Tiles
             }
 
             if (isBottom)
-            {
-                short frameAdjustment = (short)(tile.frameX > 0 ? -18 : 18);
-                SendChatMsg($"Checking condition!");
+            { 
+                // placeholder condition
+                bool condition = Main.dayTime;
+                
+                SendChatMsg($"{condition}", i, j);
 
-                // Check condition
+                ExtraWireTrips trips = ModContent.GetInstance<ExtraWireTrips>();
+
+                if (condition)
+                {
+                    //Wiring.TripWire(i, (j-2), 1, 1);
+                    trips.AddWireUpdate(i, j-2);
+                }
+                else
+                {
+                    //Wiring.TripWire(i, (j-1), 1, 1);
+                    trips.AddWireUpdate(i, j - 1);
+                }
             }
         }
 
-        public void SendChatMsg(string text)
+        public void SendChatMsg(string text, int x = -1, int y = -1)
         {
             if (chatOutput)
             {
-                Main.NewText($"[Conditional@{-1},{-1}] {text}", Color.Gray);
+                Main.NewText($"[Conditional@{x},{y}] {text}", Color.Gray);
             }
         }
     }

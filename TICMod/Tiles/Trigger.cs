@@ -61,16 +61,17 @@ namespace TICMod.Tiles
                 Main.tile[i, j].frameX += frameAdjustment;
                 Main.tile[i, j-1].frameX += frameAdjustment;
                 NetMessage.SendTileSquare(-1, i, j - 1, 2, TileChangeType.None);
-                SendChatMsg($"Enabled: {enabled.ToString()}");
+                string state = enabled ? "Enabled" : "Disabled";
+                SendChatMsg($"{state}", i, j);
             }
         }
 
-        public void SendChatMsg(string text)
+        public void SendChatMsg(string text, int x = -1, int y = -1)
         {
             if (chatOutput)
             {
-                Main.NewText($"[Trigger@{-1},{-1}] {text}", Color.Gray);
+                Main.NewText($"[Trigger@{x},{y}] {text}", Color.Gray);
             }
         }
-	}
+    }
 }

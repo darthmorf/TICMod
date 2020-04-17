@@ -38,16 +38,17 @@ namespace TICMod.Tiles
         {
             Tile tile = Main.tile[i, j];
 
-            SendChatMsg($"Doing something!");
+            SendChatMsg($"Did Something!", i, j);
 
             // Do something
         }
 
-        public void SendChatMsg(string text)
+        public void SendChatMsg(string text, int x = -1, int y = -1)
         {
             if (chatOutput)
             {
-                Main.NewText($"[Influencer@{-1},{-1}] {text}", Color.Gray);
+                
+                Main.NewText($"[Influencer@{x},{y}] {text}", Color.Gray);
             }
         }
     }
