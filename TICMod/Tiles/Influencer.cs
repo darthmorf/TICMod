@@ -21,7 +21,8 @@ namespace TICMod.Tiles
 			Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileSolidTop[Type] = true;
-			TileObjectData.newTile.CopyFrom(TileObjectData.StyleSwitch);
+            dustType = 202;
+            TileObjectData.newTile.CopyFrom(TileObjectData.StyleSwitch);
             TileObjectData.addTile(Type);
 		}
 

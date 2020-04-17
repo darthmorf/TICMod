@@ -24,9 +24,14 @@ namespace TICMod.Tiles
             Main.tileSolid[Type] = false;
 			Main.tileBlockLight[Type] = false;
 			Main.tileFrameImportant[Type] = true;
-			Main.tileNoAttach[Type] = true;
+			Main.tileNoAttach[Type] = false;
 			Main.tileSolidTop[Type] = true;
+            dustType = 145;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
+            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.None, 0, 0);
+            TileObjectData.newTile.AnchorTop = new AnchorData(AnchorType.None, 0, 0);
+            TileObjectData.newTile.AnchorLeft = new AnchorData(AnchorType.None, 0, 0);
+            TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.addTile(Type);
 		}
 

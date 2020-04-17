@@ -21,10 +21,16 @@ namespace TICMod.Tiles
 			Main.tileFrameImportant[Type] = true;
 			Main.tileNoAttach[Type] = true;
 			Main.tileSolidTop[Type] = true;
+            dustType = 233;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
             TileObjectData.newTile.Height = 3;
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
-			TileObjectData.addTile(Type);
+            TileObjectData.newTile.Origin = new Point16(0, 2);
+            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.None, 0, 0);
+            TileObjectData.newTile.AnchorTop = new AnchorData(AnchorType.None, 0, 0);
+            TileObjectData.newTile.AnchorLeft = new AnchorData(AnchorType.None, 0, 0);
+            TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.None, 0, 0);
+            TileObjectData.addTile(Type);
 		}
 
 		public override bool Dangersense(int i, int j, Player player) => true;
