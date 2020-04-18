@@ -17,8 +17,7 @@ namespace TICMod.Tiles
 {
 	public class Trigger : ModTile
     {
-        private bool enabled = true; // This var is shared between all instances - need individual one for tile data.
-        private bool chatOutput = true;
+        private TriggerStates states;
 		public override void SetDefaults()
         {
             Main.tileSolid[Type] = false;
@@ -33,17 +32,25 @@ namespace TICMod.Tiles
             TileObjectData.newTile.AnchorLeft = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.addTile(Type);
-		}
 
-		public override bool Dangersense(int i, int j, Player player) => true;
+            states = ModContent.GetInstance<TriggerStates>();
+        }
+
+        public override bool Dangersense(int i, int j, Player player) => true;
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
             Item.NewItem(i * 16, j * 16, 16, 32, ItemType<Items.Trigger>());
         }
 
-		public override void HitWire(int i, int j)
+        public override void PlaceInWorld(int i, int j, Item item)
         {
+            states.addTile(i, j, true, true);
+            base.PlaceInWorld(i, j, item);
+        }
+
+        public override void HitWire(int i, int j)
+        { 
             bool isBottom = false;
             Tile tile = Main.tile[i, j];
 
@@ -55,20 +62,21 @@ namespace TICMod.Tiles
 
             if (isBottom)
             {
-                // toggle enabled
-                enabled = !enabled;
+                bool enabled = states.isEnabled(i, j);
+                states.setEnabled(i, j, !enabled);
                 short frameAdjustment = (short)(tile.frameX > 0 ? -18 : 18);
                 Main.tile[i, j].frameX += frameAdjustment;
                 Main.tile[i, j-1].frameX += frameAdjustment;
                 NetMessage.SendTileSquare(-1, i, j - 1, 2, TileChangeType.None);
-                string state = enabled ? "Enabled" : "Disabled";
+                string state = enabled ? "Disabled" : "Enabled";
                 SendChatMsg($"{state}", i, j);
             }
         }
 
         public void SendChatMsg(string text, int x = -1, int y = -1)
         {
-            if (chatOutput)
+            //states.isChatEnabled()
+            if (true)
             {
                 Main.NewText($"[Trigger@{x},{y}] {text}", Color.Gray);
             }
