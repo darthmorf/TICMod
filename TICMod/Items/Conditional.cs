@@ -11,7 +11,7 @@ namespace TICMod.Items
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Conditional");
+            DisplayName.SetDefault(Name);
             Tooltip.SetDefault("When given a signal through bottom tile, assesses internal condition\nthen gives a signal to top tile if true, middle tile if false.");
         }
 

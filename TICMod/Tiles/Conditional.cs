@@ -13,7 +13,7 @@ namespace TICMod.Tiles
 {
 	public class Conditional : ModTile
 	{
-        private bool chatOutput = true;
+        private TICStates states;
         public override void SetDefaults()
 		{
 			Main.tileSolid[Type] = false;
@@ -75,7 +75,7 @@ namespace TICMod.Tiles
 
         public void SendChatMsg(string text, int x = -1, int y = -1)
         {
-            if (chatOutput)
+            if (true)
             {
                 Main.NewText($"[Conditional@{x},{y}] {text}", Color.Gray);
             }

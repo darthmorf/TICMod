@@ -17,7 +17,7 @@ namespace TICMod.Tiles
 {
 	public class Trigger : ModTile
     {
-        private TriggerStates states;
+        private TICStates states;
 		public override void SetDefaults()
         {
             Main.tileSolid[Type] = false;
@@ -33,7 +33,7 @@ namespace TICMod.Tiles
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.addTile(Type);
 
-            states = ModContent.GetInstance<TriggerStates>();
+            states = ModContent.GetInstance<TICStates>();
         }
 
         public override bool Dangersense(int i, int j, Player player) => true;
@@ -47,6 +47,15 @@ namespace TICMod.Tiles
         {
             states.addTile(i, j, true, true);
             base.PlaceInWorld(i, j, item);
+        }
+
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            if (!fail)
+            {
+                states.removeTile(i, j);
+            }
+            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 
         public override void HitWire(int i, int j)
@@ -75,8 +84,8 @@ namespace TICMod.Tiles
 
         public void SendChatMsg(string text, int x = -1, int y = -1)
         {
-            //states.isChatEnabled()
-            if (true)
+            
+            if (states.isChatEnabled(x,y))
             {
                 Main.NewText($"[Trigger@{x},{y}] {text}", Color.Gray);
             }

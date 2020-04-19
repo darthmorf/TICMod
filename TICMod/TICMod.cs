@@ -16,19 +16,23 @@ namespace TICMod
         }
     }
 
-    internal class TriggerStates : ModWorld
+
+
+    internal class TICStates : ModWorld
     {
         public class Data
         {
             public Point16 postion;
             public bool enabled;
             public bool chatOutput;
+            public string command;
 
-            public Data(Point16 _postion, bool _enabled, bool _chatOutput)
+            public Data(Point16 _postion, string _command="", bool _enabled=true, bool _chatOutput=true)
             {
                 postion = _postion;
                 enabled = _enabled;
                 chatOutput = _chatOutput;
+                command = _command;
             }
         }
 
@@ -41,33 +45,37 @@ namespace TICMod
 
         public override void Load(TagCompound tag)
         {
-            IList<Point16> triggerPoints = tag.GetList<Point16>("triggerPoints");
-            IList<bool> triggerEnabled = tag.GetList<bool>("triggerEnabled");
-            IList<bool> triggerChatOutput = tag.GetList<bool>("triggerChat");
+            IList<Point16> points = tag.GetList<Point16>("TICPoints");
+            IList<bool> enabled = tag.GetList<bool>("TICEnabled");
+            IList<bool> chatOutput = tag.GetList<bool>("TICChat");
+            IList<string> commands = tag.GetList<string>("TICCommand");
 
-            for (int i = 0; i < triggerPoints.Count; i++)
+            for (int i = 0; i < points.Count; i++)
             {
-                data.Add(new Data(triggerPoints[i], triggerEnabled[i], triggerChatOutput[i]));
+                data.Add(new Data(points[i], commands[i], enabled[i], chatOutput[i]));
             }
         }
 
         public override TagCompound Save()
         {
-            IList<Point16> triggerPoints = new List<Point16>();
-            IList<bool> triggerEnabled = new List<bool>();
-            IList<bool> triggerChatOutput = new List<bool>();
+            IList<Point16> points = new List<Point16>();
+            IList<bool> enabled = new List<bool>();
+            IList<bool> chatOutput = new List<bool>();
+            IList<string> commands = new List<string>();
 
             foreach (Data tile in data)
             {
-                triggerPoints.Add(tile.postion);
-                triggerEnabled.Add(tile.enabled);
-                triggerChatOutput.Add(tile.chatOutput);
+                points.Add(tile.postion);
+                enabled.Add(tile.enabled);
+                chatOutput.Add(tile.chatOutput);
+                commands.Add(tile.command);
             }
 
             return new TagCompound {
-                {"triggerPoints", triggerPoints },
-                {"triggerEnabled", triggerEnabled },
-                {"triggerChat", triggerChatOutput }
+                {"TICPoints", points },
+                {"TICEnabled", enabled },
+                {"TICChat", chatOutput },
+                {"TICCommand", commands }
             };
         }
 
@@ -101,6 +109,21 @@ namespace TICMod
             return false;
         }
 
+        public string getCommand(int i, int j)
+        {
+            Point16 point = new Point16(i, j);
+
+            for (int k = 0; k < data.Count; k++)
+            {
+                if (data[k].postion == point)
+                {
+                    return data[k].command;
+                }
+            }
+
+            return "";
+        }
+
         public void setEnabled(int i, int j, bool value)
         {
             Point16 point = new Point16(i, j);
@@ -110,14 +133,42 @@ namespace TICMod
                 if (data[k].postion == point)
                 {
                     data[k].enabled = value;
+                    return;
+                }
+            }
+        }
+
+        public void setCommand(int i, int j, string value)
+        {
+            Point16 point = new Point16(i, j);
+
+            for (int k = 0; k < data.Count; k++)
+            {
+                if (data[k].postion == point)
+                {
+                    data[k].command = value;
+                    return;
                 }
             }
         }
 
         public void addTile(int i, int j, bool enabled, bool chatEnabled)
         {
-            Data tile = new Data(new Point16(i,j), enabled, chatEnabled);
+            Data tile = new Data(new Point16(i,j));
             data.Add(tile);
+        }
+
+        public void removeTile(int i, int j)
+        {
+            Point16 point = new Point16(i, j);
+            for (int k = 0; k < data.Count; k++)
+            {
+                if (data[k].postion == point)
+                {
+                    data.RemoveAt(k);
+                    return;
+                }
+            }
         }
     }
 
