@@ -12,7 +12,9 @@ namespace TICMod.Items
         public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault("Influencer");
-			Tooltip.SetDefault("When given a signal, activates internal command.");
+			Tooltip.SetDefault("When given a signal, activates internal command." +
+                               "\nHello Terraria Enthusiasts..." +
+							   "\nCHEAT ITEM - NOT BALANCED FOR REGULAR USE.");
 		}
 
 		public override void SetDefaults()

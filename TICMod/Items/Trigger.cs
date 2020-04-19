@@ -12,7 +12,9 @@ namespace TICMod.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Trigger");
-            Tooltip.SetDefault("Sends a signal through top tile when internal condition is triggered.\nCan be disabled/enabled by giving signal to bottom tile.");
+            Tooltip.SetDefault("Sends a signal through top tile when internal condition is triggered." +
+                               "\nCan be disabled/enabled by giving signal to bottom tile." +
+                               "\nCHEAT ITEM - NOT BALANCED FOR REGULAR USE.");
         }
 
         public override void SetDefaults()
