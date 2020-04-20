@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -40,7 +41,6 @@ namespace TICMod.UI
             commandInput.Top.Set(0, 0.25f);
             commandInput.Width.Precent = 1f;
             commandInput.Height.Pixels = 30;
-            commandInput.OnTextChanged += () => { UpdateTextInput(); };
             panel.Append(commandInput);
 
             outputCheckbox = new UICheckbox("Show debug output?", "");
@@ -48,11 +48,11 @@ namespace TICMod.UI
             outputCheckbox.Left.Pixels = 70f;
             panel.Append(outputCheckbox);
 
-
             button = new UIPanel();
             button.Width.Pixels = 60f;
             button.Height.Pixels = 30f;
             button.Top.Precent = 0.70f;
+            button.OnClick += (evt, element) => { SaveBtnPress(); };
             UIText buttonText = new UIText("Save");
             buttonText.Top.Pixels = -4f;
             buttonText.Left.Pixels = 0f;
@@ -71,6 +71,7 @@ namespace TICMod.UI
 
             titleText.SetText($"Influencer Block @ ({i},{j})");
             commandInput.SetText(states.getCommand(i, j));
+            outputCheckbox.Selected = states.isChatEnabled(i, j);
         }
 
         public override void Update(GameTime gameTime)
@@ -83,9 +84,10 @@ namespace TICMod.UI
             }
         }
 
-        private void UpdateTextInput()
+        private void SaveBtnPress()
         {
-
+            states.setCommand(lasti, lastj, commandInput.currentString);
+            states.setChatEnabled(lasti, lastj, outputCheckbox.Selected);
         }
     }
 }

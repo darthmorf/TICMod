@@ -241,6 +241,20 @@ namespace TICMod
             }
         }
 
+        public void setChatEnabled(int i, int j, bool value)
+        {
+            Point16 point = new Point16(i, j);
+
+            for (int k = 0; k < data.Count; k++)
+            {
+                if (data[k].postion == point)
+                {
+                    data[k].chatOutput = value;
+                    return;
+                }
+            }
+        }
+
         public void addTile(int i, int j, bool enabled, bool chatEnabled)
         {
             Data tile = new Data(new Point16(i,j));
