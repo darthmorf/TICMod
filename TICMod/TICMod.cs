@@ -14,7 +14,8 @@ namespace TICMod
 	public class TICMod : Mod
     {
         internal UserInterface userInterface;
-        internal InfluencerUI influencerUI;
+        internal UIState modUiState;
+        internal List<InfluencerUI> influencerUis;
 
         public TICMod()
         {
@@ -22,12 +23,15 @@ namespace TICMod
 
         public override void Load()
         {
+            influencerUis = new List<InfluencerUI>();
+
             if (!Terraria.Main.dedServ)
             {
                 userInterface = new UserInterface();
 
-                influencerUI = new InfluencerUI();
-                influencerUI.Activate();
+                modUiState = new UIState();
+                modUiState.Activate();
+                userInterface?.SetState(modUiState);
             }
             base.Load();
         }
@@ -62,15 +66,25 @@ namespace TICMod
             }
         }
 
-        internal void ShowInfluencerUI(int i, int j)
+        internal void ToggleInfluencerUI(int i, int j, bool onlyClose=false)
         {
-            userInterface?.SetState(influencerUI);
-            influencerUI.InitValues(i, j);
-        }
+            foreach (var influencerUi in influencerUis)
+            {
+                if (influencerUi.i == i && influencerUi.j == j) // UI is open
+                {
+                    modUiState.RemoveChild(influencerUi);
+                    influencerUis.Remove(influencerUi);
+                    return;
+                }
+            }
 
-        internal void HideInfluencerUI()
-        {
-            userInterface?.SetState(null);
+            if (!onlyClose)
+            {
+                InfluencerUI iUI = new InfluencerUI();
+                modUiState.Append(iUI);
+                influencerUis.Add(iUI);
+                iUI.InitValues(i, j);
+            }
         }
     }
 
@@ -84,7 +98,6 @@ namespace TICMod
             public bool enabled;
             public bool chatOutput;
             public string command;
-            public bool uiOpen;
 
             public Data(Point16 _postion, string _command="", bool _enabled=true, bool _chatOutput=true)
             {
@@ -92,7 +105,6 @@ namespace TICMod
                 enabled = _enabled;
                 chatOutput = _chatOutput;
                 command = _command;
-                uiOpen = false;
             }
         }
 
@@ -169,21 +181,6 @@ namespace TICMod
             return false;
         }
 
-        public bool isUiOpen(int i, int j)
-        {
-            Point16 point = new Point16(i, j);
-
-            foreach (Data tile in data)
-            {
-                if (tile.postion == point)
-                {
-                    return tile.uiOpen;
-                }
-            }
-
-            return false;
-        }
-
         public string getCommand(int i, int j)
         {
             Point16 point = new Point16(i, j);
@@ -222,20 +219,6 @@ namespace TICMod
                 if (data[k].postion == point)
                 {
                     data[k].command = value;
-                    return;
-                }
-            }
-        }
-
-        public void setUiOpen(int i, int j, bool value)
-        {
-            Point16 point = new Point16(i, j);
-
-            for (int k = 0; k < data.Count; k++)
-            {
-                if (data[k].postion == point)
-                {
-                    data[k].uiOpen = value;
                     return;
                 }
             }

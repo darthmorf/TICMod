@@ -59,19 +59,7 @@ namespace TICMod.Tiles
 
         public override bool NewRightClick(int i, int j)
         {
-            bool uiOpenHere = states.isUiOpen(i, j);
-
-            if (uiOpenHere)
-            {
-                GetInstance<TICMod>().HideInfluencerUI();
-                states.setUiOpen(i, j, false);
-
-            }
-            else
-            {
-                GetInstance<TICMod>().ShowInfluencerUI(i, j);
-                states.setUiOpen(i, j, true);
-            }
+            GetInstance<TICMod>().ToggleInfluencerUI(i, j);
             
             return true;
         }
@@ -92,11 +80,9 @@ namespace TICMod.Tiles
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            if (!fail)
-            {
-                states.removeTile(i, j);
-            }
-            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
+           states.removeTile(i, j);
+           GetInstance<TICMod>().ToggleInfluencerUI(i, j, true);
+           base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 
     }
