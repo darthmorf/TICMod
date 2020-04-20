@@ -21,6 +21,7 @@ namespace TICMod.Tiles
 			Main.tileFrameImportant[Type] = true;
 			Main.tileNoAttach[Type] = true;
 			Main.tileSolidTop[Type] = true;
+            TileID.Sets.HasOutlines[Type] = true;
             dustType = 233;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
             TileObjectData.newTile.Height = 3;
@@ -31,9 +32,11 @@ namespace TICMod.Tiles
             TileObjectData.newTile.AnchorLeft = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.addTile(Type);
-		}
 
-		public override bool Dangersense(int i, int j, Player player) => true;
+            states = ModContent.GetInstance<TICStates>();
+        }
+
+        public override bool HasSmartInteract() => true;
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
@@ -72,6 +75,30 @@ namespace TICMod.Tiles
                 }
             }
         }
+
+        public override void PlaceInWorld(int i, int j, Item item)
+        {
+            states.addTile(i, j, true, true);
+            base.PlaceInWorld(i, j, item);
+        }
+
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            if (!fail)
+            {
+                states.removeTile(i, j);
+            }
+            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
+        }
+
+        public override void MouseOver(int i, int j)
+        {
+            Player player = Main.LocalPlayer;
+            player.noThrow = 2;
+            player.showItemIcon = true;
+            player.showItemIcon2 = ItemType<Items.Conditional>();
+        }
+
 
         public void SendChatMsg(string text, int x = -1, int y = -1)
         {

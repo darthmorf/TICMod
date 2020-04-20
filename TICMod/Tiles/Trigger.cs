@@ -25,6 +25,7 @@ namespace TICMod.Tiles
 			Main.tileFrameImportant[Type] = true;
 			Main.tileNoAttach[Type] = false;
 			Main.tileSolidTop[Type] = true;
+            TileID.Sets.HasOutlines[Type] = true;
             dustType = 145;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.None, 0, 0);
@@ -36,7 +37,7 @@ namespace TICMod.Tiles
             states = ModContent.GetInstance<TICStates>();
         }
 
-        public override bool Dangersense(int i, int j, Player player) => true;
+        public override bool HasSmartInteract() => true;
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
@@ -80,6 +81,14 @@ namespace TICMod.Tiles
                 string state = enabled ? "Disabled" : "Enabled";
                 SendChatMsg($"{state}", i, j);
             }
+        }
+
+        public override void MouseOver(int i, int j)
+        {
+            Player player = Main.LocalPlayer;
+            player.noThrow = 2;
+            player.showItemIcon = true;
+            player.showItemIcon2 = ItemType<Items.Trigger>();
         }
 
         public void SendChatMsg(string text, int x = -1, int y = -1)

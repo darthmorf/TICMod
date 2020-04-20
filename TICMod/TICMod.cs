@@ -5,14 +5,72 @@ using IL.Terraria.DataStructures;
 using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.UI;
+using TICMod.UI;
 using Point16 = Terraria.DataStructures.Point16;
 
 namespace TICMod
 {
 	public class TICMod : Mod
     {
+        internal UserInterface userInterface;
+        internal InfluencerUI influencerUI;
+
         public TICMod()
         {
+        }
+
+        public override void Load()
+        {
+            if (!Terraria.Main.dedServ)
+            {
+                userInterface = new UserInterface();
+
+                influencerUI = new InfluencerUI();
+                influencerUI.Activate();
+            }
+            base.Load();
+        }
+
+        private GameTime _lastUpdateUiGameTime;
+
+        public override void UpdateUI(GameTime gameTime)
+        {
+            _lastUpdateUiGameTime = gameTime;
+            if (userInterface?.CurrentState != null)
+            {
+                userInterface.Update(gameTime);
+            }
+        }
+
+        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
+        {
+            int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+            if (mouseTextIndex != -1)
+            {
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                "TICMod: InfluencerUI",
+                delegate
+                {
+                    if (_lastUpdateUiGameTime != null && userInterface?.CurrentState != null)
+                    {
+                        userInterface.Draw(Terraria.Main.spriteBatch, _lastUpdateUiGameTime);
+                    }
+                    return true;
+                },
+                InterfaceScaleType.UI));
+            }
+        }
+
+        internal void ShowInfluencerUI(int i, int j)
+        {
+            userInterface?.SetState(influencerUI);
+            influencerUI.InitValues(i, j);
+        }
+
+        internal void HideInfluencerUI()
+        {
+            userInterface?.SetState(null);
         }
     }
 
@@ -26,6 +84,7 @@ namespace TICMod
             public bool enabled;
             public bool chatOutput;
             public string command;
+            public bool uiOpen;
 
             public Data(Point16 _postion, string _command="", bool _enabled=true, bool _chatOutput=true)
             {
@@ -33,6 +92,7 @@ namespace TICMod
                 enabled = _enabled;
                 chatOutput = _chatOutput;
                 command = _command;
+                uiOpen = false;
             }
         }
 
@@ -109,6 +169,21 @@ namespace TICMod
             return false;
         }
 
+        public bool isUiOpen(int i, int j)
+        {
+            Point16 point = new Point16(i, j);
+
+            foreach (Data tile in data)
+            {
+                if (tile.postion == point)
+                {
+                    return tile.uiOpen;
+                }
+            }
+
+            return false;
+        }
+
         public string getCommand(int i, int j)
         {
             Point16 point = new Point16(i, j);
@@ -147,6 +222,20 @@ namespace TICMod
                 if (data[k].postion == point)
                 {
                     data[k].command = value;
+                    return;
+                }
+            }
+        }
+
+        public void setUiOpen(int i, int j, bool value)
+        {
+            Point16 point = new Point16(i, j);
+
+            for (int k = 0; k < data.Count; k++)
+            {
+                if (data[k].postion == point)
+                {
+                    data[k].uiOpen = value;
                     return;
                 }
             }
