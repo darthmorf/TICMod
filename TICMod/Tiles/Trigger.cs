@@ -9,6 +9,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
+using TICMod.UI;
 using static Terraria.ModLoader.ModContent;
 using ChatLine = Terraria.UI.Chat.ChatLine;
 using ChatMessage = Terraria.Chat.ChatMessage;
@@ -44,19 +45,17 @@ namespace TICMod.Tiles
             Item.NewItem(i * 16, j * 16, 16, 32, ItemType<Items.Trigger>());
         }
 
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            states.removeTile(i, j);
+            GetInstance<TICMod>().ToggleCommandUI(i, j, UIType.Conditional, true);
+            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
+        }
+
         public override void PlaceInWorld(int i, int j, Item item)
         {
             states.addTile(i, j, true, true);
             base.PlaceInWorld(i, j, item);
-        }
-
-        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
-        {
-            if (!fail)
-            {
-                states.removeTile(i, j);
-            }
-            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 
         public override void HitWire(int i, int j)
@@ -79,7 +78,7 @@ namespace TICMod.Tiles
                 Main.tile[i, j-1].frameX += frameAdjustment;
                 NetMessage.SendTileSquare(-1, i, j - 1, 2, TileChangeType.None);
                 string state = enabled ? "Disabled" : "Enabled";
-                SendChatMsg($"{state}", i, j);
+                SendChatMsg($"{state}", i, j, states.isChatEnabled(i,j));
             }
         }
 
@@ -91,10 +90,16 @@ namespace TICMod.Tiles
             player.showItemIcon2 = ItemType<Items.Trigger>();
         }
 
-        public void SendChatMsg(string text, int x = -1, int y = -1)
+        public override bool NewRightClick(int i, int j)
         {
-            
-            if (states.isChatEnabled(x,y))
+            GetInstance<TICMod>().ToggleCommandUI(i, j, UIType.Trigger);
+
+            return true;
+        }
+
+        public void SendChatMsg(string text, int x = -1, int y = -1, bool showOutput = true)
+        {
+            if (showOutput)
             {
                 Main.NewText($"[Trigger@{x},{y}] {text}", Color.Gray);
             }

@@ -7,6 +7,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
+using TICMod.UI;
 using static Terraria.ModLoader.ModContent;
 
 namespace TICMod.Tiles
@@ -59,18 +60,16 @@ namespace TICMod.Tiles
                 // placeholder condition
                 bool condition = Main.dayTime;
                 
-                SendChatMsg($"{condition}", i, j);
+                SendChatMsg($"{condition}", i, j, states.isChatEnabled(i,j));
 
                 ExtraWireTrips trips = ModContent.GetInstance<ExtraWireTrips>();
 
                 if (condition)
                 {
-                    //Wiring.TripWire(i, (j-2), 1, 1);
                     trips.AddWireUpdate(i, j-2);
                 }
                 else
                 {
-                    //Wiring.TripWire(i, (j-1), 1, 1);
                     trips.AddWireUpdate(i, j - 1);
                 }
             }
@@ -84,10 +83,8 @@ namespace TICMod.Tiles
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            if (!fail)
-            {
-                states.removeTile(i, j);
-            }
+            states.removeTile(i, j);
+            GetInstance<TICMod>().ToggleCommandUI(i, j, UIType.Conditional, true);
             base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 
@@ -99,10 +96,17 @@ namespace TICMod.Tiles
             player.showItemIcon2 = ItemType<Items.Conditional>();
         }
 
-
-        public void SendChatMsg(string text, int x = -1, int y = -1)
+        public override bool NewRightClick(int i, int j)
         {
-            if (true)
+            GetInstance<TICMod>().ToggleCommandUI(i, j, UIType.Conditional);
+
+            return true;
+        }
+
+
+        public void SendChatMsg(string text, int x = -1, int y = -1, bool showOutput = true)
+        {
+            if (showOutput)
             {
                 Main.NewText($"[Conditional@{x},{y}] {text}", Color.Gray);
             }

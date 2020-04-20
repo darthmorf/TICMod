@@ -15,7 +15,7 @@ namespace TICMod
     {
         internal UserInterface userInterface;
         internal UIState modUiState;
-        internal List<InfluencerUI> influencerUis;
+        internal List<CommandUI> commandUis;
 
         public TICMod()
         {
@@ -23,7 +23,7 @@ namespace TICMod
 
         public override void Load()
         {
-            influencerUis = new List<InfluencerUI>();
+            commandUis = new List<CommandUI>();
 
             if (!Terraria.Main.dedServ)
             {
@@ -66,24 +66,24 @@ namespace TICMod
             }
         }
 
-        internal void ToggleInfluencerUI(int i, int j, bool onlyClose=false)
+        internal void ToggleCommandUI(int i, int j, UIType uiType, bool onlyClose=false)
         {
-            foreach (var influencerUi in influencerUis)
+            foreach (var commandUi in commandUis)
             {
-                if (influencerUi.i == i && influencerUi.j == j) // UI is open
+                if (commandUi.i == i && commandUi.j == j) // UI is open
                 {
-                    modUiState.RemoveChild(influencerUi);
-                    influencerUis.Remove(influencerUi);
+                    modUiState.RemoveChild(commandUi);
+                    commandUis.Remove(commandUi);
                     return;
                 }
             }
 
             if (!onlyClose)
             {
-                InfluencerUI iUI = new InfluencerUI();
-                modUiState.Append(iUI);
-                influencerUis.Add(iUI);
-                iUI.InitValues(i, j);
+                CommandUI cUI = new CommandUI();
+                modUiState.Append(cUI);
+                commandUis.Add(cUI);
+                cUI.InitValues(i, j, uiType);
             }
         }
     }

@@ -14,13 +14,15 @@ using Terraria.UI;
 
 namespace TICMod.UI
 {
-    class InfluencerUI : UIDragablePanel
+    class CommandUI : UIDragablePanel
     {
         private UIText titleText;
         private UIBetterTextBox commandInput;
         private TICStates states;
         private UIPanel button;
         private UICheckbox outputCheckbox;
+
+        private UIType uiType;
 
         public int i;
         public int j;
@@ -60,17 +62,29 @@ namespace TICMod.UI
             button.Append(buttonText);
             this.Append(button);
 
+            UIQuitButton quitButton = new UIQuitButton("Close Menu");
+            quitButton.Top.Set(-10,0f);
+            quitButton.Left.Set(920,0f);
+            quitButton.OnClick += (evt, element) => { ModContent.GetInstance<TICMod>().ToggleCommandUI(i, j, uiType,true);};
+            this.Append(quitButton);
+
             states = ModContent.GetInstance<TICStates>();
         }
 
-        public void InitValues(int _i, int _j)
+        public void InitValues(int _i, int _j, UIType _uiType)
         {
-            OnInitialize();
-
             i = _i;
             j = _j;
+            uiType = _uiType;
 
-            titleText.SetText($"Influencer Block @ ({i},{j})");
+            OnInitialize();
+
+            switch (uiType)
+            {
+                
+            }
+
+            titleText.SetText($"{uiType} Block @ ({i},{j})");
             commandInput.SetText(states.getCommand(i, j));
             outputCheckbox.Selected = states.isChatEnabled(i, j);
         }
@@ -95,4 +109,6 @@ namespace TICMod.UI
             states.setChatEnabled(i, j, outputCheckbox.Selected);
         }
     }
+
+    enum UIType { Trigger, Influencer, Conditional }
 }

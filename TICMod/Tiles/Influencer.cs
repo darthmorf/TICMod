@@ -43,14 +43,20 @@ namespace TICMod.Tiles
         {
             Tile tile = Main.tile[i, j];
 
-            SendChatMsg($"Did Something!", i, j);
+            string command = states.getCommand(i, j);
+            if (command == "")
+            {
+                command = "Activated! (No command input).";
+            }
 
-            // Do something
+            // parse command
+
+            SendChatMsg(command, i, j, states.isChatEnabled(i,j));
         }
 
-        public void SendChatMsg(string text, int x = -1, int y = -1)
+        public void SendChatMsg(string text, int x = -1, int y = -1, bool showOutput=true)
         {
-            if (true)
+            if (showOutput)
             {
                 
                 Main.NewText($"[Influencer@{x},{y}] {text}", Color.Gray);
@@ -59,7 +65,7 @@ namespace TICMod.Tiles
 
         public override bool NewRightClick(int i, int j)
         {
-            GetInstance<TICMod>().ToggleInfluencerUI(i, j);
+            GetInstance<TICMod>().ToggleCommandUI(i, j, UIType.Influencer);
             
             return true;
         }
@@ -81,7 +87,7 @@ namespace TICMod.Tiles
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
            states.removeTile(i, j);
-           GetInstance<TICMod>().ToggleInfluencerUI(i, j, true);
+           GetInstance<TICMod>().ToggleCommandUI(i, j, UIType.Influencer, true);
            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 

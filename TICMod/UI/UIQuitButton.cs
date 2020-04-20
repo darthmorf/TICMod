@@ -1,0 +1,52 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
+using Terraria;
+using Terraria.GameContent.UI.Elements;
+using Terraria.ModLoader;
+using Terraria.UI;
+
+namespace TICMod.UI
+{
+	internal class UIQuitButton : UIPanel
+	{
+		public static Texture2D texture;
+
+		public event EventHandler OnSelectedChanged;
+
+		internal string hoverText;
+
+        public UIQuitButton(string hoverText)
+		{
+			texture = ModContent.GetTexture("TICMod/UI/exit");
+            this.hoverText = hoverText;
+            this.BackgroundColor = Color.Transparent;
+            this.BorderColor = Color.Transparent;
+            this.Width.Set(14f, 0);
+            this.Height.Set(15f, 0);
+            Recalculate();
+		}
+
+		public void SetHoverText(string hoverText)
+		{
+			this.hoverText = hoverText;
+		}
+
+		protected override void DrawSelf(SpriteBatch spriteBatch)
+		{
+            base.DrawSelf(spriteBatch);
+
+            CalculatedStyle innerDimensions = base.GetInnerDimensions();
+            Vector2 pos = new Vector2(innerDimensions.X-15, innerDimensions.Y - 5);
+
+
+            spriteBatch.Draw(texture, pos, texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            
+
+			if (IsMouseHovering)
+			{
+				Main.hoverItemName = hoverText;
+			}
+		}
+	}
+}
