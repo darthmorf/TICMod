@@ -52,6 +52,7 @@ namespace TICMod.UI
             button.Width.Pixels = 60f;
             button.Height.Pixels = 30f;
             button.Top.Precent = 0.70f;
+            button.BackgroundColor = new Color(73, 94, 171);
             button.OnClick += (evt, element) => { SaveBtnPress(); };
             UIText buttonText = new UIText("Save");
             buttonText.Top.Pixels = -4f;
@@ -80,7 +81,17 @@ namespace TICMod.UI
 
             if (PlayerInput.Triggers.JustPressed.Inventory)
             {
+                states.setUiOpen(lasti, lastj, false);
                 ModContent.GetInstance<TICMod>().HideInfluencerUI();
+            }
+
+            if (button.IsMouseHovering)
+            {
+               button.BackgroundColor = new Color(100, 118, 184);
+            }
+            else
+            {
+                button.BackgroundColor = new Color(73, 94, 171);
             }
         }
 
