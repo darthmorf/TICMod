@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 using TICMod.UI;
 
 namespace TICMod
@@ -57,6 +59,14 @@ namespace TICMod
                 case "say":
                     resp = CommandSay(commandArgs, resp);
                     break;
+
+                case "spawnnpc":
+                    resp = CommandSpawnNPC(commandArgs, resp);
+                    break;
+
+                case "spawnnpcid":
+                    resp = CommandSpawnNPCID(commandArgs, resp);
+                    break;
             }
 
             return resp;
@@ -100,6 +110,121 @@ namespace TICMod
             resp.response = $"Displaying '{args[1]}' as colour {textColor.ToString()}";
 
             args[1].Split(new String[] { "\\n" }, StringSplitOptions.None).ToList().ForEach(line => Main.NewText(line, textColor));
+
+            return resp;
+        }
+
+        private static CommandResponse CommandSpawnNPC(List<String> commandArgs, CommandResponse resp)
+        {
+            var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
+            var posStr = args[0].Split(new[] { ',' }, 2);
+            List<int> pos = new List<int>(2);
+            foreach (var str in posStr)
+            {
+                bool success = int.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out int posVal);
+                if (!success)
+                {
+                    break;
+                }
+                pos.Add(posVal);
+            }
+            if (pos.Count != 2)
+            {
+                resp.response =
+                    $"{args[0]} is not a valid position string.";
+                return resp;
+            }
+
+            pos[0] *= 16;
+            pos[1] *= 16;
+
+            string npcName = args[1].ToLower();
+
+            NPC npc = new NPC();
+
+            bool foundNpc = false;
+            for (int i = -65; i < Main.npcTexture.Length; i++)
+            {
+                npc.SetDefaults(i);
+                {
+                    if (npc.GivenOrTypeName.ToLower() == npcName)
+                    {
+                        foundNpc = true;
+                        break;
+                    }
+                }
+            }
+
+            if (foundNpc)
+            {
+                // correct NPC IDs
+                switch (npc.netID)
+                {
+                    case 392: // Martian Saucer
+                        npc.netID = 395;
+                        break;
+
+                    case 396: // Moon Lord
+                        npc.netID = 398;
+                        break;
+                }
+
+
+                int index = NPC.NewNPC(pos[0], pos[1], npc.type);
+                Main.npc[index].SetDefaults(npc.netID);
+                resp.success = true;
+                resp.response = $"Successfully spawned {npc.GivenOrTypeName}, ID:{npc.netID} @ {pos[0] / 16},{pos[1] / 16}.";
+            }
+            else
+            {
+                resp.response = $"Could not find NPC with name '{args[1]}'.";
+            }
+
+            return resp;
+        }
+
+        private static CommandResponse CommandSpawnNPCID(List<String> commandArgs, CommandResponse resp)
+        {
+            var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
+            var posStr = args[0].Split(new[] { ',' }, 2);
+            List<int> pos = new List<int>(2);
+            foreach (var str in posStr)
+            {
+                bool success = int.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out int posVal);
+                if (!success)
+                {
+                    break;
+                }
+                pos.Add(posVal);
+            }
+            if (pos.Count != 2)
+            {
+                resp.response =
+                    $"{args[0]} is not a valid position string.";
+                return resp;
+            }
+
+            pos[0] *= 16;
+            pos[1] *= 16;
+
+            int npcID;
+            bool isId = int.TryParse(args[1], NumberStyles.Integer, CultureInfo.CurrentCulture, out npcID);
+
+            if (npcID >= Main.npcTexture.Length || npcID < -65 || !isId)
+            {
+                resp.response =
+                    $"{args[0]} is not a valid position NPC ID. Must be > -66 and < {Main.npcTexture.Length}.";
+                return resp;
+            }
+
+            NPC npc = new NPC();
+            npc.SetDefaults(npcID);
+
+            int index = NPC.NewNPC(pos[0], pos[1], npc.type);
+            Main.npc[index].SetDefaults(npc.netID);
+            resp.success = true;
+            resp.response = $"Successfully spawned {npc.GivenOrTypeName}, ID:{npc.netID} @ {pos[0] / 16},{pos[1] / 16}.";
+            
 
             return resp;
         }
