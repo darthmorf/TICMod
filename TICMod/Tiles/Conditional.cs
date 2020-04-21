@@ -84,7 +84,7 @@ namespace TICMod.Tiles
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             states.removeTile(i, j);
-            GetInstance<TICMod>().ToggleCommandUI(i, j, UIType.Conditional, true);
+            GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Conditional, true);
             base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 
@@ -98,7 +98,7 @@ namespace TICMod.Tiles
 
         public override bool NewRightClick(int i, int j)
         {
-            GetInstance<TICMod>().ToggleCommandUI(i, j, UIType.Conditional);
+            GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Conditional);
 
             return true;
         }

@@ -42,14 +42,18 @@ namespace TICMod.Tiles
         public override void HitWire(int i, int j)
         {
             Tile tile = Main.tile[i, j];
-
             string command = states.getCommand(i, j);
-            if (command == "")
-            {
-                command = "Activated! (No command input).";
-            }
 
-            // parse command
+            CommandResponse resp = CommandHandler.Parse(command, BlockType.Influencer);
+
+            if (resp.success)
+            {
+                command = resp.response;
+            }
+            else
+            {
+                command = $"Error, invalid syntax: {resp.response}";
+            }
 
             SendChatMsg(command, i, j, states.isChatEnabled(i,j));
         }
@@ -65,7 +69,7 @@ namespace TICMod.Tiles
 
         public override bool NewRightClick(int i, int j)
         {
-            GetInstance<TICMod>().ToggleCommandUI(i, j, UIType.Influencer);
+            GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Influencer);
             
             return true;
         }
@@ -87,7 +91,7 @@ namespace TICMod.Tiles
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
            states.removeTile(i, j);
-           GetInstance<TICMod>().ToggleCommandUI(i, j, UIType.Influencer, true);
+           GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Influencer, true);
            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 

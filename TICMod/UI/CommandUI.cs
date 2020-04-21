@@ -22,7 +22,7 @@ namespace TICMod.UI
         private UIPanel button;
         private UICheckbox outputCheckbox;
 
-        private UIType uiType;
+        private BlockType uiType;
 
         public int i;
         public int j;
@@ -71,11 +71,11 @@ namespace TICMod.UI
             states = ModContent.GetInstance<TICStates>();
         }
 
-        public void InitValues(int _i, int _j, UIType _uiType)
+        public void InitValues(int _i, int _j, BlockType _type)
         {
             i = _i;
             j = _j;
-            uiType = _uiType;
+            uiType = _type;
 
             OnInitialize();
 
@@ -109,6 +109,4 @@ namespace TICMod.UI
             states.setChatEnabled(i, j, outputCheckbox.Selected);
         }
     }
-
-    enum UIType { Trigger, Influencer, Conditional }
 }

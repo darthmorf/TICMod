@@ -11,7 +11,9 @@ using Point16 = Terraria.DataStructures.Point16;
 
 namespace TICMod
 {
-	public class TICMod : Mod
+    public enum BlockType { Trigger, Influencer, Conditional }
+
+    public class TICMod : Mod
     {
         internal UserInterface userInterface;
         internal UIState modUiState;
@@ -66,7 +68,7 @@ namespace TICMod
             }
         }
 
-        internal void ToggleCommandUI(int i, int j, UIType uiType, bool onlyClose=false)
+        internal void ToggleCommandUI(int i, int j, BlockType uiType, bool onlyClose=false)
         {
             foreach (var commandUi in commandUis)
             {
