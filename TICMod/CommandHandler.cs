@@ -15,7 +15,7 @@ namespace TICMod
 {
     public static class CommandHandler
     {
-        public static CommandResponse Parse(string command, BlockType blockType)
+        public static CommandResponse Parse(string command, BlockType blockType, bool execute = true)
         {
             /*List<string> args = Regex
                 .Matches(command, @"(?<match>\w+)|\""(?<match>[\w\s]*)""")
@@ -27,29 +27,29 @@ namespace TICMod
 
             var commandArgs = command.Split(new[] {' '}, 2).ToList();
 
-            CommandResponse resp = new CommandResponse(false, "Unkown Command Block");
+            CommandResponse resp = new CommandResponse(false, "Unknown Command Block");
             switch (blockType)
             {
                 case BlockType.Trigger:
-                    resp = ParseTrigger(commandArgs);
+                    resp = ParseTrigger(commandArgs, execute);
                     break;
                 case BlockType.Influencer:
-                    resp = ParseInfluencer(commandArgs);
+                    resp = ParseInfluencer(commandArgs, execute);
                     break;
                 case BlockType.Conditional:
-                    resp = ParseConditional(commandArgs);
+                    resp = ParseConditional(commandArgs, execute);
                     break;
             }
 
             return resp;
         }
 
-        private static CommandResponse ParseTrigger(List<String> args)
+        private static CommandResponse ParseTrigger(List<String> args, bool execute)
         {
             return null;
         }
 
-        private static CommandResponse ParseInfluencer(List<String> commandArgs)
+        private static CommandResponse ParseInfluencer(List<String> commandArgs, bool execute)
         {
             CommandResponse resp = new CommandResponse(false, $"Unknown Command '{commandArgs[0]}'.");
             commandArgs[0] = commandArgs[0].ToLower();
@@ -57,30 +57,42 @@ namespace TICMod
             switch (commandArgs[0])
             {
                 case "say":
-                    resp = CommandSay(commandArgs, resp);
+                    resp = CommandSay(commandArgs, resp, execute);
                     break;
 
                 case "spawnnpc":
-                    resp = CommandSpawnNPC(commandArgs, resp);
+                    resp = CommandSpawnNPC(commandArgs, resp, execute);
                     break;
 
                 case "spawnnpcid":
-                    resp = CommandSpawnNPCID(commandArgs, resp);
+                    resp = CommandSpawnNPCID(commandArgs, resp, execute);
                     break;
             }
 
             return resp;
         }
 
-        private static CommandResponse ParseConditional(List<String> args)
+        private static CommandResponse ParseConditional(List<String> args, bool execute)
         {
             return null;
         }
 
 
-        private static CommandResponse CommandSay(List<String> commandArgs, CommandResponse resp)
+        private static CommandResponse CommandSay(List<String> commandArgs, CommandResponse resp, bool execute)
         {
+            if (commandArgs.Count != 2)
+            {
+                resp.response =
+                    $"Command must contain both an RGB code and a string to print.";
+                return resp;
+            }
             var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
+            if (args.Count != 2)
+            {
+                resp.response =
+                    $"Command must contain both an RGB code and a string to print.";
+                return resp;
+            }
             var rgbStr = args[0].Split(new[] { ',' }, 3);
             List<int> rgb = new List<int>(3);
             foreach (var str in rgbStr)
@@ -109,14 +121,29 @@ namespace TICMod
             resp.success = true;
             resp.response = $"Displaying '{args[1]}' as colour {textColor.ToString()}";
 
-            args[1].Split(new String[] { "\\n" }, StringSplitOptions.None).ToList().ForEach(line => Main.NewText(line, textColor));
+            if (execute)
+            {
+                args[1].Split(new String[] { "\\n" }, StringSplitOptions.None).ToList().ForEach(line => Main.NewText(line, textColor));
+            }
 
             return resp;
         }
 
-        private static CommandResponse CommandSpawnNPC(List<String> commandArgs, CommandResponse resp)
+        private static CommandResponse CommandSpawnNPC(List<String> commandArgs, CommandResponse resp, bool execute)
         {
+            if (commandArgs.Count != 2)
+            {
+                resp.response =
+                    $"Command must contain both a coordinate and an NPC name.";
+                return resp;
+            }
             var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
+            if (args.Count != 2)
+            {
+                resp.response =
+                    $"Command must contain both a coordinate and an NPC name.";
+                return resp;
+            }
             var posStr = args[0].Split(new[] { ',' }, 2);
             List<int> pos = new List<int>(2);
             foreach (var str in posStr)
@@ -155,7 +182,7 @@ namespace TICMod
                 }
             }
 
-            if (foundNpc)
+            if (foundNpc && npc.netID != 0)
             {
                 // correct NPC IDs
                 switch (npc.netID)
@@ -169,9 +196,12 @@ namespace TICMod
                         break;
                 }
 
+                if (execute)
+                {
+                    int index = NPC.NewNPC(pos[0], pos[1], npc.type);
+                    Main.npc[index].SetDefaults(npc.netID);
+                }
 
-                int index = NPC.NewNPC(pos[0], pos[1], npc.type);
-                Main.npc[index].SetDefaults(npc.netID);
                 resp.success = true;
                 resp.response = $"Successfully spawned {npc.GivenOrTypeName}, ID:{npc.netID} @ {pos[0] / 16},{pos[1] / 16}.";
             }
@@ -183,9 +213,21 @@ namespace TICMod
             return resp;
         }
 
-        private static CommandResponse CommandSpawnNPCID(List<String> commandArgs, CommandResponse resp)
+        private static CommandResponse CommandSpawnNPCID(List<String> commandArgs, CommandResponse resp, bool execute)
         {
+            if (commandArgs.Count != 2)
+            {
+                resp.response =
+                    $"Command must contain both a coordinate and an NPC ID.";
+                return resp;
+            }
             var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
+            if (args.Count != 2)
+            {
+                resp.response =
+                    $"Command must contain both a coordinate and an NPC ID.";
+                return resp;
+            }
             var posStr = args[0].Split(new[] { ',' }, 2);
             List<int> pos = new List<int>(2);
             foreach (var str in posStr)
@@ -210,18 +252,21 @@ namespace TICMod
             int npcID;
             bool isId = int.TryParse(args[1], NumberStyles.Integer, CultureInfo.CurrentCulture, out npcID);
 
-            if (npcID >= Main.npcTexture.Length || npcID < -65 || !isId)
+            if (npcID >= Main.npcTexture.Length || npcID < -65 || !isId || npcID == 0)
             {
                 resp.response =
-                    $"{args[0]} is not a valid position NPC ID. Must be > -66 and < {Main.npcTexture.Length}.";
+                    $"{args[0]} is not a valid position NPC ID. Must be > -66 and < {Main.npcTexture.Length} and not 0.";
                 return resp;
             }
 
             NPC npc = new NPC();
             npc.SetDefaults(npcID);
+            if (execute)
+            {
+                int index = NPC.NewNPC(pos[0], pos[1], npc.type);
+                Main.npc[index].SetDefaults(npc.netID);
+            }
 
-            int index = NPC.NewNPC(pos[0], pos[1], npc.type);
-            Main.npc[index].SetDefaults(npc.netID);
             resp.success = true;
             resp.response = $"Successfully spawned {npc.GivenOrTypeName}, ID:{npc.netID} @ {pos[0] / 16},{pos[1] / 16}.";
             

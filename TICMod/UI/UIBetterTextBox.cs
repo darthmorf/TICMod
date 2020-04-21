@@ -32,10 +32,14 @@ namespace TICMod.UI
 
 		public event Action OnEnterPressed;
 
+        public Color textColor = Color.Black;
+
 		//public event Action OnUpPressed;
 		internal bool unfocusOnEnter = true;
 
 		internal bool unfocusOnTab = true;
+
+        public string hoverText;
 
 		//public NewUITextBox(string text, float textScale = 1, bool large = false) : base("", textScale, large)
 		public UIBetterTextBox(string hintText, string text = "")
@@ -189,7 +193,7 @@ namespace TICMod.UI
 			}
 		}*/
 
-		private static bool JustPressed(Keys key)
+        private static bool JustPressed(Keys key)
 		{
 			return Main.inputText.IsKeyDown(key) && !Main.oldInputText.IsKeyDown(key);
 		}
@@ -241,7 +245,7 @@ namespace TICMod.UI
 				displayString = displayString + "|";
 			}
 			CalculatedStyle space = base.GetDimensions();
-			Color color = Color.Black;
+            Color color = textColor;
 			if (currentString.Length == 0)
 			{
 			}
@@ -257,6 +261,11 @@ namespace TICMod.UI
 				//Utils.DrawBorderString(spriteBatch, displayString, drawPos, Color.White, 1f);
 				spriteBatch.DrawString(Main.fontMouseText, displayString, drawPos, color);
 			}
+
+            if (IsMouseHovering)
+            {
+                Main.hoverItemName = hoverText;
+            }
 
 			//			CalculatedStyle innerDimensions2 = base.GetInnerDimensions();
 			//			Vector2 pos2 = innerDimensions2.Position();

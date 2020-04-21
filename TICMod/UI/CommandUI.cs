@@ -43,6 +43,7 @@ namespace TICMod.UI
             commandInput.Top.Set(0, 0.25f);
             commandInput.Width.Precent = 1f;
             commandInput.Height.Pixels = 30;
+            commandInput.OnTextChanged += () => { CommandInputChanged(); };
             this.Append(commandInput);
 
             outputCheckbox = new UICheckbox("Show debug output?", "");
@@ -107,6 +108,28 @@ namespace TICMod.UI
         {
             states.setCommand(i, j, commandInput.currentString);
             states.setChatEnabled(i, j, outputCheckbox.Selected);
+        }
+
+        private void CommandInputChanged()
+        {
+            CommandResponse resp = CommandHandler.Parse(commandInput.currentString, uiType, false);
+            if (resp.success)
+            {
+                commandInput.textColor = Color.Black;
+                commandInput.hoverText = "";
+            }
+            else
+            {
+                if (commandInput.currentString == "")
+                {
+                    commandInput.textColor = Color.Black;
+                }
+                else
+                {
+                    commandInput.textColor = Color.Red;
+                    commandInput.hoverText = resp.response;
+                }
+            }
         }
     }
 }
