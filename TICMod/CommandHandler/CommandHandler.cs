@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Terraria;
 
 namespace TICMod
 {
     public static partial class CommandHandler
     {
-        public static CommandResponse Parse(string command, BlockType blockType, bool execute = true)
+        public static CommandResponse Parse(string command, BlockType blockType, bool execute = true, int i=-1, int j=-1)
         {
             var commandArgs = command.Split(new[] {' '}, 2).ToList();
 
@@ -14,7 +15,7 @@ namespace TICMod
             switch (blockType)
             {
                 case BlockType.Trigger:
-                    resp = ParseTrigger(commandArgs, execute);
+                    resp = ParseTrigger(commandArgs, execute, i, j);
                     break;
                 case BlockType.Influencer:
                     resp = ParseInfluencer(commandArgs, execute);
@@ -27,10 +28,17 @@ namespace TICMod
             return resp;
         }
 
-        private static CommandResponse ParseTrigger(List<String> commandArgs, bool execute)
+        private static CommandResponse ParseTrigger(List<String> commandArgs, bool execute, int i, int j)
         {
             CommandResponse resp = new CommandResponse(false, $"Unknown Command '{commandArgs[0]}'.");
             commandArgs[0] = commandArgs[0].ToLower();
+
+            switch (commandArgs[0])
+            {
+                case "time":
+                    resp = TriggerTime(commandArgs, resp, execute, i, j);
+                    break;
+            }
 
             return resp;
         }

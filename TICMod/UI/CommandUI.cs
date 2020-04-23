@@ -108,6 +108,11 @@ namespace TICMod.UI
         {
             states.setCommand(i, j, commandInput.currentString);
             states.setChatEnabled(i, j, outputCheckbox.Selected);
+
+            if (uiType == BlockType.Trigger)
+            {
+                CommandResponse resp = CommandHandler.Parse(commandInput.currentString, uiType, i:i, j:j);
+            }
         }
 
         private void CommandInputChanged()

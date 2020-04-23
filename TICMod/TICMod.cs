@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using IL.Terraria;
@@ -100,6 +101,7 @@ namespace TICMod
             public bool enabled;
             public bool chatOutput;
             public string command;
+            public Action trigger;
 
             public Data(Point16 _postion, string _command="", bool _enabled=true, bool _chatOutput=true)
             {
@@ -198,6 +200,21 @@ namespace TICMod
             return "";
         }
 
+        public Action getTrigger(int i, int j)
+        {
+            Point16 point = new Point16(i, j);
+
+            for (int k = 0; k < data.Count; k++)
+            {
+                if (data[k].postion == point)
+                {
+                    return data[k].trigger;
+                }
+            }
+
+            return null;
+        }
+
         public void setEnabled(int i, int j, bool value)
         {
             Point16 point = new Point16(i, j);
@@ -240,6 +257,20 @@ namespace TICMod
             }
         }
 
+        public void setTrigger(int i, int j, Action value)
+        {
+            Point16 point = new Point16(i, j);
+
+            for (int k = 0; k < data.Count; k++)
+            {
+                if (data[k].postion == point)
+                {
+                    data[k].trigger = value;
+                    return;
+                }
+            }
+        }
+
         public void addTile(int i, int j, bool enabled, bool chatEnabled)
         {
             Data tile = new Data(new Point16(i,j));
@@ -277,5 +308,23 @@ namespace TICMod
             }
         }
         public void AddWireUpdate(int x, int y) => updates.Enqueue(new Point16(x, y));
+    }
+
+    public class Triggers : ModWorld
+    {
+        public List<Action> triggers = new List<Action>();
+
+        public override void Initialize()
+        {
+           triggers.Clear();
+        }
+
+        public override void PostUpdate()
+        {
+            foreach (var trigger in triggers)
+            {
+                trigger();
+            }
+        }
     }
 }

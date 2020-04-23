@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using IL.Terraria.UI.Chat;
+using Microsoft.Xna.Framework.Graphics;
 using On.Terraria.Chat;
 using Terraria;
 using Terraria.DataStructures;
