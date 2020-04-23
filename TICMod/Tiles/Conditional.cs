@@ -56,11 +56,13 @@ namespace TICMod.Tiles
             }
 
             if (isBottom)
-            { 
-                // placeholder condition
-                bool condition = Main.dayTime;
-                
-                SendChatMsg($"{condition}", i, j, states.isChatEnabled(i,j));
+            {
+                string command = states.getCommand(i, j);
+                CommandResponse resp = CommandHandler.Parse(command, BlockType.Conditional, true);
+
+                bool condition = resp.success;
+
+                SendChatMsg(resp.response, i, j, states.isChatEnabled(i,j));
 
                 ExtraWireTrips trips = ModContent.GetInstance<ExtraWireTrips>();
 

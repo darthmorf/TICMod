@@ -2,83 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using TICMod.UI;
 
 namespace TICMod
 {
-    public static class CommandHandler
+    public static partial class CommandHandler
     {
-        public static CommandResponse Parse(string command, BlockType blockType, bool execute = true)
-        {
-            /*List<string> args = Regex
-                .Matches(command, @"(?<match>\w+)|\""(?<match>[\w\s]*)""")
-                .Cast<Match>()
-                .Select(m => m.Groups["match"].Value)
-                .ToList();
-
-            args[0] = args[0].ToLower();*/
-
-            var commandArgs = command.Split(new[] {' '}, 2).ToList();
-
-            CommandResponse resp = new CommandResponse(false, "Unknown Command Block");
-            switch (blockType)
-            {
-                case BlockType.Trigger:
-                    resp = ParseTrigger(commandArgs, execute);
-                    break;
-                case BlockType.Influencer:
-                    resp = ParseInfluencer(commandArgs, execute);
-                    break;
-                case BlockType.Conditional:
-                    resp = ParseConditional(commandArgs, execute);
-                    break;
-            }
-
-            return resp;
-        }
-
-        private static CommandResponse ParseTrigger(List<String> args, bool execute)
-        {
-            return null;
-        }
-
-        private static CommandResponse ParseInfluencer(List<String> commandArgs, bool execute)
-        {
-            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{commandArgs[0]}'.");
-            commandArgs[0] = commandArgs[0].ToLower();
-
-            switch (commandArgs[0])
-            {
-                case "say":
-                    resp = CommandSay(commandArgs, resp, execute);
-                    break;
-
-                case "spawnnpc":
-                    resp = CommandSpawnNPC(commandArgs, resp, execute);
-                    break;
-
-                case "spawnnpcid":
-                    resp = CommandSpawnNPCID(commandArgs, resp, execute);
-                    break;
-            }
-
-            return resp;
-        }
-
-        private static CommandResponse ParseConditional(List<String> args, bool execute)
-        {
-            return null;
-        }
-
-
-        private static CommandResponse CommandSay(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerSay(List<String> commandArgs, CommandResponse resp, bool execute)
         {
             if (commandArgs.Count != 2)
             {
@@ -119,6 +50,7 @@ namespace TICMod
                 args.Add("");
             }
             resp.success = true;
+            resp.valid = true;
             resp.response = $"Displaying '{args[1]}' as colour {textColor.ToString()}";
 
             if (execute)
@@ -129,7 +61,7 @@ namespace TICMod
             return resp;
         }
 
-        private static CommandResponse CommandSpawnNPC(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerSpawnNPC(List<String> commandArgs, CommandResponse resp, bool execute)
         {
             if (commandArgs.Count != 2)
             {
@@ -203,6 +135,7 @@ namespace TICMod
                 }
 
                 resp.success = true;
+                resp.valid = true;
                 resp.response = $"Successfully spawned {npc.GivenOrTypeName}, ID:{npc.netID} @ {pos[0] / 16},{pos[1] / 16}.";
             }
             else
@@ -213,7 +146,7 @@ namespace TICMod
             return resp;
         }
 
-        private static CommandResponse CommandSpawnNPCID(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerSpawnNPCID(List<String> commandArgs, CommandResponse resp, bool execute)
         {
             if (commandArgs.Count != 2)
             {
@@ -268,22 +201,11 @@ namespace TICMod
             }
 
             resp.success = true;
+            resp.valid = true;
             resp.response = $"Successfully spawned {npc.GivenOrTypeName}, ID:{npc.netID} @ {pos[0] / 16},{pos[1] / 16}.";
-            
+
 
             return resp;
-        }
-    }
-
-    public class CommandResponse
-    {
-        public bool success;
-        public string response;
-
-        public CommandResponse(bool _success, string _response)
-        {
-            success = _success;
-            response = _response;
         }
     }
 }

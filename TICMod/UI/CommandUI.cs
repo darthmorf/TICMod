@@ -113,7 +113,7 @@ namespace TICMod.UI
         private void CommandInputChanged()
         {
             CommandResponse resp = CommandHandler.Parse(commandInput.currentString, uiType, false);
-            if (resp.success)
+            if (resp.valid)
             {
                 commandInput.textColor = Color.Black;
                 commandInput.hoverText = "";
