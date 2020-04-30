@@ -10,4 +10,4 @@ Functionality is implemented through three seperate tiles; the Trigger, the Infl
 - Conditionals check whether something is true or false, and then give an output depending on that result, for example, checking if it's day, or if a player has an item, or if a tile exists at a certain spot.
 
 
-For more information visit the GitHub repository: https://github.com/darthmorf/TICMod, or message me on discord @ darthmorf#5524.
+For more information visit the GitHub repository: https://github.com/darthmorf/TICMod, or message me on discord: darthmorf#5524.
