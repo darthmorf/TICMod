@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using IL.Terraria;
-using IL.Terraria.DataStructures;
 using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -20,18 +17,14 @@ namespace TICMod
         internal UIState modUiState;
         internal List<CommandUI> commandUis;
 
-        public TICMod()
-        {
-        }
-
         public override void Load()
         {
             commandUis = new List<CommandUI>();
 
             if (!Terraria.Main.dedServ)
             {
+                // Load UI
                 userInterface = new UserInterface();
-
                 modUiState = new UIState();
                 modUiState.Activate();
                 userInterface?.SetState(modUiState);
@@ -69,6 +62,7 @@ namespace TICMod
             }
         }
 
+        // Show/Hide individual instance of UI, tied to specific tile
         internal void ToggleCommandUI(int i, int j, BlockType uiType, bool onlyClose=false)
         {
             foreach (var commandUi in commandUis)
@@ -92,9 +86,10 @@ namespace TICMod
     }
 
 
-
+    // Handles all data that's tied to a specific Tile
     internal class TICStates : ModWorld
     {
+        // One instance applies to one specific tile
         public class Data
         {
             public Point16 postion;
@@ -121,6 +116,7 @@ namespace TICMod
             data = new List<Data>();
         }
 
+        // Load extra tile data saved with world
         public override void Load(TagCompound tag)
         {
             IList<Point16> points = tag.GetList<Point16>("TICPoints");
@@ -129,6 +125,7 @@ namespace TICMod
             IList<string> commands = tag.GetList<string>("TICCommand");
             IList<string> types = tag.GetList<string>("TICType");
 
+            // Convert type string to enum
             for (int i = 0; i < points.Count; i++)
             {
                 BlockType type = BlockType.Influencer;
@@ -150,6 +147,7 @@ namespace TICMod
                 data.Add(new Data(points[i], type, commands[i], enabled[i], chatOutput[i]));
             }
 
+            // Initialise trigger methods for existing trigger tiles
             foreach (var tile in data)
             {
                 if (tile.type == BlockType.Trigger)
@@ -159,6 +157,7 @@ namespace TICMod
             }
         }
 
+        // Save extra tile data saved with world
         public override TagCompound Save()
         {
             IList<Point16> points = new List<Point16>();
@@ -174,6 +173,7 @@ namespace TICMod
                 chatOutput.Add(tile.chatOutput);
                 commands.Add(tile.command);
 
+                // Convert enum to type string
                 switch (tile.type)
                 {
                     case BlockType.Trigger: 
@@ -199,17 +199,37 @@ namespace TICMod
             };
         }
 
-        public override void PostUpdate()
+        // Initializes extra tile data for a specific tile
+        public void addTile(int i, int j, bool enabled, bool chatEnabled, BlockType type)
         {
-            foreach (var state in data)
+            Data tile = new Data(new Point16(i, j), type, _enabled: enabled, _chatOutput: chatEnabled);
+            data.Add(tile);
+        }
+
+        // Deinitializes extra tile data for a specific tile
+        public void removeTile(int i, int j)
+        {
+            Point16 point = new Point16(i, j);
+            for (int k = 0; k < data.Count; k++)
             {
-                if (state.trigger != null)
+                if (data[k].postion == point)
                 {
-                    state.trigger();
+                    data.RemoveAt(k);
+                    return;
                 }
             }
         }
 
+        public override void PostUpdate()
+        {
+            // Execute any trigger methods
+            foreach (var tile in data)
+            {
+                tile.trigger?.Invoke();
+            }
+        }
+
+        // Getter and Setters for various data properties
         public bool isEnabled(int i, int j)
         {
             Point16 point = new Point16(i, j);
@@ -325,27 +345,9 @@ namespace TICMod
                 }
             }
         }
-
-        public void addTile(int i, int j, bool enabled, bool chatEnabled, BlockType type)
-        {
-            Data tile = new Data(new Point16(i,j), type, _enabled:enabled, _chatOutput:chatEnabled);
-            data.Add(tile);
-        }
-
-        public void removeTile(int i, int j)
-        {
-            Point16 point = new Point16(i, j);
-            for (int k = 0; k < data.Count; k++)
-            {
-                if (data[k].postion == point)
-                {
-                    data.RemoveAt(k);
-                    return;
-                }
-            }
-        }
     }
 
+    // Handles sending wire hits 
     // ty Rartrin
     public class ExtraWireTrips : ModWorld
     {
@@ -358,8 +360,8 @@ namespace TICMod
         {
             while (updates.Count > 0)
             {
-                var cur = updates.Dequeue();
-                Terraria.Wiring.TripWire(cur.X, cur.Y, 1, 1);
+                var tile = updates.Dequeue();
+                Terraria.Wiring.TripWire(tile.X, tile.Y, 1, 1);
             }
         }
         public void AddWireUpdate(int x, int y) => updates.Enqueue(new Point16(x, y));

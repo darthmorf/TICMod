@@ -9,6 +9,7 @@ using Terraria.UI;
 
 namespace TICMod.UI
 {
+	// ty jopojelly
 	internal class UIBetterTextBox : UIPanel//UITextPanel<string>
 	{
 		internal bool focused = false;

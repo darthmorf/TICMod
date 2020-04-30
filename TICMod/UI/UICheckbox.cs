@@ -8,6 +8,7 @@ using Terraria.UI;
 
 namespace TICMod.UI
 {
+    // ty jopojelly
 	internal class UICheckbox : UIText
 	{
 		public static Texture2D checkboxTexture;

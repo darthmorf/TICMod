@@ -10,10 +10,9 @@ namespace TICMod
 {
     public static class Utilities
     {
-        // TY Direwolf 420
+        // TY direwolf420
         public static string GetTimeAsString(double time, bool accurate = true)
         {
-            string suffix = "AM";
             if (!Main.dayTime)
             {
                 time += 54000.0;
@@ -24,10 +23,6 @@ namespace TICMod
             if (time < 0.0)
             {
                 time += 24.0;
-            }
-            if (time >= 12.0)
-            {
-                suffix = "PM";
             }
             int hours = (int)time;
             double doubleminutes = time - hours;
