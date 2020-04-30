@@ -24,7 +24,7 @@ Commands are entered through each block's own UI, which can be opened by right c
 If a command is invalid, the text becomes red, and an error code is displayed upon hover:
 ![](/readme-img/invalidui.png)
 
-The 'show debug output' checkbox determines whether debug output is displayed in the chat when the tile activates, for example:
+The 'show debug output' checkbox determines whether debug output is displayed in the chat when the tile activates, for example:<br/>
 ![](/readme-img/debugout.png)
 
 
