@@ -1,4 +1,4 @@
-displayName = T.I.C. Mod
+displayName = T.I.C. Mod (Command Blocks)
 author = darthmorf
 version = 0.1
 includePDB = true

@@ -1,1 +1,13 @@
-T.I.C. Mod (Trigger Influencer Condition Mod) is a mod designed for use in adventure maps that implements a system for Minecraft like Command Blocks.
+TICMod (Trigger, Influencer, Conditional Mod) is a mod that adds blocks that function similar to Command Blocks from Minecraft. It is not balanced around a standard playthrough; it's intended use is for Adventure Maps, Servers and Testing/Building Worlds.
+
+
+Functionality is implemented through three seperate tiles; the Trigger, the Influencer and the Conditional:
+
+- Triggers function as an 'event'; they are used when you want something happening to send a signal, for example a boss being spawned, a tile being edited, an item being picked up, etc.
+
+- Influencers function as the main heavy lifters of the mod; they are the ones that actually *do* things, for example spawning an NPC, creating a tile, or dropping an item.
+
+- Conditionals check whether something is true or false, and then give an output depending on that result, for example, checking if it's day, or if a player has an item, or if a tile exists at a certain spot.
+
+
+For more information visit the GitHub repository: https://github.com/darthmorf/TICMod, or message me on discord @ darthmorf#5524.
