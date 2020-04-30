@@ -102,13 +102,15 @@ namespace TICMod
             public bool chatOutput;
             public string command;
             public Action trigger;
+            public BlockType type;
 
-            public Data(Point16 _postion, string _command="", bool _enabled=true, bool _chatOutput=true)
+            public Data(Point16 _postion, BlockType _type, string _command="", bool _enabled=true, bool _chatOutput=true)
             {
                 postion = _postion;
                 enabled = _enabled;
                 chatOutput = _chatOutput;
                 command = _command;
+                type = _type;
             }
         }
 
@@ -125,10 +127,35 @@ namespace TICMod
             IList<bool> enabled = tag.GetList<bool>("TICEnabled");
             IList<bool> chatOutput = tag.GetList<bool>("TICChat");
             IList<string> commands = tag.GetList<string>("TICCommand");
+            IList<string> types = tag.GetList<string>("TICType");
 
             for (int i = 0; i < points.Count; i++)
             {
-                data.Add(new Data(points[i], commands[i], enabled[i], chatOutput[i]));
+                BlockType type = BlockType.Influencer;
+                switch (types[i])
+                {
+                    case "trigger":
+                        type = BlockType.Trigger;
+                        break;
+
+                    case "influencer":
+                        type = BlockType.Influencer;
+                        break;
+
+                    case "conditional":
+                        type = BlockType.Conditional;
+                        break;
+                }
+
+                data.Add(new Data(points[i], type, commands[i], enabled[i], chatOutput[i]));
+            }
+
+            foreach (var tile in data)
+            {
+                if (tile.type == BlockType.Trigger)
+                {
+                    CommandHandler.Parse(tile.command, tile.type, i: tile.postion.X, j: tile.postion.Y);
+                }
             }
         }
 
@@ -138,6 +165,7 @@ namespace TICMod
             IList<bool> enabled = new List<bool>();
             IList<bool> chatOutput = new List<bool>();
             IList<string> commands = new List<string>();
+            IList<string> types = new List<string>();
 
             foreach (Data tile in data)
             {
@@ -145,13 +173,29 @@ namespace TICMod
                 enabled.Add(tile.enabled);
                 chatOutput.Add(tile.chatOutput);
                 commands.Add(tile.command);
+
+                switch (tile.type)
+                {
+                    case BlockType.Trigger: 
+                        types.Add("trigger");
+                        break;
+
+                    case BlockType.Influencer:
+                        types.Add("influencer");
+                        break;
+
+                    case BlockType.Conditional:
+                        types.Add("conditional");
+                        break;
+                }
             }
 
             return new TagCompound {
                 {"TICPoints", points },
                 {"TICEnabled", enabled },
                 {"TICChat", chatOutput },
-                {"TICCommand", commands }
+                {"TICCommand", commands },
+                {"TICType", types }
             };
         }
 
@@ -282,9 +326,9 @@ namespace TICMod
             }
         }
 
-        public void addTile(int i, int j, bool enabled, bool chatEnabled)
+        public void addTile(int i, int j, bool enabled, bool chatEnabled, BlockType type)
         {
-            Data tile = new Data(new Point16(i,j));
+            Data tile = new Data(new Point16(i,j), type, _enabled:enabled, _chatOutput:chatEnabled);
             data.Add(tile);
         }
 

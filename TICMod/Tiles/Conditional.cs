@@ -79,7 +79,7 @@ namespace TICMod.Tiles
 
         public override void PlaceInWorld(int i, int j, Item item)
         {
-            states.addTile(i, j, true, true);
+            states.addTile(i, j, true, true, BlockType.Conditional);
             base.PlaceInWorld(i, j, item);
         }
 
