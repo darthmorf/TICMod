@@ -14,6 +14,7 @@ Functionality is implemented through three seperate tiles; the Trigger, the Infl
   - [Influencer Commands](#influencer-commands)
 - [Conditionals](#conditionals)
   - [Conditional Commands](#conditional-commands)
+- [Credits](#credits)
 
 
 ## User Interface
@@ -84,3 +85,10 @@ Conditionals check whether something is true or false, and then give an output d
 **Is Day?**<br/>
 `day`<br/>
 Checks to see if it is currently Day.<br/>
+
+## Credits
+- Thanks to jopojelly for use of his UI Classes.
+- Thanks to Rartrin and direwolf420 for miscellaneous support.
+- Thanks to Khaios for the inspiration!
+
+All other work by darthmorf
