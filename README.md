@@ -1,10 +1,10 @@
-[[/readme-img/logo.png]]
+![](/readme-img/logo.png)
 
 TICMod (Trigger, Influencer, Conditional Mod) is a mod for Terraria using tModloader that adds blocks that function similar to Command Blocks from Minecraft. It is not balanced around a standard playthrough; it's intended use is for Adventure Maps, Servers and Testing/Building Worlds.
 
 Functionality is implemented through three seperate tiles; the Trigger, the Influencer and the Conditional:
 
-[[/readme-img/ticmod.png]]
+![](/readme-img/ticmod.png)
 
 ### Table of Contents <!-- omit in toc -->
 - [User Interface](#user-interface)
@@ -14,18 +14,18 @@ Functionality is implemented through three seperate tiles; the Trigger, the Infl
   - [Influencer Commands](#influencer-commands)
 - [Conditionals](#conditionals)
   - [Conditional Commands](#conditional-commands)
-readme-img
+
 
 ## User Interface
 
 Commands are entered through each block's own UI, which can be opened by right clicking on the tile. The UI can be dragged around the screen, and multiple TIC UIs can be open at once for ease of use.
-[[/readme-img/validui.png]]
+![](/readme-img/validui.png)
 
 If a command is invalid, the text becomes red, and an error code is displayed upon hover:
-[[/readme-img/invalidui.png]]
+![](/readme-img/invalidui.png)
 
 The 'show debug output' checkbox determines whether debug output is displayed in the chat when the tile activates, for example:
-[[/readme-img/debugout.png]]
+![](/readme-img/debugout.png)
 
 
 
@@ -33,7 +33,7 @@ The 'show debug output' checkbox determines whether debug output is displayed in
 
 Triggers function as an 'event' - they are used when you want something happening to send a signal, for example a boss being spawned, a tile being edited, an item being picked up, etc.
 
-[[/readme-img/trigger.png]]
+![](/readme-img/trigger.png)
 
 - Sending a signal through the IN tile enables or disables the Trigger, depending on it's current state.
 - A signal is sent to the OUT tile when the Trigger is triggered.
@@ -49,7 +49,7 @@ EG: `time 14:30`
 
 Influencers function as the main heavy lifters of the mod; they are the ones that actually *do* things, for example spawning an NPC, creating a tile, or dropping an item.
 
-[[/readme-img/influencer.png]]
+![](/readme-img/influencer.png)
 
 - Sending a signal throught the IN tile activates the Influencer.
 
@@ -74,7 +74,7 @@ EG: `spawnnpcid 26,10 53`
 
 Conditionals check whether something is true or false, and then give an output depending on that result, for example, checking if it's day, or if a player has an item, or if a tile exists at a certain spot.
 
-[[/readme-img/conditional.png]]
+![](/readme-img/conditional.png)
 
 - Sending a signal throught the IN tile activates the Conditional.
 - Once activated, if the condition is true a signal is sent through OUT 1.
