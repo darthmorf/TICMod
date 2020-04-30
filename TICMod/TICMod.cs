@@ -155,6 +155,17 @@ namespace TICMod
             };
         }
 
+        public override void PostUpdate()
+        {
+            foreach (var state in data)
+            {
+                if (state.trigger != null)
+                {
+                    state.trigger();
+                }
+            }
+        }
+
         public bool isEnabled(int i, int j)
         {
             Point16 point = new Point16(i, j);
@@ -308,23 +319,5 @@ namespace TICMod
             }
         }
         public void AddWireUpdate(int x, int y) => updates.Enqueue(new Point16(x, y));
-    }
-
-    public class Triggers : ModWorld
-    {
-        public List<Action> triggers = new List<Action>();
-
-        public override void Initialize()
-        {
-           triggers.Clear();
-        }
-
-        public override void PostUpdate()
-        {
-            foreach (var trigger in triggers)
-            {
-                trigger();
-            }
-        }
     }
 }

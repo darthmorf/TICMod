@@ -38,10 +38,11 @@ namespace TICMod
 
             string givenTime = commandArgs[1];
             bool triggered = false;
-            ModContent.GetInstance<Triggers>().triggers.Add(new Action(() =>
+            TICStates states = ModContent.GetInstance<TICStates>();
+            states.setTrigger(i, j, (() =>
             {
                 string currenttime = Utilities.GetTimeAsString(Main.time);
-                TICStates states = ModContent.GetInstance<TICStates>();
+               
 
                 if (states.isEnabled(i, j) && currenttime == givenTime && !triggered)
                 {
