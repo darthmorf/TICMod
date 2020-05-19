@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ReLogic.Graphics;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
@@ -19,6 +20,7 @@ namespace TICMod.UI
 		private int _maxLength = 60;
 
 		private string hintText;
+        internal Stack<String> history = new Stack<string>();
 		internal string currentString = "";
 		private int textBlinkerCount;
 		private int textBlinkerState;
@@ -73,27 +75,7 @@ namespace TICMod.UI
 			this.unfocusOnTab = unfocusOnTab;
 		}
 
-		//void KeyboardInput_newKeyEvent(char obj)
-		//{
-		//	// Problem: keyBoardInput.newKeyEvent only fires on regular keyboard buttons.
-
-		//	if (!focused) return;
-		//	if (obj.Equals((char)Keys.Back)) // '\b'
-		//	{
-		//		Backspace();
-		//	}
-		//	else if (obj.Equals((char)Keys.Enter))
-		//	{
-		//		Unfocus();
-		//		Main.chatRelease = false;
-		//	}
-		//	else if (Char.IsLetterOrDigit(obj))
-		//	{
-		//		Write(obj.ToString());
-		//	}
-		//}
-
-		public void Unfocus()
+        public void Unfocus()
 		{
 			if (focused)
 			{
@@ -104,6 +86,7 @@ namespace TICMod.UI
 			}
 		}
 
+        // TODO: Make this work better with mutliple open UIs - also make tab swap between them
 		public void Focus()
 		{
 			if (!focused)
@@ -128,32 +111,7 @@ namespace TICMod.UI
 			base.Update(gameTime);
 		}
 
-		//public void Write(string text)
-		//{
-		//	base.SetText(base.Text.Insert(this._cursor, text));
-		//	this._cursor += text.Length;
-		//	_cursor = Math.Min(Text.Length, _cursor);
-		//	Recalculate();
-
-		//	OnTextChanged?.Invoke();
-		//}
-
-		//public void WriteAll(string text)
-		//{
-		//	bool changed = text != Text;
-		//	if (!changed) return;
-		//	base.SetText(text);
-		//	this._cursor = text.Length;
-		//	//_cursor = Math.Min(Text.Length, _cursor);
-		//	Recalculate();
-
-		//	if (changed)
-		//	{
-		//		OnTextChanged?.Invoke();
-		//	}
-		//}
-
-		public void SetText(string text)
+        public void SetText(string text)
 		{
 			if (text.ToString().Length > this._maxLength)
 			{
@@ -171,32 +129,7 @@ namespace TICMod.UI
 			this._maxLength = maxLength;
 		}
 
-		//public void Backspace()
-		//{
-		//	if (this._cursor == 0)
-		//	{
-		//		return;
-		//	}
-		//	base.SetText(base.Text.Substring(0, base.Text.Length - 1));
-		//	Recalculate();
-		//}
-
-		/*public void CursorLeft()
-		{
-			if (this._cursor == 0)
-			{
-				return;
-			}
-			this._cursor--;
-		}
-		public void CursorRight()
-		{
-			if (this._cursor < base.Text.Length)
-			{
-				this._cursor++;
-			}
-		}*/
-
+		
         private static bool JustPressed(Keys key)
 		{
 			return Main.inputText.IsKeyDown(key) && !Main.oldInputText.IsKeyDown(key);
@@ -207,46 +140,48 @@ namespace TICMod.UI
             return Main.inputText.IsKeyDown(key);
         }
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
-		{
-			Rectangle hitbox = GetInnerDimensions().ToRectangle();
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            Rectangle hitbox = GetInnerDimensions().ToRectangle();
 
-			// Draw panel
-			base.DrawSelf(spriteBatch);
-			//	Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Yellow);
+            // Draw panel
+            base.DrawSelf(spriteBatch);
+            //	Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Yellow);
 
-			if (focused)
-			{
-				Terraria.GameInput.PlayerInput.WritingText = true;
-				Main.instance.HandleIME();
-				string newString = Main.GetInputText("");
-				if (newString != null)
-				{
-					currentString = currentString.Insert(cursorPos, newString);
-                    cursorPos += newString.Length;
-					OnTextChanged?.Invoke();
-				}
+            string newString = Main.GetInputText("");
+            if (newString != null && newString != "")
+            {
+                history.Push(currentString);
+                currentString = currentString.Insert(cursorPos, newString);
+                cursorPos += newString.Length;
+                OnTextChanged?.Invoke();
+            }
 
-				if (JustPressed(Keys.Tab))
-				{
-					if (unfocusOnTab) Unfocus();
-					OnTabPressed?.Invoke();
-				}
-				if (JustPressed(Keys.Enter))
-				{
-					Main.drawingPlayerChat = false;
-					if (unfocusOnEnter) Unfocus();
-					OnEnterPressed?.Invoke();
-				}
-                if (JustPressed(Keys.Left))
+            if (focused)
+            {
+                Terraria.GameInput.PlayerInput.WritingText = true;
+                Main.instance.HandleIME();
+
+                if (JustPressed(Keys.Tab))
+                {
+                    if (unfocusOnTab) Unfocus();
+                    OnTabPressed?.Invoke();
+                }
+                else if (JustPressed(Keys.Enter))
+                {
+                    Main.drawingPlayerChat = false;
+                    if (unfocusOnEnter) Unfocus();
+                    OnEnterPressed?.Invoke();
+                }
+                else if (JustPressed(Keys.Left))
                 {
                     cursorPos -= 1;
                     if (cursorPos < 0)
                     {
                         cursorPos = 0;
                     }
-				}
-                if (JustPressed(Keys.Right))
+                }
+                else if (JustPressed(Keys.Right))
                 {
                     cursorPos += 1;
                     if (cursorPos > currentString.Length)
@@ -254,116 +189,98 @@ namespace TICMod.UI
                         cursorPos = currentString.Length;
                     }
                 }
-                if (JustPressed(Keys.Back) && cursorPos != 0)
+                else if (JustPressed(Keys.End))
                 {
-                    currentString = currentString.Remove(cursorPos-1, 1);
+                    cursorPos = currentString.Length;
+                }
+                else if (JustPressed(Keys.Home))
+                {
+                    cursorPos = 0;
+                }
+                else if (JustPressed(Keys.Back) && cursorPos != 0)
+                {
+                    history.Push(currentString);
+                    currentString = currentString.Remove(cursorPos - 1, 1);
+                    OnTextChanged?.Invoke();
                     cursorPos -= 1;
                 }
-                if (JustPressed(Keys.Delete) && cursorPos != currentString.Length)
+                else if (JustPressed(Keys.Delete) && cursorPos != currentString.Length)
                 {
+                    history.Push(currentString);
                     currentString = currentString.Remove(cursorPos, 1);
+                    OnTextChanged?.Invoke();
                 }
+                else if (IsPressed(Keys.LeftControl) && JustPressed(Keys.C))
+                {
+                    ReLogic.OS.Platform.Current.Clipboard = currentString;
+
+                }
+                else if (IsPressed(Keys.LeftControl) && JustPressed(Keys.X))
+                {
+                    history.Push(currentString);
+                    ReLogic.OS.Platform.Current.Clipboard = currentString;
+                    OnTextChanged?.Invoke();
+                    currentString = "";
+                    cursorPos = 0;
+                }
+                else if (IsPressed(Keys.LeftControl) && JustPressed(Keys.V))
+                {
+                    history.Push(currentString);
+                    currentString = currentString.Insert(cursorPos, ReLogic.OS.Platform.Current.Clipboard);
+                    cursorPos += ReLogic.OS.Platform.Current.Clipboard.Length;
+                    OnTextChanged?.Invoke();
+                }
+                else if (IsPressed(Keys.LeftControl) && JustPressed(Keys.Z) && history.Count > 0)
+                {
+                    currentString = history.Pop();
+                    cursorPos = currentString.Length;
+                }
+
 
                 if (++textBlinkerCount >= 20)
                 {
-					textBlinkerState = (textBlinkerState + 1 ) % 2;
+                    textBlinkerState = (textBlinkerState + 1) % 2;
                     textBlinkerCount = 0;
                 }
-				Main.instance.DrawWindowsIMEPanel(new Vector2(98f, (float)(Main.screenHeight - 36)), 0f);
-			}
-			string displayString = currentString;
+
+                Main.instance.DrawWindowsIMEPanel(new Vector2(98f, (float) (Main.screenHeight - 36)), 0f);
+            }
+
+            string displayString = currentString;
             string cursorChar = " ";
             if (textBlinkerState == 1)
             {
                 cursorChar = "|";
             }
 
-			if (focused)
-			{
-				displayString = displayString.Insert(cursorPos, cursorChar);
-			}
-			CalculatedStyle space = base.GetDimensions();
+            if (focused)
+            {
+                displayString = displayString.Insert(cursorPos, cursorChar);
+            }
+
+            CalculatedStyle space = base.GetDimensions();
             Color color = textColor;
-			if (currentString.Length == 0)
-			{
-			}
-			Vector2 drawPos = space.Position() + new Vector2(4, 2);
-			if (currentString.Length == 0 && !focused)
-			{
-				color *= 0.5f;
-				//Utils.DrawBorderString(spriteBatch, hintText, new Vector2(space.X, space.Y), Color.Gray, 1f);
-				spriteBatch.DrawString(Main.fontMouseText, hintText, drawPos, color);
-			}
-			else
-			{
-				//Utils.DrawBorderString(spriteBatch, displayString, drawPos, Color.White, 1f);
-				spriteBatch.DrawString(Main.fontMouseText, displayString, drawPos, color);
-			}
+            if (currentString.Length == 0)
+            {
+            }
+
+            Vector2 drawPos = space.Position() + new Vector2(4, 2);
+            if (currentString.Length == 0 && !focused)
+            {
+                color *= 0.5f;
+                //Utils.DrawBorderString(spriteBatch, hintText, new Vector2(space.X, space.Y), Color.Gray, 1f);
+                spriteBatch.DrawString(Main.fontMouseText, hintText, drawPos, color);
+            }
+            else
+            {
+                //Utils.DrawBorderString(spriteBatch, displayString, drawPos, Color.White, 1f);
+                spriteBatch.DrawString(Main.fontMouseText, displayString, drawPos, color);
+            }
 
             if (IsMouseHovering)
             {
                 Main.hoverItemName = hoverText;
             }
-
-			//			CalculatedStyle innerDimensions2 = base.GetInnerDimensions();
-			//			Vector2 pos2 = innerDimensions2.Position();
-			//			if (IsLarge)
-			//			{
-			//				pos2.Y -= 10f * TextScale * TextScale;
-			//			}
-			//			else
-			//			{
-			//				pos2.Y -= 2f * TextScale;
-			//			}
-			//			//pos2.X += (innerDimensions2.Width - TextSize.X) * 0.5f;
-			//			if (IsLarge)
-			//			{
-			//				Utils.DrawBorderStringBig(spriteBatch, Text, pos2, TextColor, TextScale, 0f, 0f, -1);
-			//				return;
-			//			}
-			//			Utils.DrawBorderString(spriteBatch, Text, pos2, TextColor, TextScale, 0f, 0f, -1);
-			//
-			//			this._frameCount++;
-			//
-			//			CalculatedStyle innerDimensions = base.GetInnerDimensions();
-			//			Vector2 pos = innerDimensions.Position();
-			//			DynamicSpriteFont spriteFont = base.IsLarge ? Main.fontDeathText : Main.fontMouseText;
-			//			Vector2 vector = new Vector2(spriteFont.MeasureString(base.Text.Substring(0, this._cursor)).X, base.IsLarge ? 32f : 16f) * base.TextScale;
-			//			if (base.IsLarge)
-			//			{
-			//				pos.Y -= 8f * base.TextScale;
-			//			}
-			//			else
-			//			{
-			//				pos.Y -= 1f * base.TextScale;
-			//			}
-			//			if (Text.Length == 0)
-			//			{
-			//				Vector2 hintTextSize = new Vector2(spriteFont.MeasureString(hintText.ToString()).X, IsLarge ? 32f : 16f) * TextScale;
-			//				pos.X += 5;//(hintTextSize.X);
-			//				if (base.IsLarge)
-			//				{
-			//					Utils.DrawBorderStringBig(spriteBatch, hintText, pos, Color.Gray, base.TextScale, 0f, 0f, -1);
-			//					return;
-			//				}
-			//				Utils.DrawBorderString(spriteBatch, hintText, pos, Color.Gray, base.TextScale, 0f, 0f, -1);
-			//				pos.X -= 5;
-			//				//pos.X -= (innerDimensions.Width - hintTextSize.X) * 0.5f;
-			//			}
-			//
-			//			if (!focused) return;
-			//
-			//			pos.X += /*(innerDimensions.Width - base.TextSize.X) * 0.5f*/ +vector.X - (base.IsLarge ? 8f : 4f) * base.TextScale + 6f;
-			//			if ((this._frameCount %= 40) > 20)
-			//			{
-			//				return;
-			//			}
-			//			if (base.IsLarge)
-			//			{
-			//				Utils.DrawBorderStringBig(spriteBatch, "|", pos, base.TextColor, base.TextScale, 0f, 0f, -1);
-			//				return;
-			//			}
-			//			Utils.DrawBorderString(spriteBatch, "|", pos, base.TextColor, base.TextScale, 0f, 0f, -1);
-		}
-	}
+        }
+    }
 }
