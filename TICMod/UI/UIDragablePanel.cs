@@ -65,6 +65,7 @@ namespace TICMod.UI
 			base.MouseUp(evt);
 		}
 
+		// TODO: Make this work with percent width elements too
 		private void DragStart(UIMouseEvent evt)
 		{
 			CalculatedStyle innerDimensions = GetInnerDimensions();
@@ -77,7 +78,26 @@ namespace TICMod.UI
 				}
 				else if (dragable)
 				{
-					offset = new Vector2(evt.MousePosition.X - Left.Pixels, evt.MousePosition.Y - Top.Pixels);
+					offset = new Vector2();
+                    if (Left.Pixels == 0 && Left.Precent != 0)
+                    {
+                        offset.X = evt.MousePosition.X - Parent.Width.Pixels * Left.Precent;
+                    }
+                    else
+                    {
+                        offset.X = evt.MousePosition.X - Left.Pixels;
+                    }
+
+                    if (Top.Pixels == 0 && Top.Precent != 0)
+                    {
+                        offset.Y = evt.MousePosition.Y - Parent.Height.Pixels * Top.Precent;
+                    }
+                    else
+                    {
+                        offset.Y = evt.MousePosition.Y - Top.Pixels;
+
+                    }
+					
 					dragging = true;
 				}
 			}

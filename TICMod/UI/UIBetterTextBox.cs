@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ReLogic.Graphics;
@@ -41,6 +41,8 @@ namespace TICMod.UI
 		internal bool unfocusOnTab = true;
 
         public string hoverText;
+
+        private int cursorPos = 0;
 
 		//public NewUITextBox(string text, float textScale = 1, bool large = false) : base("", textScale, large)
 		public UIBetterTextBox(string hintText, string text = "")
@@ -109,6 +111,7 @@ namespace TICMod.UI
 				Main.clrInput();
 				focused = true;
 				Main.blockInput = true;
+                cursorPos = currentString.Length;
 
 				OnFocus?.Invoke();
 			}
@@ -199,6 +202,11 @@ namespace TICMod.UI
 			return Main.inputText.IsKeyDown(key) && !Main.oldInputText.IsKeyDown(key);
 		}
 
+		private static bool IsPressed(Keys key)
+        {
+            return Main.inputText.IsKeyDown(key);
+        }
+
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
 			Rectangle hitbox = GetInnerDimensions().ToRectangle();
@@ -211,15 +219,12 @@ namespace TICMod.UI
 			{
 				Terraria.GameInput.PlayerInput.WritingText = true;
 				Main.instance.HandleIME();
-				string newString = Main.GetInputText(currentString);
-				if (!newString.Equals(currentString))
+				string newString = Main.GetInputText("");
+				if (newString != null)
 				{
-					currentString = newString;
+					currentString = currentString.Insert(cursorPos, newString);
+                    cursorPos += newString.Length;
 					OnTextChanged?.Invoke();
-				}
-				else
-				{
-					currentString = newString;
 				}
 
 				if (JustPressed(Keys.Tab))
@@ -233,17 +238,49 @@ namespace TICMod.UI
 					if (unfocusOnEnter) Unfocus();
 					OnEnterPressed?.Invoke();
 				}
-				if (++textBlinkerCount >= 20)
-				{
-					textBlinkerState = (textBlinkerState + 1) % 2;
-					textBlinkerCount = 0;
+                if (JustPressed(Keys.Left))
+                {
+                    cursorPos -= 1;
+                    if (cursorPos < 0)
+                    {
+                        cursorPos = 0;
+                    }
 				}
+                if (JustPressed(Keys.Right))
+                {
+                    cursorPos += 1;
+                    if (cursorPos > currentString.Length)
+                    {
+                        cursorPos = currentString.Length;
+                    }
+                }
+                if (JustPressed(Keys.Back) && cursorPos != 0)
+                {
+                    currentString = currentString.Remove(cursorPos-1, 1);
+                    cursorPos -= 1;
+                }
+                if (JustPressed(Keys.Delete) && cursorPos != currentString.Length)
+                {
+                    currentString = currentString.Remove(cursorPos, 1);
+                }
+
+                if (++textBlinkerCount >= 20)
+                {
+					textBlinkerState = (textBlinkerState + 1 ) % 2;
+                    textBlinkerCount = 0;
+                }
 				Main.instance.DrawWindowsIMEPanel(new Vector2(98f, (float)(Main.screenHeight - 36)), 0f);
 			}
 			string displayString = currentString;
-			if (this.textBlinkerState == 1 && focused)
+            string cursorChar = " ";
+            if (textBlinkerState == 1)
+            {
+                cursorChar = "|";
+            }
+
+			if (focused)
 			{
-				displayString = displayString + "|";
+				displayString = displayString.Insert(cursorPos, cursorChar);
 			}
 			CalculatedStyle space = base.GetDimensions();
             Color color = textColor;

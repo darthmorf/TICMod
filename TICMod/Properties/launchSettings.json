@@ -2,13 +2,13 @@
   "profiles": {
     "Terraria": {
       "commandName": "Executable",
-      "executablePath": "G:\\Games\\steamapps\\common\\Terraria\\tModloader.exe",
-      "workingDirectory": "G:\\Games\\steamapps\\common\\Terraria"
+      "executablePath": "$(tMLPath)",
+      "workingDirectory": "$(TerrariaSteamPath)"
     },
     "TerrariaServer": {
       "commandName": "Executable",
-      "executablePath": "G:\\Games\\steamapps\\common\\Terraria\\tModLoaderServer.exe",
-      "workingDirectory": "G:\\Games\\steamapps\\common\\Terraria"
+      "executablePath": "$(tMLServerPath)",
+      "workingDirectory": "$(TerrariaSteamPath)"
     }
   }
 }
