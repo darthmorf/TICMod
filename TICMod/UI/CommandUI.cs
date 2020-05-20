@@ -33,7 +33,7 @@ namespace TICMod.UI
             int screenWidth = Main.screenWidth;
             this.Width.Set(0, 0.5f);
             this.Height.Set(0, 0.09f);
-            this.Left.Set(screenWidth / 4, 0f); // can't use precent as that causes the dragable windows to jump when first dragged
+            this.Left.Set(screenWidth / 4, 0f); // can't use precent as that causes the draggable windows to jump when first dragged
             this.Top.Set(10f, 0f);
 
             titleText = new UIText("");

@@ -27,59 +27,6 @@ namespace TICMod
 
             return resp;
         }
-
-        private static CommandResponse ParseTrigger(List<String> commandArgs, bool execute, int i, int j)
-        {
-            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{commandArgs[0]}'.");
-            commandArgs[0] = commandArgs[0].ToLower();
-
-            switch (commandArgs[0])
-            {
-                case "time":
-                    resp = TriggerTime(commandArgs, resp, execute, i, j);
-                    break;
-            }
-
-            return resp;
-        }
-
-        private static CommandResponse ParseInfluencer(List<String> commandArgs, bool execute)
-        {
-            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{commandArgs[0]}'.");
-            commandArgs[0] = commandArgs[0].ToLower();
-
-            switch (commandArgs[0])
-            {
-                case "say":
-                    resp = InfluencerSay(commandArgs, resp, execute);
-                    break;
-
-                case "spawnnpc":
-                    resp = InfluencerSpawnNPC(commandArgs, resp, execute);
-                    break;
-
-                case "spawnnpcid":
-                    resp = InfluencerSpawnNPCID(commandArgs, resp, execute);
-                    break;
-            }
-
-            return resp;
-        }
-
-        private static CommandResponse ParseConditional(List<String> commandArgs, bool execute)
-        {
-            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{commandArgs[0]}'.");
-            commandArgs[0] = commandArgs[0].ToLower();
-
-            switch (commandArgs[0])
-            {
-                case "day":
-                    resp = ConditionalDay(resp, execute);
-                    break;
-            }
-
-            return resp;
-        }
     }
 
     public class CommandResponse

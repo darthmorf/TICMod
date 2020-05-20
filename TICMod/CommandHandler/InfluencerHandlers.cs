@@ -9,6 +9,30 @@ namespace TICMod
 {
     public static partial class CommandHandler
     {
+        private static CommandResponse ParseInfluencer(List<String> commandArgs, bool execute)
+        {
+            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{commandArgs[0]}'.");
+            commandArgs[0] = commandArgs[0].ToLower();
+
+            switch (commandArgs[0])
+            {
+                case "say":
+                    resp = InfluencerSay(commandArgs, resp, execute);
+                    break;
+
+                case "spawnnpc":
+                    resp = InfluencerSpawnNPC(commandArgs, resp, execute);
+                    break;
+
+                case "spawnnpcid":
+                    resp = InfluencerSpawnNPCID(commandArgs, resp, execute);
+                    break;
+            }
+
+            return resp;
+        }
+
+
         private static CommandResponse InfluencerSay(List<String> commandArgs, CommandResponse resp, bool execute)
         {
             if (commandArgs.Count != 2)
