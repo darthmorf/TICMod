@@ -86,7 +86,6 @@ namespace TICMod.UI
 			}
 		}
 
-        // TODO: Make this work better with mutliple open UIs - also make tab swap between them
 		public void Focus()
 		{
 			if (!focused)
@@ -105,8 +104,7 @@ namespace TICMod.UI
 			Vector2 MousePosition = new Vector2((float)Main.mouseX, (float)Main.mouseY);
 			if (!ContainsPoint(MousePosition) && (Main.mouseLeft || Main.mouseRight)) // This solution is fine, but we need a way to cleanly "unload" a UIElement
 			{
-				// TODO, figure out how to refocus without triggering unfocus while clicking enable button.
-				Unfocus();
+                Unfocus();
 			}
 			base.Update(gameTime);
 		}
@@ -148,19 +146,19 @@ namespace TICMod.UI
             base.DrawSelf(spriteBatch);
             //	Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Yellow);
 
-            string newString = Main.GetInputText("");
-            if (newString != null && newString != "")
-            {
-                history.Push(currentString);
-                currentString = currentString.Insert(cursorPos, newString);
-                cursorPos += newString.Length;
-                OnTextChanged?.Invoke();
-            }
-
             if (focused)
             {
                 Terraria.GameInput.PlayerInput.WritingText = true;
                 Main.instance.HandleIME();
+
+                string newString = Main.GetInputText("");
+                if (newString != null && newString != "")
+                {
+                    history.Push(currentString);
+                    currentString = currentString.Insert(cursorPos, newString);
+                    cursorPos += newString.Length;
+                    OnTextChanged?.Invoke();
+                }
 
                 if (JustPressed(Keys.Tab))
                 {
