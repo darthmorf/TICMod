@@ -28,7 +28,8 @@ If a command is invalid, the text becomes red, and an error code is displayed up
 The 'show debug output' checkbox determines whether debug output is displayed in the chat when the tile activates, for example:<br/>
 ![](/readme-img/debugout.png)
 
-
+The user interface supports a range of shortcuts to ease the editing of commands. Arrow keys can be used to navigate, along with HOME and END to jump the front and back respectively.
+Ctrl+C, Ctrl+V and Ctrl+X can be used to copy, paste and cut text too. Ctrl+Z can be used to undo changes, and tab can be pressed to navigate between different open TIC UIs.
 
 ## Triggers
 
