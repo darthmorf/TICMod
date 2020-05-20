@@ -83,6 +83,22 @@ namespace TICMod
                 cUI.InitValues(i, j, uiType);
             }
         }
+
+        public void CycleCommandUIFocus(int i, int j)
+        {
+            int index = 0;
+            foreach (var commandUi in commandUis)
+            {
+                index++;
+                if (commandUi.i == i && commandUi.j == j)
+                {
+                    break;
+                }
+            }
+
+            index = index % commandUis.Count;
+            commandUis[index].FocusText();
+        }
     }
 
 

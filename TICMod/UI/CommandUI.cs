@@ -80,14 +80,12 @@ namespace TICMod.UI
 
             OnInitialize();
 
-            switch (uiType)
-            {
-                
-            }
-
             titleText.SetText($"{uiType} Block @ ({i},{j})");
             commandInput.SetText(states.getCommand(i, j));
             outputCheckbox.Selected = states.isChatEnabled(i, j);
+
+            commandInput.OnTabPressed += () => ModContent.GetInstance<TICMod>().CycleCommandUIFocus(i, j);
+
         }
 
         public override void Update(GameTime gameTime)
@@ -102,6 +100,11 @@ namespace TICMod.UI
             {
                 button.BackgroundColor = new Color(73, 94, 171);
             }
+        }
+
+        public void FocusText()
+        {
+            commandInput.Focus();
         }
 
         private void SaveBtnPress()

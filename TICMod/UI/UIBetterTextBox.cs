@@ -25,7 +25,7 @@ namespace TICMod.UI
 		private int textBlinkerCount;
 		private int textBlinkerState;
 
-		public event Action OnFocus;
+        public event Action OnFocus;
 
 		public event Action OnUnfocus;
 
@@ -54,7 +54,7 @@ namespace TICMod.UI
 			SetPadding(0);
 			BackgroundColor = Color.White;
 			BorderColor = Color.Black;
-			//			keyBoardInput.newKeyEvent += KeyboardInput_newKeyEvent;
+            //			keyBoardInput.newKeyEvent += KeyboardInput_newKeyEvent;
         }
 
 		public override void Click(UIMouseEvent evt)
