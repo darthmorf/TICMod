@@ -1,4 +1,6 @@
 ![](/readme-img/logo.png)
+<br/>**CURRENTLY WIP & UNRELEASED**<br/>
+If you do compile + test this yourself, let me know but please don't share it around yet!<br/><br/>
 
 TICMod (Trigger, Influencer, Conditional Mod) is a mod for Terraria using tModloader that adds blocks that function similar to Command Blocks from Minecraft. It is not balanced around a standard playthrough; it's intended use is for Adventure Maps, Servers and Testing/Building Worlds.
 
