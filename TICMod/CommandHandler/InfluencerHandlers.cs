@@ -268,30 +268,13 @@ namespace TICMod
                     return resp;
                 }
 
-                //TODO: Seperate player selection logic to seperate method
-                if (args[2] == "@s")
-                {
-                    if (args.Count != 4)
-                    {
-                        resp.response = $"{args[2]} requires datastore name";
-                        return resp;
-                    }
+                args.RemoveRange(0, 2);
+                var ret = ParsePlayerTarget(args, resp);
+                players = ret.Item1;
+                resp = ret.Item2;
 
-                    players = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(args[3]);
-                }
-                else if (args[2] == "@a") 
+                if (!resp.valid)
                 {
-                    if (args.Count != 3)
-                    {
-                        resp.response = $"{args[2]} requires no parameters.";
-                        return resp;
-                    }
-
-                    players = Main.player.ToList();
-                }
-                else
-                {
-                    resp.response = $"{args[2]} is not a valid player target.";
                     return resp;
                 }
             }
@@ -323,7 +306,6 @@ namespace TICMod
                 playernames = playernames.Substring(0, playernames.LastIndexOf(", "));
             }
 
-            resp.valid = true;
             resp.success = true;
             resp.response = $"Gave item id {itemId} x{itemCount} to {playernames}.";
 
