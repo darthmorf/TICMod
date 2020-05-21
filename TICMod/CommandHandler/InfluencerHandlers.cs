@@ -242,13 +242,15 @@ namespace TICMod
             List<Player> players = new List<Player>();
             int itemId;
             bool validId;
+            int itemCount;
+            bool validCount;
 
             if (commandArgs.Count > 1)
             {
                 var args = commandArgs[1].Split(new[] { ' ' }).ToList();
-                if (args.Count < 2 ||args[0] == "")
+                if (args.Count < 3 || args[2] == "")
                 {
-                    resp.response = "Command requires item ID and player target.";
+                    resp.response = "Command requires item ID, item count and player target.";
                     return resp;
                 }
 
@@ -259,22 +261,29 @@ namespace TICMod
                     return resp;
                 }
 
-                //TODO: Seperate player selection logic to seperate method
-                if (args[1] == "@s")
+                validCount = int.TryParse(args[1], NumberStyles.Integer, CultureInfo.CurrentCulture, out itemCount);
+                if (!validCount || itemCount < 1)
                 {
-                    if (args.Count != 3)
+                    resp.response = $"{args[1]} is not a valid item count.";
+                    return resp;
+                }
+
+                //TODO: Seperate player selection logic to seperate method
+                if (args[2] == "@s")
+                {
+                    if (args.Count != 4)
                     {
-                        resp.response = $"{args[1]} requires 1 following parameter.";
+                        resp.response = $"{args[2]} requires datastore name";
                         return resp;
                     }
 
-                    players = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(args[2]);
+                    players = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(args[3]);
                 }
-                else if (args[1] == "@a") 
+                else if (args[2] == "@a") 
                 {
-                    if (args.Count != 2)
+                    if (args.Count != 3)
                     {
-                        resp.response = $"{args[1]} requires no parameters.";
+                        resp.response = $"{args[2]} requires no parameters.";
                         return resp;
                     }
 
@@ -282,20 +291,26 @@ namespace TICMod
                 }
                 else
                 {
-                    resp.response = $"{args[1]} is not a valid player target.";
+                    resp.response = $"{args[2]} is not a valid player target.";
                     return resp;
                 }
             }
             else
             {
-                resp.response = $"Command requires item ID and player target.";
+                resp.response = $"Command requires item ID, item count and player target.";
                 return resp;
             }
 
             string playernames = "";
             foreach (var player in players)
             {
-                player.PutItemInInventory(itemId);
+                for (int i=0; i < itemCount; i++)
+                {
+                    if (execute)
+                    {
+                        player.PutItemInInventory(itemId);
+                    }
+                }
 
                 if (player.name != "")
                 {
@@ -310,7 +325,7 @@ namespace TICMod
 
             resp.valid = true;
             resp.success = true;
-            resp.response = $"Gave item id {itemId} to {playernames}.";
+            resp.response = $"Gave item id {itemId} x{itemCount} to {playernames}.";
 
             return resp;
         }
