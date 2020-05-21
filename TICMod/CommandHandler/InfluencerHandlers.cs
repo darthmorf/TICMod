@@ -241,62 +241,54 @@ namespace TICMod
         {
             List<Player> players = new List<Player>();
             int itemId;
-            string itemIdString = "";
             bool validId;
 
             if (commandArgs.Count > 1)
             {
                 var args = commandArgs[1].Split(new[] { ' ' }).ToList();
-                if (args.Count == 0 || args[0] == "")
+                if (args.Count < 2 ||args[0] == "")
                 {
-                    resp.response = "Command takes at least two parameters.";
+                    resp.response = "Command requires item ID and player target.";
                     return resp;
                 }
 
-                if (args[0] == "@s")
+                validId = int.TryParse(args[0], NumberStyles.Integer, CultureInfo.CurrentCulture, out itemId);
+                if (!validId || itemId < 1 || itemId > Main.item.Length) // TODO: Allow for negative item IDs
+                {
+                    resp.response = $"{args[0]} is not a valid item ID.";
+                    return resp;
+                }
+
+                //TODO: Seperate player selection logic to seperate method
+                if (args[1] == "@s")
                 {
                     if (args.Count != 3)
                     {
-                        resp.response = $"{commandArgs[0]} {args[0]} requires 2 following parameters.";
+                        resp.response = $"{args[1]} requires 1 following parameter.";
                         return resp;
                     }
 
-                    players = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(args[1]);
-                    itemIdString = args[2];
+                    players = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(args[2]);
                 }
-                else if (args[0] == "@a") //TODO: Seperate player selection logic to seperate method
+                else if (args[1] == "@a") 
                 {
                     if (args.Count != 2)
                     {
-                        resp.response = $"{commandArgs[0]} {args[0]} requires 1 following parameter.";
+                        resp.response = $"{args[1]} requires no parameters.";
                         return resp;
                     }
 
                     players = Main.player.ToList();
-                    itemIdString = args[1];
                 }
                 else
                 {
-                    resp.response = $"{args[0]} is not a valid player target.";
+                    resp.response = $"{args[1]} is not a valid player target.";
                     return resp;
                 }
             }
             else
             {
-                resp.response = $"Requires player target and item ID parameter.";
-                return resp;
-            }
-
-            if (itemIdString == "")
-            {
-                resp.response = $"Requires item ID parameter";
-                return resp;
-            }
-
-            validId = int.TryParse(itemIdString, NumberStyles.Integer, CultureInfo.CurrentCulture, out itemId);
-            if (!validId || itemId < 1 || itemId > Main.item.Length) // TODO: Allow for negative item IDs
-            {
-                resp.response = $"{itemIdString} is not a valid item ID.";
+                resp.response = $"Command requires item ID and player target.";
                 return resp;
             }
 
