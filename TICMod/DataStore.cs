@@ -7,7 +7,7 @@ using Terraria;
 
 namespace TICMod
 {
-    public class PlayerDataStore : Dictionary<string, List<Player>>
+    public class PlayerDataStore : Dictionary<string, Player>
     {
         public void AddItem(string storename, Player item)
         {
@@ -18,42 +18,34 @@ namespace TICMod
 
             if (!ContainsKey(storename))
             {
-                Add(storename, new List<Player>());
+                Add(storename, null);
             }
             
-            if (!this[storename].Contains(item))
+            if (this[storename] == null)
             {
-                this[storename].Add(item);
+                this[storename] = item;
             }
         }
 
-        public void RemoveItem(string storename, Player item)
+        public void RemoveItem(string storename)
         {
             if (storename == null)
             {
                 return;
             }
 
-            if (ContainsKey(storename) && this[storename].Contains(item))
-            {
-                this[storename].Remove(item);
-
-                if (this[storename].Count == 0)
-                {
-                    Remove(storename);
-                }
-            }
+            Remove(storename);
         }
 
-        public List<Player> GetItem(string storename)
+        public Player GetItem(string storename)
         {
-            List<Player> players = new List<Player>();
-            if (this.ContainsKey(storename) && this[storename] != null)
+            Player player = new Player();
+            if (this.ContainsKey(storename))
             {
-                players = this[storename];
+                player = this[storename];
             }
 
-            return players;
+            return player;
         }
     }
 }
