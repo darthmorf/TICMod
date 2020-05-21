@@ -10,10 +10,24 @@ Functionality is implemented through three seperate tiles; the Trigger, the Infl
 - [User Interface](#user-interface)
 - [Triggers](#triggers)
   - [Trigger Commands](#trigger-commands)
+    - [Time](#time)
+    - [Player Death](#player-death)
 - [Influencers](#influencers)
   - [Influencer Commands](#influencer-commands)
+    - [Say](#say)
+    - [Spawn NPC by Name](#spawn-npc-by-name)
+    - [Spawn NPC by ID](#spawn-npc-by-id)
+    - [Give Item to Player](#give-item-to-player)
 - [Conditionals](#conditionals)
   - [Conditional Commands](#conditional-commands)
+    - [Is Day?](#is-day)
+- [Entity Selection](#entity-selection)
+  - [Player Selection](#player-selection)
+    - [All Players](#all-players)
+    - [Stored Players](#stored-players)
+- [Data Stores](#data-stores)
+  - [Examples](#examples)
+    - [Give 20 Lesser Healing Potions to players when they die.](#give-20-lesser-healing-potions-to-players-when-they-die)
 - [Credits](#credits)
 
 
@@ -41,9 +55,14 @@ Triggers function as an 'event' - they are used when you want something happenin
 - A signal is sent to the OUT tile when the Trigger is triggered.
 
 ### Trigger Commands
-**Set Time**<br/>
+#### Time
 `time hh:mm`<br/>
-Sets the world's time. Must be in 24 hour format.<br/>
+Triggers once when time is equal to the specified time. Must be in 24 hour format.<br/>
+EG: `time 14:30`
+
+#### Player Death
+`playerdeath datastore(optional)`<br/>
+Triggers once when a player dies. Can optionally pass in a [datastore](#data-stores) string to write to.<br/>
 EG: `time 14:30`
 
 
@@ -56,20 +75,25 @@ Influencers function as the main heavy lifters of the mod; they are the ones tha
 - Sending a signal throught the IN tile activates the Influencer.
 
 ### Influencer Commands
-**Say**<br/>
+#### Say
 `say rrr,ggg,bbb message`<br/>
 Sends a message to the chat with the colour specified by `rrr,ggg,bbb`, in RGB format. Message can contain `\n` which will create a line break in the message.<br/>
 EG: `say 0,160,255 Hello World`
 
-**Spawn NPC by Name**<br/>
+#### Spawn NPC by Name
 `spawnnpc x,y name`<br/>
 Spawns the NPC with specified name at world position x,y. [NPC Names can be found on the Wiki](https://terraria.gamepedia.com/NPC_IDs). Note: Some NPCs, like Zombies have multiple variants. To control which one spawns more accurately, use `spawnpcid` instead.<br/>
 EG: `spawnnpc 26,10 Dr Man Fly`
 
-**Spawn NPC by ID**<br/>
+#### Spawn NPC by ID
 `spawnnpcid x,y id`<br/>
 Spawns the NPC with specified ID at world position x,y. [NPC IDs can be found on the Wiki](https://terraria.gamepedia.com/NPC_IDs).<br/>
 EG: `spawnnpcid 26,10 53`
+
+#### Give Item to Player
+`giveitem id count player(s)`<br/>
+Gives [targeted player](#player-selection) the specified count of item with specified id.<br/>
+EG: `giveitem 26 10 @a`
 
 
 ## Conditionals
@@ -83,13 +107,45 @@ Conditionals check whether something is true or false, and then give an output d
 - Once activated, if the condition is false a signal is sent through OUT 2. 
 
 ### Conditional Commands
-**Is Day?**<br/>
+#### Is Day?
 `day`<br/>
-Checks to see if it is currently Day.<br/>
+Checks to see if it is currently Day.
+
+
+## Entity Selection
+
+### Player Selection
+
+If a command asks for a player as a parameter, a number of options can be put in, depending on who you wish to target.
+
+#### All Players
+`@a`<br/>
+Applies TIC effect to all players.<br/>
+EG: `giveitem 26, 10 @a`
+
+#### Stored Players
+`@s store`<br/>
+Applies TIC effect to the player within specified [datastore](#data-stores).<br/>
+EG: `giveitem 26, 10 @s store`
+
+
+## Data Stores
+
+Some commands (mostly Triggers) will allow you to output an effected entity so that they can be effected by another TIC block, like an influencer. This is acheived through Data Stores. To create a store, simply reference it in a command that can output to one. Currently supported entity types are: players.
+
+### Examples
+
+#### Give 20 Lesser Healing Potions to players when they die.
+First, we need a Trigger to trigger when a player dies, and store that player in a [datastore](#data-stores). Let's call this store `deadplayer`. This is achieved by using the [playerdeath](#player-death) command in a trigger:<br/>
+`playerdeath deadplayer`<br/>
+This Trigger's output should then be wired to an Influencer with the [giveitem](#give-item-to-player) command, targeting the [datastore](#data-stores) we created in the the Trigger:<br/>
+`giveitem 28 20 @s deadplayer`<br/>
+Now, when a player dies, the trigger will add them to the datastore and send the influencer a signal, which will give them 20 Lesser Healing Potions to the player we just stoed in the datastore!
+
 
 ## Credits
 - Thanks to jopojelly for use of his UI Classes.
 - Thanks to Rartrin and direwolf420 for miscellaneous support.
 - Thanks to Khaios for the inspiration!
 
-All other work by darthmorf
+All other work by darthmorf / Sam Poirier
