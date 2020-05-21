@@ -17,10 +17,12 @@ namespace TICMod
         internal UserInterface userInterface;
         internal UIState modUiState;
         internal List<CommandUI> commandUis;
+        internal PlayerDataStore playerDataStore;
 
         public override void Load()
         {
             commandUis = new List<CommandUI>();
+            playerDataStore = new PlayerDataStore();
 
             if (!Terraria.Main.dedServ)
             {

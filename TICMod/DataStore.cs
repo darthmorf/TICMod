@@ -11,11 +11,17 @@ namespace TICMod
     {
         public void AddItem(string storename, Player item)
         {
+            if (storename == null)
+            {
+                return;
+            }
+
             if (!ContainsKey(storename))
             {
                 Add(storename, new List<Player>());
             }
-            else if (!this[storename].Contains(item))
+            
+            if (!this[storename].Contains(item))
             {
                 this[storename].Add(item);
             }
@@ -23,6 +29,11 @@ namespace TICMod
 
         public void RemoveItem(string storename, Player item)
         {
+            if (storename == null)
+            {
+                return;
+            }
+
             if (ContainsKey(storename) && this[storename].Contains(item))
             {
                 this[storename].Remove(item);
@@ -32,6 +43,17 @@ namespace TICMod
                     Remove(storename);
                 }
             }
+        }
+
+        public List<Player> GetItem(string storename)
+        {
+            List<Player> players = new List<Player>();
+            if (this.ContainsKey(storename) && this[storename] != null)
+            {
+                players = this[storename];
+            }
+
+            return players;
         }
     }
 }

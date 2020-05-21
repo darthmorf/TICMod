@@ -33,21 +33,22 @@ namespace TICMod
 
         private static CommandResponse TriggerPlayerDeath(List<String> commandArgs, CommandResponse resp, bool execute, int i, int j)
         {
-            TICMod mod = ModContent.GetInstance<TICMod>();
+            string storeName = null;
             if (commandArgs.Count > 1)
             {
-                resp.response = "Command must have either 0 or 1 parameter.";
-                return resp;
-            }
+                var args = commandArgs[1].Split(new[] { ' ' }).ToList();
 
-            string storeName = null;
-            if (commandArgs.Count == 1)
-            {
-                storeName = commandArgs[0];
-            }
+                if (args.Count > 1)
+                {
+                    resp.response = "Command must have either 0 or 1 parameter.";
+                    return resp;
+                }
 
+                storeName = args[0];
+            }
 
             bool triggered = false;
+            TICMod mod = ModContent.GetInstance<TICMod>();
             TICStates states = ModContent.GetInstance<TICStates>();
             List<Player> deadPlayers = new List<Player>();
             states.setTrigger(i, j, (() =>
@@ -57,6 +58,7 @@ namespace TICMod
                     if (player.dead && !deadPlayers.Contains(player))
                     {
                         deadPlayers.Add(player);
+                        mod.playerDataStore.AddItem(storeName, player);
                         ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(i, j - 1);
                         SendChatMsg($"{player.name} died, triggering.", i, j, states.isChatEnabled(i, j));
                         triggered = true;
@@ -64,6 +66,7 @@ namespace TICMod
                     else if (!player.dead && deadPlayers.Contains(player))
                     {
                         deadPlayers.Remove(player);
+                        mod.playerDataStore.RemoveItem(storeName, player);
                     }
                 }
             }));

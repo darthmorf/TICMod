@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace TICMod
 {
@@ -26,6 +27,10 @@ namespace TICMod
 
                 case "spawnnpcid":
                     resp = InfluencerSpawnNPCID(commandArgs, resp, execute);
+                    break;
+
+                case "giveitem":
+                    resp = InfluencerGiveItem(commandArgs, resp, execute);
                     break;
             }
 
@@ -228,6 +233,92 @@ namespace TICMod
             resp.valid = true;
             resp.response = $"Successfully spawned {npc.GivenOrTypeName}, ID:{npc.netID} @ {pos[0] / 16},{pos[1] / 16}.";
 
+
+            return resp;
+        }
+
+        private static CommandResponse InfluencerGiveItem(List<String> commandArgs, CommandResponse resp, bool execute)
+        {
+            List<Player> players = new List<Player>();
+            int itemId;
+            string itemIdString = "";
+            bool validId;
+
+            if (commandArgs.Count > 1)
+            {
+                var args = commandArgs[1].Split(new[] { ' ' }).ToList();
+                if (args.Count == 0 || args[0] == "")
+                {
+                    resp.response = "Command takes at least two parameters.";
+                    return resp;
+                }
+
+                if (args[0] == "@s")
+                {
+                    if (args.Count != 3)
+                    {
+                        resp.response = $"{commandArgs[0]} {args[0]} requires 2 following parameters.";
+                        return resp;
+                    }
+
+                    players = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(args[1]);
+                    itemIdString = args[2];
+                }
+                else if (args[0] == "@a") //TODO: Seperate player selection logic to seperate method
+                {
+                    if (args.Count != 2)
+                    {
+                        resp.response = $"{commandArgs[0]} {args[0]} requires 1 following parameter.";
+                        return resp;
+                    }
+
+                    players = Main.player.ToList();
+                    itemIdString = args[1];
+                }
+                else
+                {
+                    resp.response = $"{args[0]} is not a valid player target.";
+                    return resp;
+                }
+            }
+            else
+            {
+                resp.response = $"Requires player target and item ID parameter.";
+                return resp;
+            }
+
+            if (itemIdString == "")
+            {
+                resp.response = $"Requires item ID parameter";
+                return resp;
+            }
+
+            validId = int.TryParse(itemIdString, NumberStyles.Integer, CultureInfo.CurrentCulture, out itemId);
+            if (!validId || itemId < 1 || itemId > Main.item.Length) // TODO: Allow for negative item IDs
+            {
+                resp.response = $"{itemIdString} is not a valid item ID.";
+                return resp;
+            }
+
+            string playernames = "";
+            foreach (var player in players)
+            {
+                player.PutItemInInventory(itemId);
+
+                if (player.name != "")
+                {
+                    playernames += $"{player.name}, ";
+                }
+            }
+
+            if (playernames != "")
+            {
+                playernames = playernames.Substring(0, playernames.LastIndexOf(", "));
+            }
+
+            resp.valid = true;
+            resp.success = true;
+            resp.response = $"Gave item id {itemId} to {playernames}.";
 
             return resp;
         }
