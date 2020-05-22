@@ -48,7 +48,7 @@ namespace TICMod.Tiles
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            states.removeTile(i, j);
+            states.data.Remove((i, j));
             GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Conditional, true);
             base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
@@ -72,14 +72,15 @@ namespace TICMod.Tiles
 
             if (isBottom)
             {
-                bool enabled = states.isEnabled(i, j);
-                states.setEnabled(i, j, !enabled);
+                
+                states.data.TryGetValue((i, j), out var data);
+                states.data[(i, j)].enabled = !states.data[(i, j)].enabled;
                 short frameAdjustment = (short)(tile.frameX > 0 ? -18 : 18);
                 Main.tile[i, j].frameX += frameAdjustment;
                 Main.tile[i, j-1].frameX += frameAdjustment;
                 NetMessage.SendTileSquare(-1, i, j - 1, 2, TileChangeType.None);
-                string state = enabled ? "Disabled" : "Enabled";
-                SendChatMsg($"{state}", i, j, states.isChatEnabled(i,j));
+                string state = states.data[(i, j)].enabled ? "Disabled" : "Enabled";
+                SendChatMsg($"{state}", i, j, states.data[(i, j)].enabled);
             }
         }
 

@@ -33,6 +33,13 @@ namespace TICMod
 
         private static CommandResponse TriggerPlayerDeath(List<String> commandArgs, CommandResponse resp, bool execute, int i, int j)
         {
+            TICStates states = ModContent.GetInstance<TICStates>();
+            TICStates.Data data = null;
+            if (execute)
+            {
+                data = states.data[(i, j)];
+            }
+
             string storeName = null;
             if (commandArgs.Count > 1)
             {
@@ -47,29 +54,33 @@ namespace TICMod
                 storeName = args[0];
             }
 
-            bool triggered = false;
             TICMod mod = ModContent.GetInstance<TICMod>();
-            TICStates states = ModContent.GetInstance<TICStates>();
-            List<Player> deadPlayers = new List<Player>();
-            states.setTrigger(i, j, (() =>
+            
+            List<Player> triggeredPlayers = new List<Player>();
+            if (execute)
             {
-                foreach (var player in Main.player)
+                data.trigger = () =>
                 {
-                    if (player.dead && !deadPlayers.Contains(player))
+                    foreach (var player in Main.player)
                     {
-                        deadPlayers.Add(player);
-                        mod.playerDataStore.AddItem(storeName, player);
-                        ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(i, j - 1);
-                        SendChatMsg($"{player.name} died, triggering.", i, j, states.isChatEnabled(i, j));
-                        triggered = true;
+                        if (player.dead && data.enabled && !triggeredPlayers.Contains(player))
+                        {
+                            triggeredPlayers.Add(player);
+                            mod.playerDataStore.AddItem(storeName, player);
+                            ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(i, j - 1);
+
+                            if (data.chatOutput)
+                                SendChatMsg($"{player.name} died, triggering.", i, j, data.chatOutput);
+                        }
+                        else if (!player.dead && triggeredPlayers.Contains(player))
+                        {
+                            triggeredPlayers.Remove(player);
+                            if (mod.playerDataStore.ContainsValue(player))
+                                mod.playerDataStore.RemoveItem(storeName);
+                        }
                     }
-                    else if (!player.dead && deadPlayers.Contains(player))
-                    {
-                        deadPlayers.Remove(player);
-                        mod.playerDataStore.RemoveItem(storeName);
-                    }
-                }
-            }));
+                };
+            }
 
             resp.valid = true;
             return resp;
@@ -77,10 +88,17 @@ namespace TICMod
 
         private static CommandResponse TriggerTime(List<String> commandArgs, CommandResponse resp, bool execute, int i, int j)
         {
+            TICStates states = ModContent.GetInstance<TICStates>();
+            TICStates.Data data = null;
+            if (execute)
+            {
+                data = states.data[(i, j)];
+            }
+
             if (commandArgs.Count != 2)
             {
                 resp.response =
-                    $"Command must contain a player name.";
+                    $"Command must contain a time.";
                 return resp;
             }
             var posStr = commandArgs[1].Split(new[] { ':' }, 2);
@@ -103,23 +121,27 @@ namespace TICMod
 
             string givenTime = commandArgs[1];
             bool triggered = false;
-            TICStates states = ModContent.GetInstance<TICStates>();
-            states.setTrigger(i, j, (() =>
+            if (execute)
             {
-                string currenttime = Utilities.GetTimeAsString(Main.time);
+                data.trigger = () =>
+                {
+                    string currenttime = Utilities.GetTimeAsString(Main.time);
 
 
-                if (states.isEnabled(i, j) && currenttime == givenTime && !triggered)
-                {
-                    ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(i, j - 1);
-                    SendChatMsg($"Reached time {currenttime}, triggering.", i, j, states.isChatEnabled(i, j));
-                    triggered = true;
-                }
-                else if (currenttime != givenTime && triggered)
-                {
-                    triggered = false;
-                }
-            }));
+                    if (data.enabled && currenttime == givenTime && !triggered)
+                    {
+                        ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(i, j - 1);
+                        triggered = true;
+
+                        if (data.chatOutput)
+                            SendChatMsg($"Reached time {currenttime}, triggering.", i, j, data.chatOutput);
+                    }
+                    else if (currenttime != givenTime && triggered)
+                    {
+                        triggered = false;
+                    }
+                };
+            }
 
             resp.valid = true;
             return resp;

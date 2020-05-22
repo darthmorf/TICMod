@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -128,11 +129,11 @@ namespace TICMod
             }
         }
 
-        public static List<Data> data;
+        internal Dictionary<(int x, int y), Data> data;
 
         public override void Initialize()
         {
-            data = new List<Data>();
+            data = new Dictionary<(int x, int y), Data>();
         }
 
         // Load extra tile data saved with world
@@ -163,15 +164,15 @@ namespace TICMod
                         break;
                 }
 
-                data.Add(new Data(points[i], type, commands[i], enabled[i], chatOutput[i]));
+                data.Add((points[i].X, points[i].Y), new Data(points[i], type, commands[i], enabled[i], chatOutput[i]));
             }
 
             // Initialise trigger methods for existing trigger tiles
             foreach (var tile in data)
             {
-                if (tile.type == BlockType.Trigger)
+                if (tile.Value.type == BlockType.Trigger)
                 {
-                    CommandHandler.Parse(tile.command, tile.type, i: tile.postion.X, j: tile.postion.Y);
+                    CommandHandler.Parse(tile.Value.command, tile.Value.type, i: tile.Value.postion.X, j: tile.Value.postion.Y);
                 }
             }
         }
@@ -185,15 +186,15 @@ namespace TICMod
             IList<string> commands = new List<string>();
             IList<string> types = new List<string>();
 
-            foreach (Data tile in data)
+            foreach (var tile in data)
             {
-                points.Add(tile.postion);
-                enabled.Add(tile.enabled);
-                chatOutput.Add(tile.chatOutput);
-                commands.Add(tile.command);
+                points.Add(tile.Value.postion);
+                enabled.Add(tile.Value.enabled);
+                chatOutput.Add(tile.Value.chatOutput);
+                commands.Add(tile.Value.command);
 
                 // Convert enum to type string
-                switch (tile.type)
+                switch (tile.Value.type)
                 {
                     case BlockType.Trigger: 
                         types.Add("trigger");
@@ -220,23 +221,9 @@ namespace TICMod
 
         // Initializes extra tile data for a specific tile
         public void addTile(int i, int j, bool enabled, bool chatEnabled, BlockType type)
-        {
+        { 
             Data tile = new Data(new Point16(i, j), type, _enabled: enabled, _chatOutput: chatEnabled);
-            data.Add(tile);
-        }
-
-        // Deinitializes extra tile data for a specific tile
-        public void removeTile(int i, int j)
-        {
-            Point16 point = new Point16(i, j);
-            for (int k = 0; k < data.Count; k++)
-            {
-                if (data[k].postion == point)
-                {
-                    data.RemoveAt(k);
-                    return;
-                }
-            }
+            data.Add((i,j), tile);
         }
 
         public override void PostUpdate()
@@ -244,126 +231,10 @@ namespace TICMod
             // Execute any trigger methods
             foreach (var tile in data)
             {
-                tile.trigger?.Invoke();
+               tile.Value.trigger?.Invoke();
             }
         }
 
-        // Getter and Setters for various data properties
-        public bool isEnabled(int i, int j)
-        {
-            Point16 point = new Point16(i, j);
-
-            foreach (Data tile in data)
-            {
-                if (tile.postion == point)
-                {
-                    return tile.enabled;
-                }
-            }
-
-            return false;
-        }
-
-        public bool isChatEnabled(int i, int j)
-        {
-            Point16 point = new Point16(i, j);
-
-            foreach (Data tile in data)
-            {
-                if (tile.postion == point)
-                {
-                    return tile.chatOutput;
-                }
-            }
-
-            return false;
-        }
-
-        public string getCommand(int i, int j)
-        {
-            Point16 point = new Point16(i, j);
-
-            for (int k = 0; k < data.Count; k++)
-            {
-                if (data[k].postion == point)
-                {
-                    return data[k].command;
-                }
-            }
-
-            return "";
-        }
-
-        public Action getTrigger(int i, int j)
-        {
-            Point16 point = new Point16(i, j);
-
-            for (int k = 0; k < data.Count; k++)
-            {
-                if (data[k].postion == point)
-                {
-                    return data[k].trigger;
-                }
-            }
-
-            return null;
-        }
-
-        public void setEnabled(int i, int j, bool value)
-        {
-            Point16 point = new Point16(i, j);
-
-            for (int k = 0; k < data.Count; k++)
-            {
-                if (data[k].postion == point)
-                {
-                    data[k].enabled = value;
-                    return;
-                }
-            }
-        }
-
-        public void setCommand(int i, int j, string value)
-        {
-            Point16 point = new Point16(i, j);
-
-            for (int k = 0; k < data.Count; k++)
-            {
-                if (data[k].postion == point)
-                {
-                    data[k].command = value;
-                    return;
-                }
-            }
-        }
-
-        public void setChatEnabled(int i, int j, bool value)
-        {
-            Point16 point = new Point16(i, j);
-
-            for (int k = 0; k < data.Count; k++)
-            {
-                if (data[k].postion == point)
-                {
-                    data[k].chatOutput = value;
-                    return;
-                }
-            }
-        }
-
-        public void setTrigger(int i, int j, Action value)
-        {
-            Point16 point = new Point16(i, j);
-
-            for (int k = 0; k < data.Count; k++)
-            {
-                if (data[k].postion == point)
-                {
-                    data[k].trigger = value;
-                    return;
-                }
-            }
-        }
     }
 
     // Handles sending wire hits 

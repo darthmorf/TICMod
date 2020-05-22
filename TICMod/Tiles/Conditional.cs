@@ -57,12 +57,12 @@ namespace TICMod.Tiles
 
             if (isBottom)
             {
-                string command = states.getCommand(i, j);
+                string command = states.data[(i, j)].command;
                 CommandResponse resp = CommandHandler.Parse(command, BlockType.Conditional, true);
 
                 bool condition = resp.success;
 
-                SendChatMsg(resp.response, i, j, states.isChatEnabled(i,j));
+                SendChatMsg(resp.response, i, j, states.data[(i, j)].chatOutput);
 
                 ExtraWireTrips trips = ModContent.GetInstance<ExtraWireTrips>();
 
@@ -85,7 +85,7 @@ namespace TICMod.Tiles
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            states.removeTile(i, j);
+            states.data.Remove((i, j));
             GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Conditional, true);
             base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }

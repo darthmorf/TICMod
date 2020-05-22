@@ -82,8 +82,8 @@ namespace TICMod.UI
             OnInitialize();
 
             titleText.SetText($"{uiType} Block @ ({i},{j})");
-            commandInput.SetText(states.getCommand(i, j));
-            outputCheckbox.Selected = states.isChatEnabled(i, j);
+            commandInput.SetText(states.data[(i, j)].command);
+            outputCheckbox.Selected = states.data[(i, j)].chatOutput;
 
             commandInput.OnTabPressed += () => ModContent.GetInstance<TICMod>().CycleCommandUIFocus(i, j);
 
@@ -110,8 +110,8 @@ namespace TICMod.UI
 
         private void SaveBtnPress()
         {
-            states.setCommand(i, j, commandInput.currentString);
-            states.setChatEnabled(i, j, outputCheckbox.Selected);
+            states.data[(i, j)].command = commandInput.currentString;
+            states.data[(i, j)].chatOutput = outputCheckbox.Selected;
 
             if (uiType == BlockType.Trigger)
             {

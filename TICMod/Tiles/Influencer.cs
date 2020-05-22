@@ -42,7 +42,7 @@ namespace TICMod.Tiles
         public override void HitWire(int i, int j)
         {
             Tile tile = Main.tile[i, j];
-            string command = states.getCommand(i, j);
+            string command = states.data[(i, j)].command;
 
             CommandResponse resp = CommandHandler.Parse(command, BlockType.Influencer);
 
@@ -55,7 +55,7 @@ namespace TICMod.Tiles
                 command = $"Error, invalid syntax: {resp.response}";
             }
 
-            SendChatMsg(command, i, j, states.isChatEnabled(i,j));
+            SendChatMsg(command, i, j, states.data[(i, j)].chatOutput);
         }
 
         public void SendChatMsg(string text, int x = -1, int y = -1, bool showOutput=true)
@@ -90,8 +90,8 @@ namespace TICMod.Tiles
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-           states.removeTile(i, j);
-           GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Influencer, true);
+            states.data.Remove((i, j));
+            GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Influencer, true);
            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 
