@@ -15,7 +15,7 @@ namespace TICMod
     public class TICMod : Mod
     {
         internal UserInterface userInterface;
-        internal UIState modUiState;
+        internal UIStateReverse modUiState;
         internal List<CommandUI> commandUis;
         internal PlayerDataStore playerDataStore;
 
@@ -28,7 +28,7 @@ namespace TICMod
             {
                 // Load UI
                 userInterface = new UserInterface();
-                modUiState = new UIState();
+                modUiState = new UIStateReverse();
                 modUiState.Activate();
                 userInterface?.SetState(modUiState);
             }
