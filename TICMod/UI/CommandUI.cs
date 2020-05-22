@@ -32,11 +32,12 @@ namespace TICMod.UI
         {
             int screenWidth = Main.screenWidth;
             this.Width.Set(0, 0.5f);
-            this.Height.Set(0, 0.09f);
+            this.Height.Set(105, 0f);
             this.Left.Set(screenWidth / 4, 0f); // can't use precent as that causes the draggable windows to jump when first dragged
             this.Top.Set(10f, 0f);
 
             titleText = new UIText("");
+            titleText.Top.Pixels = -5;
             this.Append(titleText);
 
             commandInput = new UIBetterTextBox("Command");
