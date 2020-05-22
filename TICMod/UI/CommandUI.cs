@@ -116,6 +116,10 @@ namespace TICMod.UI
             if (uiType == BlockType.Trigger)
             {
                 CommandResponse resp = CommandHandler.Parse(commandInput.currentString, uiType, i:i, j:j);
+                if (resp.valid == false)
+                {
+                    states.data[(i, j)].trigger = null;
+                }
             }
         }
 
