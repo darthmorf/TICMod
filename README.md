@@ -2,7 +2,7 @@
 <br/>**CURRENTLY WIP & UNRELEASED**<br/>
 If you do compile + test this yourself, let me know but please don't share it around yet!<br/><br/>
 
-TICMod (Trigger, Influencer, Conditional Mod) is a mod for Terraria using tModloader that adds blocks that function similar to Command Blocks from Minecraft. It is not balanced around a standard playthrough; it's intended use is for Adventure Maps, Servers and Testing/Building Worlds.
+TICMod (Trigger, Influencer, Conditional Mod) is a mod for Terraria that adds tiles that function similar to Command Blocks from Minecraft. It is not balanced around a standard playthrough; it's intended use is for Adventure Maps, Servers and Testing/Building Worlds.
 
 Functionality is implemented through three seperate tiles; the Trigger, the Influencer and the Conditional:
 
@@ -41,11 +41,15 @@ Commands are entered through each block's own UI, which can be opened by right c
 If a command is invalid, the text becomes red, and an error code is displayed upon hover:
 ![](/readme-img/invalidui.png)
 
-The 'show debug output' checkbox determines whether debug output is displayed in the chat when the tile activates, for example:<br/>
-![](/readme-img/debugout.png)
-
 The user interface supports a range of shortcuts to ease the editing of commands. Arrow keys can be used to navigate, along with HOME and END to jump the front and back respectively.
 Ctrl+C, Ctrl+V and Ctrl+X can be used to copy, paste and cut text too. Ctrl+Z can be used to undo changes, and tab can be pressed to navigate between different open TIC UIs.
+
+The 'show debug output' checkbox determines whether debug output is displayed in the chat when the tile activates, for example:<br/>
+![](/readme-img/debugout.png)
+These outputs can be disabled globally (ignoring individual tile settings) by using the 'Tile Output Toggler' item. Using it will toggle the world between the two states.
+
+Some commands also require a world co-ordinate to be passed. As this does not directly correspond to the vanilla position items, you can use an accessory; the 'Mouse Coordinate Display'. With this equipped, your mouse cursor will display the co-ordinates of the tile beneath it:
+<br>![](/readme-img/coordinateui.png)
 
 ## Triggers
 
@@ -65,7 +69,7 @@ EG: `time 14:30`
 #### Player Death
 `playerdeath datastore(optional)`<br/>
 Triggers once when a player dies. Can optionally pass in a [datastore](#data-stores) string to write to.<br/>
-EG: `time 14:30`
+EG: `playerdeath deadplayer`
 
 
 ## Influencers
