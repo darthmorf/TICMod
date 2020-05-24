@@ -12,9 +12,7 @@ namespace TICMod.Items
         public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault("Influencer");
-			Tooltip.SetDefault("When given a signal, activates internal command." +
-                               "\nHello Terraria Enthusiasts..." +
-							   "\nCHEAT ITEM - NOT BALANCED FOR REGULAR USE.");
+			Tooltip.SetDefault("When given a signal, activates internal command.");
 		}
 
 		public override void SetDefaults()
@@ -31,7 +29,7 @@ namespace TICMod.Items
 			item.height = 12;
 			item.value = 0;
 			item.mech = true;
-            item.rare = 13;
+            item.rare = ItemRarityID.Cyan;
 		}
 
 		public override void AddRecipes()

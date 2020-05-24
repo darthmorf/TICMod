@@ -17,8 +17,8 @@ namespace TICMod.Items
         public override void SetDefaults()
         {
             item.width = 18;
-            item.height = 18; 
-            item.rare = 11;
+            item.height = 18;
+            item.rare = ItemRarityID.Cyan;
             item.vanity = true;
         }
 

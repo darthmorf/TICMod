@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -18,7 +18,6 @@ namespace TICMod.Items
         public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault(name);
-			Tooltip.SetDefault("Toggles whether TIC Blocks display their debug output on this world.");
         }
 
         public override void SetDefaults()
@@ -27,9 +26,9 @@ namespace TICMod.Items
 			item.height = 20;
 			item.maxStack = 1;
 			item.value = 0;
-            item.rare = 13;
+            item.rare = ItemRarityID.Cyan;
             item.useStyle = 5;
-            item.useAnimation = 20;
+            item.useAnimation = 5;
 
 
 
@@ -76,14 +75,26 @@ namespace TICMod.Items
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             bool output = ModContent.GetInstance<TICStates>().tileOutput;
+            string tt = "";
             if (output)
             {
-                tooltips[1].text = "Disables TIC blocks displaying their debug output on this world.";
+                tt = "Disables TIC blocks displaying their debug output on this world.";
             }
             else
             {
-                tooltips[1].text = "Enables TIC blocks displaying their debug output on this world.";
+                tt = "Enables TIC blocks displaying their debug output on this world.";
             }
+
+            foreach (var tooltip in tooltips)
+            {
+                if (tooltip.Name == "Tooltip#0")
+                {
+                    tooltip.text = tt;
+                    return;
+                }
+            }
+
+            tooltips.Add(new TooltipLine(mod, "Tooltip#0", tt));
         }
     }
 }

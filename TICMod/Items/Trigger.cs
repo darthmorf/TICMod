@@ -31,7 +31,7 @@ namespace TICMod.Items
             item.height = 12;
             item.value = 0;
             item.mech = true;
-            item.rare = 13;
+            item.rare = ItemRarityID.Cyan;
         }
 
         public override void AddRecipes()

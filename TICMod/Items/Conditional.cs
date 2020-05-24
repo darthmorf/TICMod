@@ -12,9 +12,7 @@ namespace TICMod.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault(Name);
-            Tooltip.SetDefault("When given a signal through bottom tile, assesses internal condition" +
-                               "\nthen gives a signal to top tile if true, middle tile if false." +
-                               "\nCHEAT ITEM - NOT BALANCED FOR REGULAR USE.");
+            Tooltip.SetDefault("When given a signal through bottom tile, assesses internal condition");
         }
 
         public override void SetDefaults()
@@ -31,7 +29,7 @@ namespace TICMod.Items
             item.height = 12;
             item.value = 0;
             item.mech = true;
-            item.rare = 13;
+            item.rare = ItemRarityID.Cyan;
         }
 
         public override void AddRecipes()
