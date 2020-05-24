@@ -70,7 +70,7 @@ namespace TICMod
                             ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(i, j - 1);
 
                             if (data.chatOutput)
-                                SendChatMsg($"{player.name} died, triggering.", i, j, data.chatOutput);
+                                states.SendChatMsg($"{player.name} died, triggering.", i, j);
                         }
                         else if (!player.dead && triggeredPlayers.Contains(player))
                         {
@@ -134,7 +134,7 @@ namespace TICMod
                         triggered = true;
 
                         if (data.chatOutput)
-                            SendChatMsg($"Reached time {currenttime}, triggering.", i, j, data.chatOutput);
+                            states.SendChatMsg($"Reached time {currenttime}, triggering.", i, j);
                     }
                     else if (currenttime != givenTime && triggered)
                     {
@@ -145,14 +145,6 @@ namespace TICMod
 
             resp.valid = true;
             return resp;
-        }
-
-        public static void SendChatMsg(string text, int x = -1, int y = -1, bool showOutput = true)
-        {
-            if (showOutput)
-            {
-                Main.NewText($"[Trigger@{x},{y}] {text}", Color.Gray);
-            }
         }
     }
 }

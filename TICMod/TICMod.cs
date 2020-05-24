@@ -130,6 +130,7 @@ namespace TICMod
         }
 
         internal Dictionary<(int x, int y), Data> data;
+        internal bool tileOutput = true;
 
         public override void Initialize()
         {
@@ -144,6 +145,7 @@ namespace TICMod
             IList<bool> chatOutput = tag.GetList<bool>("TICChat");
             IList<string> commands = tag.GetList<string>("TICCommand");
             IList<string> types = tag.GetList<string>("TICType");
+            tileOutput = tag.GetBool("TICTileOutput");
 
             // Convert type string to enum
             for (int i = 0; i < points.Count; i++)
@@ -215,7 +217,8 @@ namespace TICMod
                 {"TICEnabled", enabled },
                 {"TICChat", chatOutput },
                 {"TICCommand", commands },
-                {"TICType", types }
+                {"TICType", types },
+                {"TICTileOutput", tileOutput }
             };
         }
 
@@ -243,7 +246,7 @@ namespace TICMod
                 showOutput = data[(x, y)].chatOutput;
             }
 
-            if (showOutput)
+            if (showOutput && tileOutput)
             {
                 Main.NewText($"[Trigger@{x},{y}] {text}", Color.Gray);
             }
