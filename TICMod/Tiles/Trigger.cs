@@ -80,7 +80,7 @@ namespace TICMod.Tiles
                 Main.tile[i, j-1].frameX += frameAdjustment;
                 NetMessage.SendTileSquare(-1, i, j - 1, 2, TileChangeType.None);
                 string state = states.data[(i, j)].enabled ? "Disabled" : "Enabled";
-                SendChatMsg($"{state}", i, j, states.data[(i, j)].enabled);
+                states.SendChatMsg($"{state}", i, j);
             }
         }
 
@@ -97,14 +97,6 @@ namespace TICMod.Tiles
             GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Trigger);
 
             return true;
-        }
-
-        public void SendChatMsg(string text, int x = -1, int y = -1, bool showOutput = true)
-        {
-            if (showOutput)
-            {
-                Main.NewText($"[Trigger@{x},{y}] {text}", Color.Gray);
-            }
         }
     }
 }

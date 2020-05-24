@@ -235,6 +235,20 @@ namespace TICMod
             }
         }
 
+        public void SendChatMsg(string text, int x = -1, int y = -1)
+        {
+            bool showOutput = true;
+            if (data.ContainsKey((x,y)))
+            {
+                showOutput = data[(x, y)].chatOutput;
+            }
+
+            if (showOutput)
+            {
+                Main.NewText($"[Trigger@{x},{y}] {text}", Color.Gray);
+            }
+        }
+
     }
 
     // Handles sending wire hits 

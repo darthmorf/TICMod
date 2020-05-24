@@ -55,16 +55,7 @@ namespace TICMod.Tiles
                 command = $"Error, invalid syntax: {resp.response}";
             }
 
-            SendChatMsg(command, i, j, states.data[(i, j)].chatOutput);
-        }
-
-        public void SendChatMsg(string text, int x = -1, int y = -1, bool showOutput=true)
-        {
-            if (showOutput)
-            {
-                
-                Main.NewText($"[Influencer@{x},{y}] {text}", Color.Gray);
-            }
+            states.SendChatMsg(command, i, j);
         }
 
         public override bool NewRightClick(int i, int j)

@@ -62,7 +62,8 @@ namespace TICMod.Tiles
 
                 bool condition = resp.success;
 
-                SendChatMsg(resp.response, i, j, states.data[(i, j)].chatOutput);
+
+                states.SendChatMsg(resp.response, i, j);
 
                 ExtraWireTrips trips = ModContent.GetInstance<ExtraWireTrips>();
 
@@ -103,15 +104,6 @@ namespace TICMod.Tiles
             GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Conditional);
 
             return true;
-        }
-
-
-        public void SendChatMsg(string text, int x = -1, int y = -1, bool showOutput = true)
-        {
-            if (showOutput)
-            {
-                Main.NewText($"[Conditional@{x},{y}] {text}", Color.Gray);
-            }
         }
     }
 }
