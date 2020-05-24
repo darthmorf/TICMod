@@ -15,9 +15,13 @@ namespace TICMod
 
     public class TICMod : Mod
     {
-        internal UserInterface userInterface;
+        internal UserInterface commandInterface;
         internal UIStateReverse modUiState;
         internal List<CommandUI> commandUis;
+
+        internal UserInterface coordInterface;
+        internal UICoordDisplay coordDisplay;
+
         internal PlayerDataStore playerDataStore;
 
         public override void Load()
@@ -28,10 +32,15 @@ namespace TICMod
             if (!Terraria.Main.dedServ)
             {
                 // Load UI
-                userInterface = new UserInterface();
+                commandInterface = new UserInterface();
                 modUiState = new UIStateReverse();
                 modUiState.Activate();
-                userInterface?.SetState(modUiState);
+                commandInterface?.SetState(modUiState);
+
+                coordInterface = new UserInterface();
+                coordDisplay = new UICoordDisplay();
+                coordDisplay.Activate();
+                coordInterface?.SetState(coordDisplay);
             }
             base.Load();
         }
@@ -41,9 +50,14 @@ namespace TICMod
         public override void UpdateUI(GameTime gameTime)
         {
             _lastUpdateUiGameTime = gameTime;
-            if (userInterface?.CurrentState != null)
+            if (commandInterface?.CurrentState != null)
             {
-                userInterface.Update(gameTime);
+                commandInterface.Update(gameTime);
+            }
+
+            if (coordInterface?.CurrentState != null)
+            {
+                coordInterface.Update(gameTime);
             }
         }
 
@@ -53,16 +67,30 @@ namespace TICMod
             if (mouseTextIndex != -1)
             {
                 layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                "TICMod: InfluencerUI",
+                "TICMod: CoordDisplayUI",
                 delegate
                 {
-                    if (_lastUpdateUiGameTime != null && userInterface?.CurrentState != null)
+                    if (_lastUpdateUiGameTime != null && coordInterface?.CurrentState != null)
                     {
-                        userInterface.Draw(Terraria.Main.spriteBatch, _lastUpdateUiGameTime);
+                        coordInterface.Draw(Terraria.Main.spriteBatch, _lastUpdateUiGameTime);
                     }
                     return true;
                 },
                 InterfaceScaleType.UI));
+
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                "TICMod: TICUI",
+                delegate
+                {
+                    if (_lastUpdateUiGameTime != null && commandInterface?.CurrentState != null)
+                    {
+                        commandInterface.Draw(Terraria.Main.spriteBatch, _lastUpdateUiGameTime);
+                    }
+                    return true;
+                },
+                InterfaceScaleType.UI));
+
+                
             }
         }
 
@@ -272,5 +300,16 @@ namespace TICMod
             }
         }
         public void AddWireUpdate(int x, int y) => updates.Enqueue(new Point16(x, y));
+    }
+
+    class TICPlayer : ModPlayer
+    {
+        public bool CoordDisplay = false;
+
+        public override void ResetEffects()
+        {
+            CoordDisplay = false;
+            base.ResetEffects();
+        }
     }
 }
