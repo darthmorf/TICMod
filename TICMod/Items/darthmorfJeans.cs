@@ -21,13 +21,5 @@ namespace TICMod.Items
             item.rare = ItemRarityID.Cyan;
             item.vanity = true;
         }
-
-        public override void AddRecipes()
-        {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.DirtBlock);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
-        }
     }
 }
