@@ -28,7 +28,7 @@ Functionality is implemented through three seperate tiles; the Trigger, the Infl
     - [All Players](#all-players)
     - [Stored Players](#stored-players)
 - [Data Stores](#data-stores)
-  - [Examples](#examples)
+- [Examples](#examples)
     - [Give 20 Lesser Healing Potions to players when they die.](#give-20-lesser-healing-potions-to-players-when-they-die)
 - [Credits](#credits)
 
@@ -139,7 +139,7 @@ EG: `giveitem 26, 10 @s store`
 
 Some commands (mostly Triggers) will allow you to output an effected entity so that they can be effected by another TIC block, like an influencer. This is acheived through Data Stores. To create a store, simply reference it in a command that can output to one. Currently supported entity types are: players.
 
-### Examples
+## Examples
 
 #### Give 20 Lesser Healing Potions to players when they die.
 First, we need a Trigger to trigger when a player dies, and store that player in a [datastore](#data-stores). Let's call this store `deadplayer`. This is achieved by using the [playerdeath](#player-death) command in a trigger:<br/>
