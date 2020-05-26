@@ -42,7 +42,7 @@ namespace TICMod
             {
                 if (args.Count != 2 || String.IsNullOrWhiteSpace(args[1]))
                 {
-                    resp.response = $"{args[0]} requires datastore name";
+                    resp.response = $"{args[0]} requires datastore name parameter";
                     return (players, resp);
                 }
 
@@ -57,6 +57,46 @@ namespace TICMod
                 }
 
                 players = Main.player.ToList();
+            }
+            else if (args[0] == "@n")
+            {
+                string name = String.Join(" ", args.Skip(1));
+
+                if (args.Count < 2 || String.IsNullOrWhiteSpace(name))
+                {
+                    resp.response = $"{args[0]} requires player name parameter";
+                    return (players, resp);
+                }
+
+                foreach (var player in Main.player)
+                {
+                    if (player.name == name)
+                    {
+                        players.Add(player);
+                    }
+                }
+            }
+            else if (args[0] == "@r")
+            {
+                if (args.Count != 1)
+                {
+                    resp.response = $"{args[0]} requires no parameters.";
+                    return (players, resp);
+                }
+
+                List<Player> validPlayers = new List<Player>();
+                foreach (var player in Main.player)
+                {
+                    if (player.name != "")
+                    {
+                        validPlayers.Add(player);
+                    }
+                }
+                
+                Random rand = new Random();
+                int index = rand.Next(validPlayers.Count);
+
+                players.Add(validPlayers[index]);
             }
             else
             {
