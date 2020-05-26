@@ -71,14 +71,14 @@ namespace TICMod.UI
             quitButton.OnClick += (evt, element) => { ModContent.GetInstance<TICMod>().ToggleCommandUI(i, j, uiType,true);};
             this.Append(quitButton);
 
-            world = ModContent.GetInstance<TICWorld>();
         }
 
-        public void InitValues(int _i, int _j, BlockType _type)
+        public void InitValues(int i, int j, BlockType type)
         {
-            i = _i;
-            j = _j;
-            uiType = _type;
+            world = ModContent.GetInstance<TICWorld>();
+            this.i = i;
+            this.j = j;
+            uiType = type;
 
             OnInitialize();
 

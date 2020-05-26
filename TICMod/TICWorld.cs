@@ -1,9 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using MonoMod.Utils;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -15,32 +19,30 @@ namespace TICMod
     internal class TICWorld : ModWorld
     {
         // One instance applies to one specific tile
+        [Serializable]
         public class Data
         {
-            public Point16 postion;
+            public int x;
+            public int y;
             public bool enabled;
             public bool chatOutput;
             public string command;
             public Action trigger;
             public BlockType type;
 
-            public Data(Point16 _postion, BlockType _type, string _command = "", bool _enabled = true, bool _chatOutput = true)
+            public Data(int x, int y, BlockType type, string command = "", bool enabled = true, bool chatOutput = true)
             {
-                postion = _postion;
-                enabled = _enabled;
-                chatOutput = _chatOutput;
-                command = _command;
-                type = _type;
+                this.x = x;
+                this.y = y;
+                this.enabled = enabled;
+                this.chatOutput = chatOutput;
+                this.command = command;
+                this.type = type;
             }
         }
 
-        internal Dictionary<(int x, int y), Data> data;
+        public Dictionary<(int x, int y), Data> data = new Dictionary<(int x, int y), Data>();
         internal bool tileOutput = true;
-
-        public override void Initialize()
-        {
-            data = new Dictionary<(int x, int y), Data>();
-        }
 
         // Load extra tile data saved with world
         public override void Load(TagCompound tag)
@@ -71,7 +73,8 @@ namespace TICMod
                         break;
                 }
 
-                data.Add((points[i].X, points[i].Y), new Data(points[i], type, commands[i], enabled[i], chatOutput[i]));
+                data.Add((points[i].X, points[i].Y),
+                    new Data(points[i].X, points[i].Y, type, commands[i], enabled[i], chatOutput[i]));
             }
 
             // Initialise trigger methods for existing trigger tiles
@@ -79,7 +82,7 @@ namespace TICMod
             {
                 if (tile.Value.type == BlockType.Trigger)
                 {
-                    CommandHandler.Parse(tile.Value.command, tile.Value.type, i: tile.Value.postion.X, j: tile.Value.postion.Y);
+                    CommandHandler.Parse(tile.Value.command, tile.Value.type, i: tile.Value.x, j: tile.Value.y);
                 }
             }
         }
@@ -95,7 +98,7 @@ namespace TICMod
 
             foreach (var tile in data)
             {
-                points.Add(tile.Value.postion);
+                points.Add(new Point16(tile.Value.x, tile.Value.y));
                 enabled.Add(tile.Value.enabled);
                 chatOutput.Add(tile.Value.chatOutput);
                 commands.Add(tile.Value.command);
@@ -130,7 +133,7 @@ namespace TICMod
         // Initializes extra tile data for a specific tile
         public void addTile(int i, int j, bool enabled, bool chatEnabled, BlockType type)
         {
-            Data tile = new Data(new Point16(i, j), type, _enabled: enabled, _chatOutput: chatEnabled);
+            Data tile = new Data(i, j, type, enabled: enabled, chatOutput: chatEnabled);
             data.Add((i, j), tile);
         }
 
@@ -157,6 +160,44 @@ namespace TICMod
             }
         }
 
+        public override void NetSend(BinaryWriter writer)
+        {
+            if (Main.dedServ)
+            {
+                byte[] dataBytes;
+                BinaryFormatter bf = new BinaryFormatter();
+                using (var ms = new MemoryStream())
+                {
+                    bf.Serialize(ms, data);
+                    dataBytes = ms.ToArray();
+                }
+
+                writer.Write(BitConverter.GetBytes((Int32)dataBytes.Length));
+                writer.Write(dataBytes);
+            }
+        }
+
+        public override void NetReceive(BinaryReader reader)
+        {
+            try
+            {
+                int byteCount = reader.ReadInt32();
+                byte[] byteData = reader.ReadBytes(byteCount);
+
+                using (var memStream = new MemoryStream())
+                {
+                    var binForm = new BinaryFormatter();
+                    memStream.Write(byteData, 0, byteData.Length);
+                    memStream.Seek(0, SeekOrigin.Begin);
+                    data = (Dictionary < (int x, int y), Data > )binForm.Deserialize(memStream);
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            
+        }
     }
 
     // Handles sending wire hits 
