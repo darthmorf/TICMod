@@ -287,12 +287,10 @@ namespace TICMod
             string playernames = "";
             foreach (var player in players)
             {
-                for (int i=0; i < itemCount; i++)
+                if (execute)
                 {
-                    if (execute)
-                    {
-                        player.PutItemInInventory(itemId);
-                    }
+                    player.PutItemInInventory(itemId);
+                    player.QuickSpawnItem(itemId, itemCount);
                 }
 
                 if (player.name != "")
