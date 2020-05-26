@@ -33,11 +33,11 @@ namespace TICMod
 
         private static CommandResponse TriggerPlayerDeath(List<String> commandArgs, CommandResponse resp, bool execute, int i, int j)
         {
-            TICStates states = ModContent.GetInstance<TICStates>();
-            TICStates.Data data = null;
+            TICWorld world = ModContent.GetInstance<TICWorld>();
+            TICWorld.Data data = null;
             if (execute)
             {
-                data = states.data[(i, j)];
+                data = world.data[(i, j)];
             }
 
             string storeName = null;
@@ -70,7 +70,7 @@ namespace TICMod
                             ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(i, j - 1);
 
                             if (data.chatOutput)
-                                states.SendChatMsg($"{player.name} died, triggering.", i, j);
+                                world.SendChatMsg($"{player.name} died, triggering.", i, j);
                         }
                         else if (!player.dead && triggeredPlayers.Contains(player))
                         {
@@ -88,11 +88,11 @@ namespace TICMod
 
         private static CommandResponse TriggerTime(List<String> commandArgs, CommandResponse resp, bool execute, int i, int j)
         {
-            TICStates states = ModContent.GetInstance<TICStates>();
-            TICStates.Data data = null;
+            TICWorld world = ModContent.GetInstance<TICWorld>();
+            TICWorld.Data data = null;
             if (execute)
             {
-                data = states.data[(i, j)];
+                data = world.data[(i, j)];
             }
 
             if (commandArgs.Count != 2)
@@ -134,7 +134,7 @@ namespace TICMod
                         triggered = true;
 
                         if (data.chatOutput)
-                            states.SendChatMsg($"Reached time {currenttime}, triggering.", i, j);
+                            world.SendChatMsg($"Reached time {currenttime}, triggering.", i, j);
                     }
                     else if (currenttime != givenTime && triggered)
                     {

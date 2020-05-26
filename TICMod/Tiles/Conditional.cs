@@ -14,7 +14,7 @@ namespace TICMod.Tiles
 {
 	public class Conditional : ModTile
 	{
-        private TICStates states;
+        private TICWorld world;
         public override void SetDefaults()
 		{
 			Main.tileSolid[Type] = false;
@@ -34,7 +34,7 @@ namespace TICMod.Tiles
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.addTile(Type);
 
-            states = ModContent.GetInstance<TICStates>();
+            world = ModContent.GetInstance<TICWorld>();
         }
 
         public override bool HasSmartInteract() => true;
@@ -57,13 +57,13 @@ namespace TICMod.Tiles
 
             if (isBottom)
             {
-                string command = states.data[(i, j)].command;
+                string command = world.data[(i, j)].command;
                 CommandResponse resp = CommandHandler.Parse(command, BlockType.Conditional, true);
 
                 bool condition = resp.success;
 
 
-                states.SendChatMsg(resp.response, i, j);
+                world.SendChatMsg(resp.response, i, j);
 
                 ExtraWireTrips trips = ModContent.GetInstance<ExtraWireTrips>();
 
@@ -80,13 +80,13 @@ namespace TICMod.Tiles
 
         public override void PlaceInWorld(int i, int j, Item item)
         {
-            states.addTile(i, j, true, true, BlockType.Conditional);
+            world.addTile(i, j, true, true, BlockType.Conditional);
             base.PlaceInWorld(i, j, item);
         }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            states.data.Remove((i, j));
+            world.data.Remove((i, j));
             GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Conditional, true);
             base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }

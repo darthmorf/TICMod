@@ -19,7 +19,7 @@ namespace TICMod.Tiles
 {
 	public class Trigger : ModTile
     {
-        private TICStates states;
+        private TICWorld world;
 		public override void SetDefaults()
         {
             Main.tileSolid[Type] = false;
@@ -36,7 +36,7 @@ namespace TICMod.Tiles
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.addTile(Type);
 
-            states = ModContent.GetInstance<TICStates>();
+            world = ModContent.GetInstance<TICWorld>();
         }
 
         public override bool HasSmartInteract() => true;
@@ -48,14 +48,14 @@ namespace TICMod.Tiles
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            states.data.Remove((i, j));
+            world.data.Remove((i, j));
             GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Conditional, true);
             base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 
         public override void PlaceInWorld(int i, int j, Item item)
         {
-            states.addTile(i, j, true, true, BlockType.Trigger);
+            world.addTile(i, j, true, true, BlockType.Trigger);
             base.PlaceInWorld(i, j, item);
         }
 
@@ -73,14 +73,14 @@ namespace TICMod.Tiles
             if (isBottom)
             {
                 
-                states.data.TryGetValue((i, j), out var data);
-                states.data[(i, j)].enabled = !states.data[(i, j)].enabled;
+                world.data.TryGetValue((i, j), out var data);
+                world.data[(i, j)].enabled = !world.data[(i, j)].enabled;
                 short frameAdjustment = (short)(tile.frameX > 0 ? -18 : 18);
                 Main.tile[i, j].frameX += frameAdjustment;
                 Main.tile[i, j-1].frameX += frameAdjustment;
                 NetMessage.SendTileSquare(-1, i, j - 1, 2, TileChangeType.None);
-                string state = states.data[(i, j)].enabled ? "Disabled" : "Enabled";
-                states.SendChatMsg($"{state}", i, j);
+                string state = world.data[(i, j)].enabled ? "Disabled" : "Enabled";
+                world.SendChatMsg($"{state}", i, j);
             }
         }
 

@@ -18,7 +18,7 @@ namespace TICMod.UI
     {
         private UIText titleText;
         private UIBetterTextBox commandInput;
-        private TICStates states;
+        private TICWorld world;
         private UIPanel button;
         private UICheckbox outputCheckbox;
 
@@ -71,7 +71,7 @@ namespace TICMod.UI
             quitButton.OnClick += (evt, element) => { ModContent.GetInstance<TICMod>().ToggleCommandUI(i, j, uiType,true);};
             this.Append(quitButton);
 
-            states = ModContent.GetInstance<TICStates>();
+            world = ModContent.GetInstance<TICWorld>();
         }
 
         public void InitValues(int _i, int _j, BlockType _type)
@@ -83,8 +83,8 @@ namespace TICMod.UI
             OnInitialize();
 
             titleText.SetText($"{uiType} Block @ ({i},{j})");
-            commandInput.SetText(states.data[(i, j)].command);
-            outputCheckbox.Selected = states.data[(i, j)].chatOutput;
+            commandInput.SetText(world.data[(i, j)].command);
+            outputCheckbox.Selected = world.data[(i, j)].chatOutput;
 
             commandInput.OnTabPressed += () => ModContent.GetInstance<TICMod>().CycleCommandUIFocus(i, j);
 
@@ -111,15 +111,15 @@ namespace TICMod.UI
 
         private void SaveBtnPress()
         {
-            states.data[(i, j)].command = commandInput.currentString;
-            states.data[(i, j)].chatOutput = outputCheckbox.Selected;
+            world.data[(i, j)].command = commandInput.currentString;
+            world.data[(i, j)].chatOutput = outputCheckbox.Selected;
 
             if (uiType == BlockType.Trigger)
             {
                 CommandResponse resp = CommandHandler.Parse(commandInput.currentString, uiType, i:i, j:j);
                 if (resp.valid == false)
                 {
-                    states.data[(i, j)].trigger = null;
+                    world.data[(i, j)].trigger = null;
                 }
             }
         }

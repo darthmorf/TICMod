@@ -30,33 +30,34 @@ namespace TICMod.Items
             item.useStyle = 5;
             item.useAnimation = 5;
 
-
-
             UpdateState();
         }
 
         internal void UpdateState()
         {
-            if (enableTexture == null)
-                enableTexture = mod.GetTexture("Items/OutputToggleOn");
-            if (disableTexture == null)
-                disableTexture = mod.GetTexture("Items/OutputToggleOff");
+            if (Main.dedServ == false)
+            {
+                if (enableTexture == null)
+                    enableTexture = mod.GetTexture("Items/OutputToggleOn");
+                if (disableTexture == null)
+                    disableTexture = mod.GetTexture("Items/OutputToggleOff");
 
-            bool output = ModContent.GetInstance<TICStates>().tileOutput;
-            if (output)
-            {
-                Main.itemTexture[item.type] = disableTexture;
-            }
-            else
-            {
-                Main.itemTexture[item.type] = enableTexture;
+                bool output = ModContent.GetInstance<TICWorld>().tileOutput;
+                if (output)
+                {
+                    Main.itemTexture[item.type] = disableTexture;
+                }
+                else
+                {
+                    Main.itemTexture[item.type] = enableTexture;
+                }
             }
         }
 
         public override bool UseItem(Player player)
         {
-            bool output = ModContent.GetInstance<TICStates>().tileOutput;
-            ModContent.GetInstance<TICStates>().tileOutput = !output;
+            bool output = ModContent.GetInstance<TICWorld>().tileOutput;
+            ModContent.GetInstance<TICWorld>().tileOutput = !output;
 
             if (!output)
             {
@@ -74,7 +75,7 @@ namespace TICMod.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            bool output = ModContent.GetInstance<TICStates>().tileOutput;
+            bool output = ModContent.GetInstance<TICWorld>().tileOutput;
             string tt = "";
             if (output)
             {

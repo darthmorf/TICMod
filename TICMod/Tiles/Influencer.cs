@@ -15,7 +15,7 @@ namespace TICMod.Tiles
 {
 	public class Influencer : ModTile
     {
-        private TICStates states;
+        private TICWorld world;
         public override void SetDefaults()
 		{
             Main.tileSolid[Type] = false;
@@ -28,7 +28,7 @@ namespace TICMod.Tiles
             TileObjectData.newTile.CopyFrom(TileObjectData.StyleSwitch);
             TileObjectData.addTile(Type);
 
-            states = ModContent.GetInstance<TICStates>();
+            world = ModContent.GetInstance<TICWorld>();
         }
 
         public override bool HasSmartInteract() => true;
@@ -42,7 +42,7 @@ namespace TICMod.Tiles
         public override void HitWire(int i, int j)
         {
             Tile tile = Main.tile[i, j];
-            string command = states.data[(i, j)].command;
+            string command = world.data[(i, j)].command;
 
             CommandResponse resp = CommandHandler.Parse(command, BlockType.Influencer);
 
@@ -55,7 +55,7 @@ namespace TICMod.Tiles
                 command = $"Error, invalid syntax: {resp.response}";
             }
 
-            states.SendChatMsg(command, i, j);
+            world.SendChatMsg(command, i, j);
         }
 
         public override bool NewRightClick(int i, int j)
@@ -75,13 +75,13 @@ namespace TICMod.Tiles
 
         public override void PlaceInWorld(int i, int j, Item item)
         {
-            states.addTile(i, j, true, true, BlockType.Influencer);
+            world.addTile(i, j, true, true, BlockType.Influencer);
             base.PlaceInWorld(i, j, item);
         }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            states.data.Remove((i, j));
+            world.data.Remove((i, j));
             GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Influencer, true);
            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
