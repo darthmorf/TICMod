@@ -131,6 +131,18 @@ namespace TICMod
             index = index % commandUis.Count;
             commandUis[index].FocusText();
         }
+
+        public override void PreSaveAndQuit()
+        {
+            modUiState.RemoveAllChildren();
+            base.PreSaveAndQuit();
+        }
+
+        public override void Unload()
+        {
+            commandInterface = null;
+            coordInterface = null;
+        }
     }
 
 
