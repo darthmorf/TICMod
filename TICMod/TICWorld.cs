@@ -10,13 +10,14 @@ using Microsoft.Xna.Framework;
 using MonoMod.Utils;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
 namespace TICMod
 {
     // Handles all data that's tied to a specific Tile
-    internal class TICWorld : ModWorld
+    public class TICWorld : ModWorld
     {
         // One instance applies to one specific tile
         [Serializable]
@@ -44,18 +45,25 @@ namespace TICMod
         public Dictionary<(int x, int y), Data> data = new Dictionary<(int x, int y), Data>();
         internal bool tileOutput = true;
 
+        public override void Initialize()
+        {
+            data.Clear();
+        }
+
         // Load extra tile data saved with world
         public override void Load(TagCompound tag)
         {
-            IList<Point16> points = tag.GetList<Point16>("TICPoints");
+            IList<int> xpoints = tag.GetList<int>("TICXPoints");
+            IList<int> ypoints = tag.GetList<int>("TICYPoints");
             IList<bool> enabled = tag.GetList<bool>("TICEnabled");
             IList<bool> chatOutput = tag.GetList<bool>("TICChat");
             IList<string> commands = tag.GetList<string>("TICCommand");
             IList<string> types = tag.GetList<string>("TICType");
             tileOutput = tag.GetBool("TICTileOutput");
 
+            data.Clear();
             // Convert type string to enum
-            for (int i = 0; i < points.Count; i++)
+            for (int i = 0; i < types.Count; i++)
             {
                 BlockType type = BlockType.Influencer;
                 switch (types[i])
@@ -73,8 +81,8 @@ namespace TICMod
                         break;
                 }
 
-                data.Add((points[i].X, points[i].Y),
-                    new Data(points[i].X, points[i].Y, type, commands[i], enabled[i], chatOutput[i]));
+                data.Add((xpoints[i], ypoints[i]),
+                    new Data(xpoints[i], ypoints[i], type, commands[i], enabled[i], chatOutput[i]));
             }
 
             // Initialise trigger methods for existing trigger tiles
@@ -90,7 +98,8 @@ namespace TICMod
         // Save extra tile data saved with world
         public override TagCompound Save()
         {
-            IList<Point16> points = new List<Point16>();
+            IList<int> xpoints = new List<int>();
+            IList<int> ypoints = new List<int>();
             IList<bool> enabled = new List<bool>();
             IList<bool> chatOutput = new List<bool>();
             IList<string> commands = new List<string>();
@@ -98,7 +107,8 @@ namespace TICMod
 
             foreach (var tile in data)
             {
-                points.Add(new Point16(tile.Value.x, tile.Value.y));
+                xpoints.Add(tile.Value.x);
+                ypoints.Add(tile.Value.y);
                 enabled.Add(tile.Value.enabled);
                 chatOutput.Add(tile.Value.chatOutput);
                 commands.Add(tile.Value.command);
@@ -121,7 +131,8 @@ namespace TICMod
             }
 
             return new TagCompound {
-                {"TICPoints", points },
+                {"TICXPoints", xpoints },
+                {"TICYPoints", ypoints },
                 {"TICEnabled", enabled },
                 {"TICChat", chatOutput },
                 {"TICCommand", commands },
@@ -135,6 +146,30 @@ namespace TICMod
         {
             Data tile = new Data(i, j, type, enabled: enabled, chatOutput: chatEnabled);
             data.Add((i, j), tile);
+
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                ModContent.GetInstance<TICMod>().SendTICTileUpdatePacket(data[(i, j)]);
+            }
+        }
+
+        public void updateTile(int i, int j, BlockType uiType)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                ModContent.GetInstance<TICMod>().SendTICTileUpdatePacket(data[(i, j)]);
+            }
+            else
+            {
+                if (uiType == BlockType.Trigger)
+                {
+                    CommandResponse resp = CommandHandler.Parse(data[(i, j)].command, uiType, i: i, j: j);
+                    if (resp.valid == false)
+                    {
+                        data[(i, j)].trigger = null;
+                    }
+                }
+            }
         }
 
         public override void PostUpdate()

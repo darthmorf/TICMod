@@ -114,14 +114,7 @@ namespace TICMod.UI
             world.data[(i, j)].command = commandInput.currentString;
             world.data[(i, j)].chatOutput = outputCheckbox.Selected;
 
-            if (uiType == BlockType.Trigger)
-            {
-                CommandResponse resp = CommandHandler.Parse(commandInput.currentString, uiType, i:i, j:j);
-                if (resp.valid == false)
-                {
-                    world.data[(i, j)].trigger = null;
-                }
-            }
+            world.updateTile(i, j, uiType);
         }
 
         private void CommandInputChanged()
