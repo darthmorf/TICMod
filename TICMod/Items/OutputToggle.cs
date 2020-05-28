@@ -61,11 +61,11 @@ namespace TICMod.Items
 
             if (!output)
             {
-				Main.NewText($"Enabled TIC Tile Debug outputs", new Color(0, 127, 255));
+                Utils.ChatOutput($"Enabled TIC Tile Debug outputs", new Color(0, 127, 255));
             }
             else
             {
-                Main.NewText($"Disabled TIC Tile Debug outputs", new Color(0, 127, 255));
+                Utils.ChatOutput($"Disabled TIC Tile Debug outputs", new Color(0, 127, 255));
             }
 
             UpdateState();

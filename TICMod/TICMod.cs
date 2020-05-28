@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.UI;
@@ -172,6 +173,16 @@ namespace TICMod
                     else
                     {
                         data.Add((tile.x, tile.y), tile);
+                    }
+
+                    // Rebuild trigger methods as they cannot be transmitted
+                    if (tile.type == BlockType.Trigger)
+                    {
+                        CommandResponse resp = CommandHandler.Parse(tile.command, tile.type, i: tile.x, j: tile.y);
+                        if (resp.valid == false)
+                        {
+                            tile.trigger = null;
+                        }
                     }
 
                     NetMessage.SendData(MessageID.WorldData);

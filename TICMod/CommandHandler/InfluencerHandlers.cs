@@ -84,7 +84,7 @@ namespace TICMod
 
             if (execute)
             {
-                args[1].Split(new String[] { "\\n" }, StringSplitOptions.None).ToList().ForEach(line => Main.NewText(line, textColor));
+                args[1].Split(new String[] { "\\n" }, StringSplitOptions.None).ToList().ForEach(line => Utils.ChatOutput(line, textColor));
             }
 
             return resp;

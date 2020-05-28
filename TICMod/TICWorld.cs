@@ -28,7 +28,7 @@ namespace TICMod
             public bool enabled;
             public bool chatOutput;
             public string command;
-            public Action trigger;
+            [NonSerialized()]  public Action trigger;
             public BlockType type;
 
             public Data(int x, int y, BlockType type, string command = "", bool enabled = true, bool chatOutput = true)
@@ -155,20 +155,18 @@ namespace TICMod
 
         public void updateTile(int i, int j, BlockType uiType)
         {
+            if (uiType == BlockType.Trigger)
+            {
+                CommandResponse resp = CommandHandler.Parse(data[(i, j)].command, uiType, i: i, j: j);
+                if (resp.valid == false)
+                {
+                    data[(i, j)].trigger = null;
+                }
+            }
+
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
                 ModContent.GetInstance<TICMod>().SendTICTileUpdatePacket(data[(i, j)]);
-            }
-            else
-            {
-                if (uiType == BlockType.Trigger)
-                {
-                    CommandResponse resp = CommandHandler.Parse(data[(i, j)].command, uiType, i: i, j: j);
-                    if (resp.valid == false)
-                    {
-                        data[(i, j)].trigger = null;
-                    }
-                }
             }
         }
 
@@ -177,7 +175,10 @@ namespace TICMod
             // Execute any trigger methods
             foreach (var tile in data)
             {
-                tile.Value.trigger?.Invoke();
+                if (tile.Value.enabled)
+                {
+                    tile.Value.trigger?.Invoke();
+                }
             }
         }
 
@@ -191,7 +192,7 @@ namespace TICMod
 
             if (showOutput && tileOutput)
             {
-                Main.NewText($"[Trigger@{x},{y}] {text}", Color.Gray);
+                Utils.ChatOutput($"[Trigger@{x},{y}] {text}", Color.Gray);
             }
         }
 
@@ -201,6 +202,7 @@ namespace TICMod
             {
                 byte[] dataBytes;
                 BinaryFormatter bf = new BinaryFormatter();
+                
                 using (var ms = new MemoryStream())
                 {
                     bf.Serialize(ms, data);
@@ -225,6 +227,19 @@ namespace TICMod
                     memStream.Write(byteData, 0, byteData.Length);
                     memStream.Seek(0, SeekOrigin.Begin);
                     data = (Dictionary < (int x, int y), Data > )binForm.Deserialize(memStream);
+                }
+
+                foreach (var tile in data)
+                {
+                    // Rebuild trigger methods as they cannot be transmitted
+                    if (tile.Value.type == BlockType.Trigger)
+                    {
+                        CommandResponse resp = CommandHandler.Parse(tile.Value.command, tile.Value.type, i: tile.Value.x, j: tile.Value.y);
+                        if (resp.valid == false)
+                        {
+                            tile.Value.trigger = null;
+                        }
+                    }
                 }
             }
             catch (Exception e)
