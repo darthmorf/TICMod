@@ -46,7 +46,11 @@ namespace TICMod
                     return (players, resp);
                 }
 
-                players.Add(ModContent.GetInstance<TICMod>().playerDataStore.GetItem(args[1]));
+                Player player = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(args[1]);
+                if (player != null)
+                {
+                    players.Add(player);
+                }
             }
             else if (args[0] == "@a")
             {

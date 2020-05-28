@@ -21,10 +21,7 @@ namespace TICMod
                 Add(storename, null);
             }
             
-            if (this[storename] == null)
-            {
-                this[storename] = item;
-            }
+            this[storename] = item;
         }
 
         public void RemoveItem(string storename)
@@ -39,7 +36,7 @@ namespace TICMod
 
         public Player GetItem(string storename)
         {
-            Player player = new Player();
+            Player player = null;
             if (this.ContainsKey(storename))
             {
                 player = this[storename];

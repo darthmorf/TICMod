@@ -75,8 +75,8 @@ namespace TICMod
                         else if (!player.dead && triggeredPlayers.Contains(player))
                         {
                             triggeredPlayers.Remove(player);
-                            if (mod.playerDataStore.ContainsValue(player))
-                                mod.playerDataStore.RemoveItem(storeName);
+                            //if (mod.playerDataStore.ContainsValue(player))
+                            //    mod.playerDataStore.RemoveItem(storeName);
                         }
                     }
                 };
