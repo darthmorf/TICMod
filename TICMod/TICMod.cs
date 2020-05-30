@@ -81,6 +81,8 @@ namespace TICMod
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
             int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+            int nameIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: MP Player Names"));
+            int inventoryIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
             if (mouseTextIndex != -1)
             {
                 layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
@@ -106,8 +108,11 @@ namespace TICMod
                     return true;
                 },
                 InterfaceScaleType.UI));
+            }
 
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+            if (nameIndex != -1)
+            {
+                layers.Insert(nameIndex, new LegacyGameInterfaceLayer(
                 "TICMod: TICTextDisplay",
                 delegate
                 {

@@ -9,17 +9,32 @@ using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
+using Terraria.ModLoader.UI;
 using Terraria.UI;
 
 namespace TICMod.UI
 {
-    class UITextDisplayer : UIState
-    {
-        internal Queue<DisplayText> toRemove = new Queue<DisplayText>();
+    class UITextDisplayer : UIStateReverse
+    { 
 
-        public void AddText(string text, Color color, TimeSpan displayTime)
+        public void AddText(string text, Color color, TimeSpan displayTime, int xPos, int yPos)
         {
-            this.Append(new DisplayText(text, displayTime, 20, 20));
+            this.Append(new DisplayText(text, displayTime, xPos, yPos, color));
+        }
+
+        protected override void DrawChildren(SpriteBatch spriteBatch)
+        {
+            DisplayText[] texts = Elements.OfType<DisplayText>().ToArray();
+
+            foreach (var text in texts)
+            {
+                if (text.delete)
+                {
+                    Elements.Remove(text);
+                }
+            }
+
+            base.DrawChildren(spriteBatch);
         }
     }
 
@@ -28,22 +43,26 @@ namespace TICMod.UI
         private TimeSpan lifespan;
         private DateTime initTime;
 
-        internal DisplayText(string text, TimeSpan lifespan, int xPos, int yPos,  float textScale=1, bool large=false) : base(text, textScale, large)
+        public bool delete = false;
+
+        internal DisplayText(string text, TimeSpan lifespan, int xPos, int yPos, Color color, float textScale=1, bool large=false) : base(text, textScale, large)
         {
             this.lifespan = lifespan;
             initTime = DateTime.Now;
             Top.Pixels = yPos;
             Left.Pixels = xPos;
+            TextColor = color;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            TimeSpan elapsedTime = DateTime.Now - initTime;
+            TimeSpan elapsedTime = DateTime.Now - initTime; // not effected by speeding up time ingame
             if (elapsedTime > lifespan)
             {
-                Parent.Remove();
-                Parent.RecalculateChildren();
+                delete = true;
             }
+
+            base.Draw(spriteBatch);
         }
     }
 }
