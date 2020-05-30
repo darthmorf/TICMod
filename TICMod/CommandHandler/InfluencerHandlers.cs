@@ -32,6 +32,10 @@ namespace TICMod
                 case "giveitem":
                     resp = InfluencerGiveItem(commandArgs, resp, execute);
                     break;
+
+                case "forcegiveitem":
+                    resp  = InfluencerForceGiveItem(commandArgs, resp, execute);
+                    break;
             }
 
             return resp;
@@ -289,8 +293,82 @@ namespace TICMod
             {
                 if (execute)
                 {
-                    player.PutItemInInventory(itemId);
                     player.QuickSpawnItem(itemId, itemCount);
+                }
+
+                if (player.name != "")
+                {
+                    playernames += $"{player.name}, ";
+                }
+            }
+
+            if (playernames != "")
+            {
+                playernames = playernames.Substring(0, playernames.LastIndexOf(", "));
+            }
+
+            resp.success = true;
+            resp.response = $"Gave item id {itemId} x{itemCount} to {playernames}.";
+
+            return resp;
+        }
+
+        public static CommandResponse InfluencerForceGiveItem(List<String> commandArgs, CommandResponse resp, bool execute)
+        {
+            List<Player> players = new List<Player>();
+            int itemId;
+            bool validId;
+            int itemCount;
+            bool validCount;
+
+            if (commandArgs.Count > 1)
+            {
+                var args = commandArgs[1].Split(new[] { ' ' }).ToList();
+                if (args.Count < 3 || args[2] == "")
+                {
+                    resp.response = "Command requires item ID, item count and player target.";
+                    return resp;
+                }
+
+                validId = int.TryParse(args[0], NumberStyles.Integer, CultureInfo.CurrentCulture, out itemId);
+                if (!validId || itemId < 1 || itemId > Main.item.Length) // TODO: Allow for negative item IDs
+                {
+                    resp.response = $"{args[0]} is not a valid item ID.";
+                    return resp;
+                }
+
+                validCount = int.TryParse(args[1], NumberStyles.Integer, CultureInfo.CurrentCulture, out itemCount);
+                if (!validCount || itemCount < 1)
+                {
+                    resp.response = $"{args[1]} is not a valid item count.";
+                    return resp;
+                }
+
+                args.RemoveRange(0, 2);
+                var ret = ParsePlayerTarget(args, resp);
+                players = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+            else
+            {
+                resp.response = $"Command requires item ID, item count and player target.";
+                return resp;
+            }
+
+            string playernames = "";
+            foreach (var player in players)
+            {
+                if (execute)
+                {
+                    for(int i = 0; i < itemCount; i++)
+                    {
+                        player.PutItemInInventory(itemId);
+                    }
                 }
 
                 if (player.name != "")
