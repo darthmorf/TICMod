@@ -26,6 +26,9 @@ namespace TICMod
         internal UserInterface coordInterface;
         internal UICoordDisplay coordDisplay;
 
+        internal UserInterface textDisplayInterface;
+        internal UITextDisplayer textDisplayer;
+
         internal PlayerDataStore playerDataStore;
 
         public override void Load()
@@ -45,6 +48,11 @@ namespace TICMod
                 coordDisplay = new UICoordDisplay();
                 coordDisplay.Activate();
                 coordInterface?.SetState(coordDisplay);
+
+                textDisplayInterface = new UserInterface();
+                textDisplayer = new UITextDisplayer();
+                textDisplayer.Activate();
+                textDisplayInterface?.SetState(textDisplayer);
             }
             base.Load();
         }
@@ -62,6 +70,11 @@ namespace TICMod
             if (coordInterface?.CurrentState != null)
             {
                 coordInterface.Update(gameTime);
+            }
+
+            if (textDisplayInterface?.CurrentState != null)
+            {
+                textDisplayInterface.Update(gameTime);
             }
         }
 
@@ -89,6 +102,18 @@ namespace TICMod
                     if (_lastUpdateUiGameTime != null && commandInterface?.CurrentState != null)
                     {
                         commandInterface.Draw(Terraria.Main.spriteBatch, _lastUpdateUiGameTime);
+                    }
+                    return true;
+                },
+                InterfaceScaleType.UI));
+
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                "TICMod: TICTextDisplay",
+                delegate
+                {
+                    if (_lastUpdateUiGameTime != null && textDisplayInterface?.CurrentState != null)
+                    {
+                        textDisplayInterface.Draw(Terraria.Main.spriteBatch, _lastUpdateUiGameTime);
                     }
                     return true;
                 },

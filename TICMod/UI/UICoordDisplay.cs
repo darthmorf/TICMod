@@ -26,7 +26,7 @@ namespace TICMod.UI
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (!Main.player[0].GetModPlayer<TICPlayer>().CoordDisplay)
+            if (!Main.player[Main.myPlayer].GetModPlayer<TICPlayer>().CoordDisplay)
             {
                 return;
             }

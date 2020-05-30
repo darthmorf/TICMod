@@ -36,6 +36,10 @@ namespace TICMod
                 case "forcegiveitem":
                     resp  = InfluencerForceGiveItem(commandArgs, resp, execute);
                     break;
+
+                case "drawtext":
+                    resp = InfluencerDrawText(commandArgs, resp, execute);
+                    break;
             }
 
             return resp;
@@ -313,7 +317,7 @@ namespace TICMod
             return resp;
         }
 
-        public static CommandResponse InfluencerForceGiveItem(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerForceGiveItem(List<String> commandArgs, CommandResponse resp, bool execute)
         {
             List<Player> players = new List<Player>();
             int itemId;
@@ -384,6 +388,18 @@ namespace TICMod
 
             resp.success = true;
             resp.response = $"Gave item id {itemId} x{itemCount} to {playernames}.";
+
+            return resp;
+        }
+
+        private static CommandResponse InfluencerDrawText(List<String> commandArgs, CommandResponse resp, bool execute)
+        {
+
+            if (execute)
+            {
+                ModContent.GetInstance<TICMod>().textDisplayer.AddText("Hello World!", new Color(255, 255, 255), TimeSpan.FromSeconds(5));
+
+            }
 
             return resp;
         }
