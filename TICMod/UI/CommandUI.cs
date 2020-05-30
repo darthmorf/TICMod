@@ -67,7 +67,7 @@ namespace TICMod.UI
 
             UIQuitButton quitButton = new UIQuitButton("Close Menu");
             quitButton.Top.Set(-10,0f);
-            quitButton.Left.Set(920,0f);
+            quitButton.Left.Set(0,0.98f);
             quitButton.OnClick += (evt, element) => { ModContent.GetInstance<TICMod>().ToggleCommandUI(i, j, uiType,true);};
             this.Append(quitButton);
 
