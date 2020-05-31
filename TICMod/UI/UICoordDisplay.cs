@@ -34,6 +34,7 @@ namespace TICMod.UI
             text.SetText($"({(int)Main.MouseWorld.X/16}, {(int)Main.MouseWorld.Y/16})");
             text.Left.Pixels = Main.mouseX;
             text.Top.Pixels = Main.mouseY - 20;
+            Recalculate();
 
             base.Draw(spriteBatch);
         }

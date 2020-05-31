@@ -167,6 +167,7 @@ namespace TICMod
         public override void PreSaveAndQuit()
         {
             modUiState.RemoveAllChildren();
+            textDisplayer.RemoveAllChildren();
             base.PreSaveAndQuit();
         }
 
@@ -174,6 +175,7 @@ namespace TICMod
         {
             commandInterface = null;
             coordInterface = null;
+            textDisplayInterface = null;
         }
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)

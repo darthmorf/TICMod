@@ -17,9 +17,9 @@ namespace TICMod.UI
     class UITextDisplayer : UIStateReverse
     { 
 
-        public void AddText(string text, Color color, TimeSpan displayTime, int xPos, int yPos)
+        public void AddText(string text, Color color, int displayTime, int xPos, int yPos, bool tileAttach)
         {
-            this.Append(new DisplayText(text, displayTime, xPos, yPos, color));
+            this.Append(new DisplayText(text, displayTime, xPos, yPos, color, tileAttach));
         }
 
         protected override void DrawChildren(SpriteBatch spriteBatch)
@@ -40,14 +40,19 @@ namespace TICMod.UI
 
     class DisplayText : UIText
     {
-        private TimeSpan lifespan;
+        private int lifespan;
         private DateTime initTime;
+        private bool tileAttach;
+        private int xPos, yPos;
 
         public bool delete = false;
 
-        internal DisplayText(string text, TimeSpan lifespan, int xPos, int yPos, Color color, float textScale=1, bool large=false) : base(text, textScale, large)
+        internal DisplayText(string text, int lifespan, int xPos, int yPos, Color color, bool tileAttach, float textScale=1, bool large=false) : base(text, textScale, large)
         {
             this.lifespan = lifespan;
+            this.tileAttach = tileAttach;
+            this.xPos = xPos;
+            this.yPos = yPos;
             initTime = DateTime.Now;
             Top.Pixels = yPos;
             Left.Pixels = xPos;
@@ -56,15 +61,22 @@ namespace TICMod.UI
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Vector2 pos = new Vector2(4560*16, 480*16);
-            Vector2 screenPos = new Vector2(Main.screenPosition.X, Main.screenPosition.Y);
-            pos = pos - screenPos;
-            
-            Top.Pixels = pos.Y;
-            Left.Pixels = pos.X;
+            if (tileAttach)
+            {
+                Vector2 pos = new Vector2(xPos, yPos);
+                Vector2 screenPos = new Vector2(Main.screenPosition.X, Main.screenPosition.Y);
+                pos = pos - screenPos;
 
-            TimeSpan elapsedTime = DateTime.Now - initTime; // not effected by speeding up time ingame
-            if (elapsedTime > lifespan)
+                Top.Pixels = pos.Y;
+                Left.Pixels = pos.X;
+
+                Recalculate();
+            }
+
+
+            TimeSpan elapsedTime = DateTime.Now - initTime;
+            TimeSpan lifespan_ = TimeSpan.FromSeconds(lifespan);
+            if (elapsedTime > lifespan_ && lifespan > 0)
             {
                 delete = true;
             }

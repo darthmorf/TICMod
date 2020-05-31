@@ -169,6 +169,19 @@ namespace TICMod
             resp.valid = true;
             return (pos.ToArray(), resp);
         }
+
+        public static (int, CommandResponse) ParseInt(string args, CommandResponse resp)
+        {
+            bool success = int.TryParse(args, NumberStyles.Integer, CultureInfo.CurrentCulture, out int posVal);
+            if (!success)
+            {
+                resp.response = $"{args} is not a valid integer";
+                return (-1, resp);
+            }
+
+            resp.valid = true;
+            return (posVal, resp);
+        }
     }
 
     

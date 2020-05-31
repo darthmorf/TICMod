@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -359,11 +359,54 @@ namespace TICMod
 
         private static CommandResponse InfluencerDrawText(List<String> commandArgs, CommandResponse resp, bool execute)
         {
+            if (commandArgs.Count != 2)
+            {
+                resp.response = $"Command must contain RGB code, Coodinate, Duration and a string to print.";
+                return resp;
+            }
+
+            var args = commandArgs[1].Split(new[] { ' ' }, 4).ToList();
+            if (args.Count != 4)
+            {
+                resp.response = $"Command must contain RGB code, Coodinate, Duration and a string to print.";
+                return resp;
+            }
+
+            var ret1 = ParseColor(args[0], resp);
+            Color textColor = ret1.Item1;
+            resp = ret1.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            resp.valid = false;
+            var ret2 = ParseCoordinate(args[1], resp);
+            int[] pos = ret2.Item1;
+            resp = ret2.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            resp.valid = false;
+            var ret3 = ParseInt(args[2], resp);
+            int timeout = ret3.Item1;
+            resp = ret3.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
 
             if (execute)
             {
-                ModContent.GetInstance<TICMod>().textDisplayer.AddText("Hello World!", new Color(255, 255, 255), TimeSpan.FromSeconds(), 960, 100);
-
+                ModContent.GetInstance<TICMod>().textDisplayer.AddText(args[3], textColor, timeout, pos[0], pos[1], true);
+                string timeoutText = (timeout < 1) ? "until world restart." : $"for {timeout} seconds.";
+                resp.response = $"Displaying '{args[3]}' as {textColor} at ({pos[0]}, {pos[1]}) {timeoutText}";
+                resp.success = true;
             }
 
             return resp;
