@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -50,37 +50,25 @@ namespace TICMod
         {
             if (commandArgs.Count != 2)
             {
-                resp.response =
-                    $"Command must contain both an RGB code and a string to print.";
+                resp.response = $"Command must contain both an RGB code and a string to print.";
                 return resp;
             }
+
             var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
             if (args.Count != 2)
             {
-                resp.response =
-                    $"Command must contain both an RGB code and a string to print.";
-                return resp;
-            }
-            var rgbStr = args[0].Split(new[] { ',' }, 3);
-            List<int> rgb = new List<int>(3);
-            foreach (var str in rgbStr)
-            {
-                bool success = int.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out int rgbVal);
-                if (!success)
-                {
-                    break;
-                }
-                rgb.Add(rgbVal);
-            }
-
-            if (rgb.Count != 3)
-            {
-                resp.response =
-                    $"{args[0]} is not a valid RGB string. Should be in the format r,g,b each in the range 0-255.";
+                resp.response = $"Command must contain both an RGB code and a string to print.";
                 return resp;
             }
 
-            Color textColor = new Color(rgb[0], rgb[1], rgb[2]);
+            var ret = ParseColor(args[0], resp);
+            Color textColor = ret.Item1;
+            resp = ret.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
 
             if (args.Count < 2)
             {
@@ -113,26 +101,15 @@ namespace TICMod
                     $"Command must contain both a coordinate and an NPC name.";
                 return resp;
             }
-            var posStr = args[0].Split(new[] { ',' }, 2);
-            List<int> pos = new List<int>(2);
-            foreach (var str in posStr)
+
+            var ret = ParseCoordinate(args[0], resp);
+            int[] pos = ret.Item1;
+            resp = ret.Item2;
+
+            if (!resp.valid)
             {
-                bool success = int.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out int posVal);
-                if (!success)
-                {
-                    break;
-                }
-                pos.Add(posVal);
-            }
-            if (pos.Count != 2)
-            {
-                resp.response =
-                    $"{args[0]} is not a valid position string.";
                 return resp;
             }
-
-            pos[0] *= 16;
-            pos[1] *= 16;
 
             string npcName = args[1].ToLower();
 
@@ -198,26 +175,14 @@ namespace TICMod
                     $"Command must contain both a coordinate and an NPC ID.";
                 return resp;
             }
-            var posStr = args[0].Split(new[] { ',' }, 2);
-            List<int> pos = new List<int>(2);
-            foreach (var str in posStr)
+            var ret = ParseCoordinate(args[0], resp);
+            int[] pos = ret.Item1;
+            resp = ret.Item2;
+
+            if (!resp.valid)
             {
-                bool success = int.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out int posVal);
-                if (!success)
-                {
-                    break;
-                }
-                pos.Add(posVal);
-            }
-            if (pos.Count != 2)
-            {
-                resp.response =
-                    $"{args[0]} is not a valid position string.";
                 return resp;
             }
-
-            pos[0] *= 16;
-            pos[1] *= 16;
 
             int npcID;
             bool isId = int.TryParse(args[1], NumberStyles.Integer, CultureInfo.CurrentCulture, out npcID);

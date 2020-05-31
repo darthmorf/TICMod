@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -111,7 +113,65 @@ namespace TICMod
             resp.valid = true;
             return (players, resp);
         }
+
+        public static (Color, CommandResponse) ParseColor(string args, CommandResponse resp)
+        {
+            Color color = new Color();
+            
+            var rgbStr = args.Split(new[] { ',' }, 3);
+            List<int> rgb = new List<int>(3);
+            foreach (var str in rgbStr)
+            {
+                bool success = int.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out int rgbVal);
+                if (!success)
+                {
+                    break;
+                }
+                rgb.Add(rgbVal);
+            }
+
+            if (rgb.Count != 3)
+            {
+                resp.response =
+                    $"{args[0]} is not a valid RGB string. Should be in the format r,g,b each in the range 0-255.";
+                return (color, resp);
+            }
+
+            color = new Color(rgb[0], rgb[1], rgb[2]);
+
+            resp.valid = true;
+            return (color, resp);
+        }
+
+        public static (int[], CommandResponse) ParseCoordinate(string args, CommandResponse resp)
+        {
+            var posStr = args.Split(new[] { ',' }, 2);
+            List<int> pos = new List<int>(2);
+            foreach (var str in posStr)
+            {
+                bool success = int.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out int posVal);
+                if (!success)
+                {
+                    break;
+                }
+                pos.Add(posVal);
+            }
+            if (pos.Count != 2)
+            {
+                resp.response =
+                    $"{args[0]} is not a valid position string.";
+                return (pos.ToArray(), resp);
+            }
+
+            pos[0] *= 16;
+            pos[1] *= 16;
+
+            resp.valid = true;
+            return (pos.ToArray(), resp);
+        }
     }
+
+    
 
     public class CommandResponse
     {
