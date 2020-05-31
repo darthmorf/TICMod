@@ -361,14 +361,14 @@ namespace TICMod
         {
             if (commandArgs.Count != 2)
             {
-                resp.response = $"Command must contain RGB code, Coodinate, Duration and a string to print.";
+                resp.response = $"Command must contain RGB code, Coordinate, Duration and a string to print.";
                 return resp;
             }
 
             var args = commandArgs[1].Split(new[] { ' ' }, 4).ToList();
             if (args.Count != 4)
             {
-                resp.response = $"Command must contain RGB code, Coodinate, Duration and a string to print.";
+                resp.response = $"Command must contain RGB code, Coordinate, Duration and a string to print.";
                 return resp;
             }
 
@@ -403,7 +403,16 @@ namespace TICMod
 
             if (execute)
             {
-                ModContent.GetInstance<TICMod>().textDisplayer.AddText(args[3], textColor, timeout, pos[0], pos[1], true);
+                TICMod mod = ModContent.GetInstance<TICMod>();
+                if (Main.dedServ)
+                {
+                    mod.SendTextDisplayPacket(args[3], textColor, timeout, pos[0], pos[1], true);
+                }
+                else
+                {
+                    ModContent.GetInstance<TICMod>().textDisplayer.AddText(args[3], textColor, timeout, pos[0], pos[1], true);
+                }
+                
                 string timeoutText = (timeout < 1) ? "until world restart." : $"for {timeout} seconds.";
                 resp.response = $"Displaying '{args[3]}' as {textColor} at ({pos[0]}, {pos[1]}) {timeoutText}";
                 resp.success = true;

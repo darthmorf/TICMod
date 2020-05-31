@@ -20,7 +20,6 @@ namespace TICMod.UI
         {
             base.OnInitialize();
             text = new UIText("(-1, -1)");
-
             this.Append(text);
         }
 

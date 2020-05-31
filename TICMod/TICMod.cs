@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Xna.Framework;
+using MonoMod.Utils;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -221,9 +222,26 @@ namespace TICMod
                     // TODO: Handle triggers
                 }
             }
+            else
+            {
+                byte msgType = reader.ReadByte();
+                if (msgType == 1)
+                {
+                    string message = reader.ReadNullTerminatedString();
+                    int r = reader.ReadVarInt();
+                    int g = reader.ReadVarInt();
+                    int b = reader.ReadVarInt();
+                    int timeout = reader.ReadVarInt();
+                    int xPos = reader.ReadVarInt();
+                    int yPos = reader.ReadVarInt();
+                    bool tileAttach = reader.ReadBoolean();
+
+                    ModContent.GetInstance<TICMod>().textDisplayer.AddText(message, new Color(r,g,b), timeout, xPos, yPos, tileAttach);
+                }
+            }
         }
 
-        public void SendTICTileUpdatePacket(TICWorld.Data data)
+        public void SendTICTileUpdatePacket(TICWorld.Data data) // Client -> Server
         {
             ModPacket packet = GetPacket();
             packet.Write((byte)0);
@@ -237,6 +255,21 @@ namespace TICMod
 
             packet.Write(BitConverter.GetBytes((Int32)dataBytes.Length));
             packet.Write(dataBytes);
+            packet.Send();
+        }
+
+        public void SendTextDisplayPacket(string message, Color color, int timeout, int xPos, int yPos, bool tileAttach) // Server -> Client
+        {
+            ModPacket packet = GetPacket();
+            packet.Write((byte)1);
+            packet.WriteNullTerminatedString(message);
+            packet.WriteVarInt(color.R);
+            packet.WriteVarInt(color.G);
+            packet.WriteVarInt(color.B);
+            packet.WriteVarInt(timeout);
+            packet.WriteVarInt(xPos);
+            packet.WriteVarInt(yPos);
+            packet.Write(tileAttach);
             packet.Send();
         }
     }
