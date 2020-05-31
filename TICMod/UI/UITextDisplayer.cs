@@ -56,6 +56,13 @@ namespace TICMod.UI
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            Vector2 pos = new Vector2(4560*16, 480*16);
+            Vector2 screenPos = new Vector2(Main.screenPosition.X, Main.screenPosition.Y);
+            pos = pos - screenPos;
+            
+            Top.Pixels = pos.Y;
+            Left.Pixels = pos.X;
+
             TimeSpan elapsedTime = DateTime.Now - initTime; // not effected by speeding up time ingame
             if (elapsedTime > lifespan)
             {

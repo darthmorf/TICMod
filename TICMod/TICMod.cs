@@ -122,7 +122,7 @@ namespace TICMod
                     }
                     return true;
                 },
-                InterfaceScaleType.UI));
+                InterfaceScaleType.Game));
             }
         }
 

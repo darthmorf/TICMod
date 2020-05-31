@@ -397,7 +397,7 @@ namespace TICMod
 
             if (execute)
             {
-                ModContent.GetInstance<TICMod>().textDisplayer.AddText("Hello World!", new Color(255, 255, 255), TimeSpan.FromSeconds(5), 960, 100);
+                ModContent.GetInstance<TICMod>().textDisplayer.AddText("Hello World!", new Color(255, 255, 255), TimeSpan.FromSeconds(), 960, 100);
 
             }
 
