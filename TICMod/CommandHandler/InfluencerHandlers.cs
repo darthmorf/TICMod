@@ -37,8 +37,12 @@ namespace TICMod
                     resp  = InfluencerForceGiveItem(commandArgs, resp, execute);
                     break;
 
-                case "drawtext":
-                    resp = InfluencerDrawText(commandArgs, resp, execute);
+                case "drawworldtext":
+                    resp = InfluencerDrawWorldText(commandArgs, resp, execute);
+                    break;
+
+                case "drawuitext":
+                    resp = InfluencerDrawUIText(commandArgs, resp, execute);
                     break;
             }
 
@@ -357,7 +361,7 @@ namespace TICMod
             return resp;
         }
 
-        private static CommandResponse InfluencerDrawText(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerDrawWorldText(List<String> commandArgs, CommandResponse resp, bool execute)
         {
             if (commandArgs.Count != 2)
             {
@@ -415,6 +419,80 @@ namespace TICMod
                 
                 string timeoutText = (timeout < 1) ? "until world restart." : $"for {timeout} seconds.";
                 resp.response = $"Displaying '{args[3]}' as {textColor} at ({pos[0]}, {pos[1]}) {timeoutText}";
+                resp.success = true;
+            }
+
+            return resp;
+        }
+
+        private static CommandResponse InfluencerDrawUIText(List<String> commandArgs, CommandResponse resp, bool execute)
+        {
+            if (commandArgs.Count != 2)
+            {
+                resp.response = $"Command must contain RGB code, Width %, Height %, Duration and a string to print.";
+                return resp;
+            }
+
+            var args = commandArgs[1].Split(new[] { ' ' }, 5).ToList();
+            if (args.Count != 5)
+            {
+                resp.response = $"Command must contain RGB code, Width %, Height %, Duration and a string to print.";
+                return resp;
+            }
+
+            var ret1 = ParseColor(args[0], resp);
+            Color textColor = ret1.Item1;
+            resp = ret1.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            resp.valid = false;
+            var ret2 = ParseInt(args[1], resp);
+            int width = ret2.Item1;
+            resp = ret2.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            resp.valid = false;
+            var ret3 = ParseInt(args[2], resp);
+            int height = ret3.Item1;
+            resp = ret3.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            resp.valid = false;
+            var ret4 = ParseInt(args[3], resp);
+            int timeout = ret4.Item1;
+            resp = ret4.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            if (execute)
+            {
+                TICMod mod = ModContent.GetInstance<TICMod>();
+                if (Main.dedServ)
+                {
+                    mod.SendTextDisplayPacket(args[4], textColor, timeout, width, height, false);
+                }
+                else
+                {
+                    ModContent.GetInstance<TICMod>().textDisplayer.AddText(args[4], textColor, timeout, width, height, false);
+                }
+
+                string timeoutText = (timeout < 1) ? "until world restart." : $"for {timeout} seconds.";
+                resp.response = $"Displaying '{args[3]}' as {textColor} at ({width}%, {height}%) {timeoutText}";
                 resp.success = true;
             }
 

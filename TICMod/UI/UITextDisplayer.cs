@@ -53,9 +53,17 @@ namespace TICMod.UI
             this.tileAttach = tileAttach;
             this.xPos = xPos;
             this.yPos = yPos;
+            if (tileAttach)
+            {
+                Top.Pixels = yPos;
+                Left.Pixels = xPos;
+            }
+            else
+            {
+                Top.Precent = (float)yPos / 100;
+                Left.Precent = (float)xPos / 100;
+            }
             initTime = DateTime.Now;
-            Top.Pixels = yPos;
-            Left.Pixels = xPos;
             TextColor = color;
         }
 

@@ -182,6 +182,19 @@ namespace TICMod
             resp.valid = true;
             return (posVal, resp);
         }
+
+        public static (double, CommandResponse) ParseDouble(string args, CommandResponse resp)
+        {
+            bool success = double.TryParse(args, NumberStyles.Float, CultureInfo.CurrentCulture, out double posVal);
+            if (!success)
+            {
+                resp.response = $"{args} is not a valid decimal";
+                return (-1, resp);
+            }
+
+            resp.valid = true;
+            return (posVal, resp);
+        }
     }
 
     
