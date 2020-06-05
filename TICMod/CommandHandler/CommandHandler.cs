@@ -195,6 +195,26 @@ namespace TICMod
             resp.valid = true;
             return (posVal, resp);
         }
+
+        public static string GetPlayerNames(List<Player> players)
+        {
+            string playernames = "";
+
+            foreach (var player in players)
+            {
+                if (player.name != "")
+                {
+                    playernames += $"{player.name}, ";
+                }
+            }
+
+            if (playernames != "")
+            {
+                playernames = playernames.Substring(0, playernames.LastIndexOf(", "));
+            }
+
+            return playernames;
+        }
     }
 
     

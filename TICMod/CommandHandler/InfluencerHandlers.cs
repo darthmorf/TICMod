@@ -45,6 +45,10 @@ namespace TICMod
                 case "drawuitext":
                     resp = InfluencerDrawUIText(commandArgs, resp, execute);
                     break;
+
+                case "respawn":
+                    resp = InfluencerRespawnPlayer(commandArgs, resp, execute);
+                    break;
             }
 
             return resp;
@@ -262,24 +266,15 @@ namespace TICMod
                 return resp;
             }
 
-            string playernames = "";
-            foreach (var player in players)
+            if (execute)
             {
-                if (execute)
+                foreach (var player in players)
                 {
                     player.QuickSpawnItem(itemId, itemCount);
                 }
-
-                if (player.name != "")
-                {
-                    playernames += $"{player.name}, ";
-                }
             }
 
-            if (playernames != "")
-            {
-                playernames = playernames.Substring(0, playernames.LastIndexOf(", "));
-            }
+            string playernames = GetPlayerNames(players);
 
             resp.success = true;
             resp.response = $"Gave item id {itemId} x{itemCount} to {playernames}.";
@@ -334,27 +329,18 @@ namespace TICMod
                 return resp;
             }
 
-            string playernames = "";
-            foreach (var player in players)
+            if (execute)
             {
-                if (execute)
+                foreach (var player in players)
                 {
-                    for(int i = 0; i < itemCount; i++)
+                    for (int i = 0; i < itemCount; i++)
                     {
                         player.PutItemInInventory(itemId);
                     }
                 }
-
-                if (player.name != "")
-                {
-                    playernames += $"{player.name}, ";
-                }
             }
 
-            if (playernames != "")
-            {
-                playernames = playernames.Substring(0, playernames.LastIndexOf(", "));
-            }
+            string playernames = GetPlayerNames(players);
 
             resp.success = true;
             resp.response = $"Gave item id {itemId} x{itemCount} to {playernames}.";
@@ -496,6 +482,39 @@ namespace TICMod
                 resp.response = $"Displaying '{args[3]}' as {textColor} at ({width}%, {height}%) {timeoutText}";
                 resp.success = true;
             }
+
+            return resp;
+        }
+
+        private static CommandResponse InfluencerRespawnPlayer(List<string> commandArgs, CommandResponse resp, bool execute)
+        {
+            if (commandArgs.Count != 2)
+            {
+                resp.response = "Respawn requires player target parameter";
+                return resp;
+            }
+
+            var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
+            var ret = ParsePlayerTarget(args, resp);
+            List<Player> players = ret.Item1;
+            resp = ret.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            if (execute)
+            {
+                foreach (var player in players)
+                {
+                    player.respawnTimer = 0;
+                }
+            }
+
+            string playernames = GetPlayerNames(players);
+            resp.response = $"Respawned players {playernames}.";
+            resp.success = true;
 
             return resp;
         }
