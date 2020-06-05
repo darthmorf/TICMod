@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -48,6 +49,10 @@ namespace TICMod
 
                 case "respawn":
                     resp = InfluencerRespawnPlayer(commandArgs, resp, execute);
+                    break;
+
+                case "kill":
+                    resp = InfluencerKillPlayer(commandArgs, resp, execute);
                     break;
             }
 
@@ -514,6 +519,54 @@ namespace TICMod
 
             string playernames = GetPlayerNames(players);
             resp.response = $"Respawned players {playernames}.";
+            resp.success = true;
+
+            return resp;
+        }
+
+        private static CommandResponse InfluencerKillPlayer(List<string> commandArgs, CommandResponse resp, bool execute)
+        {
+            if (commandArgs.Count != 2)
+            {
+                resp.response = "Kill Player requires player target and reason parameters";
+                return resp;
+            }
+
+            var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
+            var ret = ParsePlayerTarget(args, resp);
+            List<Player> players = ret.Item1;
+            resp = ret.Item2;
+            int argCount = ret.Item3;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            string reason = "";
+            if (args.Count == 3 && argCount == 0)
+            {
+                reason = args[1] + " " + args[2];
+            }
+            else if (args.Count == 3)
+            {
+                reason = args[2];
+            }
+            else if (args.Count == 2)
+            {
+                reason = args[1];
+            }
+
+            if (execute)
+            {
+                foreach (var player in players)
+                {
+                    player.KillMe(PlayerDeathReason.ByCustomReason($"{reason}"), Double.MaxValue, 0, false);
+                }
+            }
+
+            string playernames = GetPlayerNames(players);
+            resp.response = $"Killed players {playernames}.";
             resp.success = true;
 
             return resp;

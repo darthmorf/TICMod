@@ -31,21 +31,22 @@ namespace TICMod
             return resp;
         }
 
-        public static (List<Player>, CommandResponse) ParsePlayerTarget(List<string> args, CommandResponse resp)
+        public static (List<Player>, CommandResponse, int) ParsePlayerTarget(List<string> args, CommandResponse resp)
         {
             List<Player> players = new List<Player>();
+            int argCount = 0;
 
             if (args.Count == 0)
             {
                 resp.response = "Command requires player target";
-                return (players, resp);
+                return (players, resp, argCount);
             }
             else if (args[0] == "@s")
             {
                 if (args.Count != 2 || String.IsNullOrWhiteSpace(args[1]))
                 {
                     resp.response = $"{args[0]} requires datastore name parameter";
-                    return (players, resp);
+                    return (players, resp, argCount);
                 }
 
                 Player player = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(args[1]);
@@ -53,16 +54,18 @@ namespace TICMod
                 {
                     players.Add(player);
                 }
+
+                argCount = 1;
             }
             else if (args[0] == "@a")
             {
-                if (args.Count != 1)
+                foreach (var player in Main.player)
                 {
-                    resp.response = $"{args[0]} requires no parameters.";
-                    return (players, resp);
+                    if (player.name != "")
+                    {
+                        players.Add(player);
+                    }
                 }
-
-                players = Main.player.ToList();
             }
             else if (args[0] == "@n")
             {
@@ -71,7 +74,7 @@ namespace TICMod
                 if (args.Count < 2 || String.IsNullOrWhiteSpace(name))
                 {
                     resp.response = $"{args[0]} requires player name parameter";
-                    return (players, resp);
+                    return (players, resp, argCount);
                 }
 
                 foreach (var player in Main.player)
@@ -81,15 +84,11 @@ namespace TICMod
                         players.Add(player);
                     }
                 }
+
+                argCount = 1;
             }
             else if (args[0] == "@r")
             {
-                if (args.Count != 1)
-                {
-                    resp.response = $"{args[0]} requires no parameters.";
-                    return (players, resp);
-                }
-
                 List<Player> validPlayers = new List<Player>();
                 foreach (var player in Main.player)
                 {
@@ -107,11 +106,11 @@ namespace TICMod
             else
             {
                 resp.response = $"{args[0]} is not a valid player target.";
-                return (players, resp);
+                return (players, resp, argCount);
             }
 
             resp.valid = true;
-            return (players, resp);
+            return (players, resp, argCount);
         }
 
         public static (Color, CommandResponse) ParseColor(string args, CommandResponse resp)
