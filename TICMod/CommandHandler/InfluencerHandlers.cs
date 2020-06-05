@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace TICMod
@@ -232,7 +233,7 @@ namespace TICMod
                 }
 
                 validId = int.TryParse(args[0], NumberStyles.Integer, CultureInfo.CurrentCulture, out itemId);
-                if (!validId || itemId < 1 || itemId > Main.item.Length) // TODO: Allow for negative item IDs
+                if (!validId || itemId < 1 || itemId > ItemID.Count) // TODO: Allow for negative item IDs (wait for 1.4)
                 {
                     resp.response = $"{args[0]} is not a valid item ID.";
                     return resp;

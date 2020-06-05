@@ -17,7 +17,7 @@ namespace TICMod.UI
 
 		//private int _cursor;
 		//private int _frameCount;
-		private int _maxLength = 60;
+		private int _maxLength = Int32.MaxValue;
 
 		private string hintText;
         internal Stack<String> history = new Stack<string>();
