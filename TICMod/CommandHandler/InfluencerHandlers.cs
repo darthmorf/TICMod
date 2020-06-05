@@ -538,7 +538,8 @@ namespace TICMod
             {
                 foreach (var player in players)
                 {
-                    player.KillMe(PlayerDeathReason.ByCustomReason($"{reason}"), Double.MaxValue, 0, false);
+                    string thisreason = reason.Replace("#name", player.name);
+                    player.KillMe(PlayerDeathReason.ByCustomReason($"{thisreason}"), Double.MaxValue, 0, false);
                 }
             }
 
