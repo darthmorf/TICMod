@@ -10,15 +10,15 @@ namespace TICMod
 {
     public static partial class CommandHandler
     {
-        private static CommandResponse ParseConditional(List<String> commandArgs, bool execute)
+        private static CommandResponse ParseConditional(string command, string[] args, bool execute)
         {
-            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{commandArgs[0]}'.");
-            commandArgs[0] = commandArgs[0].ToLower();
+            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'.");
+            command = command.ToLower();
 
-            switch (commandArgs[0])
+            switch (command)
             {
                 case "day":
-                    resp = ConditionalDay(resp, execute);
+                    resp = ConditionalDay(args, resp, execute);
                     break;
             }
 
@@ -26,7 +26,7 @@ namespace TICMod
         }
 
 
-        private static CommandResponse ConditionalDay(CommandResponse resp, bool execute)
+        private static CommandResponse ConditionalDay(string[] args, CommandResponse resp, bool execute)
         {
             bool isDay = Main.dayTime;
             resp.valid = true;

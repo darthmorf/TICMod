@@ -12,47 +12,47 @@ namespace TICMod
 {
     public static partial class CommandHandler
     {
-        private static CommandResponse ParseInfluencer(List<String> commandArgs, bool execute)
+        private static CommandResponse ParseInfluencer(string command, string[] args, bool execute)
         {
-            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{commandArgs[0]}'.");
-            commandArgs[0] = commandArgs[0].ToLower();
+            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
+            command = command.ToLower();
 
-            switch (commandArgs[0])
+            switch (command)
             {
                 case "say":
-                    resp = InfluencerSay(commandArgs, resp, execute);
+                    resp = InfluencerSay(args, resp, execute);
                     break;
 
                 case "spawnnpc":
-                    resp = InfluencerSpawnNPC(commandArgs, resp, execute);
+                    resp = InfluencerSpawnNPC(args, resp, execute);
                     break;
 
                 case "spawnnpcid":
-                    resp = InfluencerSpawnNPCID(commandArgs, resp, execute);
+                    resp = InfluencerSpawnNPCID(args, resp, execute);
                     break;
 
                 case "giveitem":
-                    resp = InfluencerGiveItem(commandArgs, resp, execute);
+                    resp = InfluencerGiveItem(args, resp, execute);
                     break;
 
                 case "forcegiveitem":
-                    resp  = InfluencerForceGiveItem(commandArgs, resp, execute);
+                    resp  = InfluencerForceGiveItem(args, resp, execute);
                     break;
 
                 case "drawworldtext":
-                    resp = InfluencerDrawWorldText(commandArgs, resp, execute);
+                    resp = InfluencerDrawWorldText(args, resp, execute);
                     break;
 
                 case "drawuitext":
-                    resp = InfluencerDrawUIText(commandArgs, resp, execute);
+                    resp = InfluencerDrawUIText(args, resp, execute);
                     break;
 
                 case "respawn":
-                    resp = InfluencerRespawnPlayer(commandArgs, resp, execute);
+                    resp = InfluencerRespawnPlayer(args, resp, execute);
                     break;
 
                 case "kill":
-                    resp = InfluencerKillPlayer(commandArgs, resp, execute);
+                    resp = InfluencerKillPlayer(args, resp, execute);
                     break;
             }
 
@@ -60,72 +60,62 @@ namespace TICMod
         }
 
 
-        private static CommandResponse InfluencerSay(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerSay(string[] args, CommandResponse resp, bool execute)
         {
-            if (commandArgs.Count != 2)
+            if (args.Length != 4)
             {
-                resp.response = $"Command must contain both an RGB code and a string to print.";
+                resp.response = $"Takes 4 parameters; R value, G value, B value & string to print";
                 return resp;
             }
-
-            var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
-            if (args.Count != 2)
+            
+            int[] colors = new int[3];
+            for (int i = 0; i < 3; i++)
             {
-                resp.response = $"Command must contain both an RGB code and a string to print.";
-                return resp;
-            }
+                var ret = ParseInt(args[i], resp, 0, 255);
+                colors[i] = ret.Item1;
+                resp = ret.Item2;
 
-            var ret = ParseColor(args[0], resp);
-            Color textColor = ret.Item1;
-            resp = ret.Item2;
-
-            if (!resp.valid)
-            {
-                return resp;
+                if (!resp.valid)
+                {
+                    return resp;
+                }
             }
+            Color textColor = new Color(colors[0], colors[1], colors[2]);
 
-            if (args.Count < 2)
-            {
-                args.Add("");
-            }
             resp.success = true;
             resp.valid = true;
-            resp.response = $"Displaying '{args[1]}' as colour {textColor.ToString()}";
+            resp.response = $"Displaying '{args[1]}' as color {textColor.ToString()}.";
 
             if (execute)
             {
-                args[1].Split(new String[] { "\\n" }, StringSplitOptions.None).ToList().ForEach(line => Utils.ChatOutput(line, textColor));
+                args[3].Split(new String[] { "\\n" }, StringSplitOptions.None).ToList().ForEach(line => Utils.ChatOutput(line, textColor));
             }
 
             return resp;
         }
 
-        private static CommandResponse InfluencerSpawnNPC(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerSpawnNPC(string[] args, CommandResponse resp, bool execute)
         {
-            if (commandArgs.Count != 2)
+            if (args.Length != 3)
             {
-                resp.response =
-                    $"Command must contain both a coordinate and an NPC name.";
-                return resp;
-            }
-            var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
-            if (args.Count != 2)
-            {
-                resp.response =
-                    $"Command must contain both a coordinate and an NPC name.";
+                resp.response = $"Takes 3 parameters; X Co-ordinate, Y Co-ordinate & NPC Name";
                 return resp;
             }
 
-            var ret = ParseCoordinate(args[0], resp);
-            int[] pos = ret.Item1;
-            resp = ret.Item2;
-
-            if (!resp.valid)
+            int[] pos = new int[2];
+            for (int i = 0; i < 2; i++)
             {
-                return resp;
+                var ret = ParseInt(args[i], resp, 0);
+                pos[i] = ret.Item1 * 16;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
             }
 
-            string npcName = args[1].ToLower();
+            string npcName = args[2].ToLower();
 
             NPC npc = new NPC();
 
@@ -174,37 +164,34 @@ namespace TICMod
             return resp;
         }
 
-        private static CommandResponse InfluencerSpawnNPCID(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerSpawnNPCID(string[] args, CommandResponse resp, bool execute)
         {
-            if (commandArgs.Count != 2)
+            if (args.Length != 3)
             {
-                resp.response =
-                    $"Command must contain both a coordinate and an NPC ID.";
-                return resp;
-            }
-            var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
-            if (args.Count != 2)
-            {
-                resp.response =
-                    $"Command must contain both a coordinate and an NPC ID.";
-                return resp;
-            }
-            var ret = ParseCoordinate(args[0], resp);
-            int[] pos = ret.Item1;
-            resp = ret.Item2;
-
-            if (!resp.valid)
-            {
+                resp.response = $"Takes 3 parameters; X Co-ordinate, Y Co-ordinate & NPC ID";
                 return resp;
             }
 
-            int npcID;
-            bool isId = int.TryParse(args[1], NumberStyles.Integer, CultureInfo.CurrentCulture, out npcID);
-
-            if (npcID >= Main.npcTexture.Length || npcID < -65 || !isId || npcID == 0)
+            int[] pos = new int[2];
+            for (int i = 0; i < 2; i++)
             {
-                resp.response =
-                    $"{args[0]} is not a valid position NPC ID. Must be > -66 and < {Main.npcTexture.Length} and not 0.";
+                var ret = ParseInt(args[i], resp, 0);
+                pos[i] = ret.Item1 * 16;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            var ret2 = ParseInt(args[2], resp, -65, NPCID.Count);
+            int npcID = ret2.Item1;
+            resp = ret2.Item2;
+
+            if (!resp.valid || npcID == 0)
+            {
+                resp.response += " and not 0";
                 return resp;
             }
 
@@ -224,50 +211,47 @@ namespace TICMod
             return resp;
         }
 
-        private static CommandResponse InfluencerGiveItem(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerGiveItem(string[] args, CommandResponse resp, bool execute)
         {
             List<Player> players = new List<Player>();
             int itemId;
-            bool validId;
             int itemCount;
-            bool validCount;
 
-            if (commandArgs.Count > 1)
+            if (args.Length < 3 || args.Length > 4)
             {
-                var args = commandArgs[1].Split(new[] { ' ' }).ToList();
-                if (args.Count < 3 || args[2] == "")
-                {
-                    resp.response = "Command requires item ID, item count and player target.";
-                    return resp;
-                }
-
-                validId = int.TryParse(args[0], NumberStyles.Integer, CultureInfo.CurrentCulture, out itemId);
-                if (!validId || itemId < 1 || itemId > ItemID.Count) // TODO: Allow for negative item IDs (wait for 1.4)
-                {
-                    resp.response = $"{args[0]} is not a valid item ID.";
-                    return resp;
-                }
-
-                validCount = int.TryParse(args[1], NumberStyles.Integer, CultureInfo.CurrentCulture, out itemCount);
-                if (!validCount || itemCount < 1)
-                {
-                    resp.response = $"{args[1]} is not a valid item count.";
-                    return resp;
-                }
-
-                args.RemoveRange(0, 2);
-                var ret = ParsePlayerTarget(args, resp);
-                players = ret.Item1;
-                resp = ret.Item2;
-
-                if (!resp.valid)
-                {
-                    return resp;
-                }
+                resp.response = "Takes 3-4 parameters; Item ID, Item Count & Player target";
+                return resp;
             }
-            else
+            
+            var ret = ParseInt(args[0], resp, 1, ItemID.Count);
+            itemId = ret.Item1;
+            resp = ret.Item2;
+            if (!resp.valid) // TODO: Allow for negative item IDs (wait for 1.4)
             {
-                resp.response = $"Command requires item ID, item count and player target.";
+                return resp;
+            }
+            resp.valid = false;
+
+            ret = ParseInt(args[1], resp, 1);
+            itemCount = ret.Item1;
+            resp = ret.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+            resp.valid = false;
+
+            string playerParam = "";
+            if (args.Length == 4)
+            {
+                playerParam = args[3];
+            }
+
+            var ret2 = ParsePlayerTarget(args[2], playerParam, resp);
+            players = ret2.Item1;
+            resp = ret2.Item2;
+            if (!resp.valid)
+            {
                 return resp;
             }
 
@@ -287,7 +271,7 @@ namespace TICMod
             return resp;
         }
 
-        private static CommandResponse InfluencerForceGiveItem(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerForceGiveItem(string[] args, CommandResponse resp, bool execute)
         {
             List<Player> players = new List<Player>();
             int itemId;
@@ -295,42 +279,44 @@ namespace TICMod
             int itemCount;
             bool validCount;
 
-            if (commandArgs.Count > 1)
+            if (args.Length < 3 || args.Length > 4)
             {
-                var args = commandArgs[1].Split(new[] { ' ' }).ToList();
-                if (args.Count < 3 || args[2] == "")
-                {
-                    resp.response = "Command requires item ID, item count and player target.";
-                    return resp;
-                }
-
-                validId = int.TryParse(args[0], NumberStyles.Integer, CultureInfo.CurrentCulture, out itemId);
-                if (!validId || itemId < 1 || itemId > Main.item.Length) // TODO: Allow for negative item IDs
-                {
-                    resp.response = $"{args[0]} is not a valid item ID.";
-                    return resp;
-                }
-
-                validCount = int.TryParse(args[1], NumberStyles.Integer, CultureInfo.CurrentCulture, out itemCount);
-                if (!validCount || itemCount < 1)
-                {
-                    resp.response = $"{args[1]} is not a valid item count.";
-                    return resp;
-                }
-
-                args.RemoveRange(0, 2);
-                var ret = ParsePlayerTarget(args, resp);
-                players = ret.Item1;
-                resp = ret.Item2;
-
-                if (!resp.valid)
-                {
-                    return resp;
-                }
+                resp.response = "Takes 3-4 parameters; Item ID, Item Count & Player target";
+                return resp;
             }
-            else
+
+
+            var ret1 = ParseInt(args[0], resp);
+            itemId = ret1.Item1;
+            resp = ret1.Item2;
+            if (!resp.valid || itemId < 1 || itemId > ItemID.Count) // TODO: Allow for negative item IDs (wait for 1.4)
             {
-                resp.response = $"Command requires item ID, item count and player target.";
+                resp.response = $"{args[0]} is not a valid item ID.";
+                return resp;
+            }
+            resp.valid = false;
+
+            var ret2 = ParseInt(args[1], resp);
+            itemCount = ret2.Item1;
+            resp = ret2.Item2;
+            if (!resp.valid || itemCount < 1)
+            {
+                resp.response = $"{args[1]} is not a valid item count.";
+                return resp;
+            }
+            resp.valid = false;
+
+            string playerParam = "";
+            if (args.Length == 4)
+            {
+                playerParam = args[3];
+            }
+
+            var ret = ParsePlayerTarget(args[2], playerParam, resp);
+            players = ret.Item1;
+            resp = ret.Item2;
+            if (!resp.valid)
+            {
                 return resp;
             }
 
@@ -353,44 +339,45 @@ namespace TICMod
             return resp;
         }
 
-        private static CommandResponse InfluencerDrawWorldText(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerDrawWorldText(string[] args, CommandResponse resp, bool execute)
         {
-            if (commandArgs.Count != 2)
+            if (args.Length != 7)
             {
-                resp.response = $"Command must contain RGB code, Coordinate, Duration and a string to print.";
+                resp.response = $"Takes 7 parameters; R value, G value, B value, X Co-ordinate, Y Co-ordinate, Time & Message";
                 return resp;
             }
 
-            var args = commandArgs[1].Split(new[] { ' ' }, 4).ToList();
-            if (args.Count != 4)
+            int[] colors = new int[3];
+            for (int i = 0; i < 3; i++)
             {
-                resp.response = $"Command must contain RGB code, Coordinate, Duration and a string to print.";
-                return resp;
+                var ret = ParseInt(args[i], resp, 0, 255);
+                colors[i] = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+            Color textColor = new Color(colors[0], colors[1], colors[2]);
+
+            int[] pos = new int[2];
+            for (int i = 3; i < 5; i++)
+            {
+                var ret = ParseInt(args[i], resp, 0);
+                pos[i-3] = ret.Item1 * 16;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
             }
 
-            var ret1 = ParseColor(args[0], resp);
-            Color textColor = ret1.Item1;
+            resp.valid = false;
+            var ret1 = ParseInt(args[5], resp);
+            int timeout = ret1.Item1;
             resp = ret1.Item2;
-
-            if (!resp.valid)
-            {
-                return resp;
-            }
-
-            resp.valid = false;
-            var ret2 = ParseCoordinate(args[1], resp);
-            int[] pos = ret2.Item1;
-            resp = ret2.Item2;
-
-            if (!resp.valid)
-            {
-                return resp;
-            }
-
-            resp.valid = false;
-            var ret3 = ParseInt(args[2], resp);
-            int timeout = ret3.Item1;
-            resp = ret3.Item2;
 
             if (!resp.valid)
             {
@@ -402,70 +389,59 @@ namespace TICMod
                 TICMod mod = ModContent.GetInstance<TICMod>();
                 if (Main.dedServ)
                 {
-                    mod.SendTextDisplayPacket(args[3], textColor, timeout, pos[0], pos[1], true);
+                    mod.SendTextDisplayPacket(args[6], textColor, timeout, pos[0], pos[1], true);
                 }
                 else
                 {
-                    ModContent.GetInstance<TICMod>().textDisplayer.AddText(args[3], textColor, timeout, pos[0], pos[1], true);
+                    ModContent.GetInstance<TICMod>().textDisplayer.AddText(args[6], textColor, timeout, pos[0], pos[1], true);
                 }
                 
                 string timeoutText = (timeout < 1) ? "until world restart." : $"for {timeout} seconds.";
-                resp.response = $"Displaying '{args[3]}' as {textColor} at ({pos[0]}, {pos[1]}) {timeoutText}";
+                resp.response = $"Displaying '{args[6]}' as {textColor} at ({pos[0]}, {pos[1]}) {timeoutText}";
                 resp.success = true;
             }
 
             return resp;
         }
 
-        private static CommandResponse InfluencerDrawUIText(List<String> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerDrawUIText(string[] args, CommandResponse resp, bool execute)
         {
-            if (commandArgs.Count != 2)
+            if (args.Length != 7)
             {
-                resp.response = $"Command must contain RGB code, Width %, Height %, Duration and a string to print.";
+                resp.response = $"Takes 7 parameters; R Value, G Value, B Value, Width %, Height %, Time & Message";
                 return resp;
             }
 
-            var args = commandArgs[1].Split(new[] { ' ' }, 5).ToList();
-            if (args.Count != 5)
+            int[] colors = new int[3];
+            for (int i = 0; i < 3; i++)
             {
-                resp.response = $"Command must contain RGB code, Width %, Height %, Duration and a string to print.";
-                return resp;
+                var ret = ParseInt(args[i], resp, 0, 255);
+                colors[i] = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+            Color textColor = new Color(colors[0], colors[1], colors[2]);
+
+            int[] pos = new int[2];
+            for (int i = 3; i < 5; i++)
+            {
+                var ret = ParseInt(args[i], resp, 0, 100);
+                pos[i-3] = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
             }
 
-            var ret1 = ParseColor(args[0], resp);
-            Color textColor = ret1.Item1;
+            var ret1 = ParseInt(args[5], resp);
+            int timeout = ret1.Item1;
             resp = ret1.Item2;
-
-            if (!resp.valid)
-            {
-                return resp;
-            }
-
-            resp.valid = false;
-            var ret2 = ParseInt(args[1], resp);
-            int width = ret2.Item1;
-            resp = ret2.Item2;
-
-            if (!resp.valid)
-            {
-                return resp;
-            }
-
-            resp.valid = false;
-            var ret3 = ParseInt(args[2], resp);
-            int height = ret3.Item1;
-            resp = ret3.Item2;
-
-            if (!resp.valid)
-            {
-                return resp;
-            }
-
-            resp.valid = false;
-            var ret4 = ParseInt(args[3], resp);
-            int timeout = ret4.Item1;
-            resp = ret4.Item2;
-
             if (!resp.valid)
             {
                 return resp;
@@ -476,34 +452,38 @@ namespace TICMod
                 TICMod mod = ModContent.GetInstance<TICMod>();
                 if (Main.dedServ)
                 {
-                    mod.SendTextDisplayPacket(args[4], textColor, timeout, width, height, false);
+                    mod.SendTextDisplayPacket(args[6], textColor, timeout, pos[0], pos[1], false);
                 }
                 else
                 {
-                    ModContent.GetInstance<TICMod>().textDisplayer.AddText(args[4], textColor, timeout, width, height, false);
+                    ModContent.GetInstance<TICMod>().textDisplayer.AddText(args[6], textColor, timeout, pos[0], pos[1], false);
                 }
 
                 string timeoutText = (timeout < 1) ? "until world restart." : $"for {timeout} seconds.";
-                resp.response = $"Displaying '{args[3]}' as {textColor} at ({width}%, {height}%) {timeoutText}";
+                resp.response = $"Displaying '{args[3]}' as {textColor} at ({pos[0]}%, {pos[1]}%) {timeoutText}";
                 resp.success = true;
             }
 
             return resp;
         }
 
-        private static CommandResponse InfluencerRespawnPlayer(List<string> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerRespawnPlayer(string[] args, CommandResponse resp, bool execute)
         {
-            if (commandArgs.Count != 2)
+            if (args.Length < 1 || args.Length > 2)
             {
-                resp.response = "Respawn requires player target parameter";
+                resp.response = "Takes 1-2 parameters; Player Target";
                 return resp;
             }
 
-            var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
-            var ret = ParsePlayerTarget(args, resp);
+            string playerParam = "";
+            if (args.Length == 2)
+            {
+                playerParam = args[1];
+            }
+
+            var ret = ParsePlayerTarget(args[0], playerParam, resp);
             List<Player> players = ret.Item1;
             resp = ret.Item2;
-
             if (!resp.valid)
             {
                 return resp;
@@ -524,16 +504,21 @@ namespace TICMod
             return resp;
         }
 
-        private static CommandResponse InfluencerKillPlayer(List<string> commandArgs, CommandResponse resp, bool execute)
+        private static CommandResponse InfluencerKillPlayer(string[] args, CommandResponse resp, bool execute)
         {
-            if (commandArgs.Count != 2)
+            if (args.Length < 2 || args.Length > 3)
             {
-                resp.response = "Kill Player requires player target and reason parameters";
+                resp.response = "Takes 2-3 parameters; Player Target & Message";
                 return resp;
             }
 
-            var args = commandArgs[1].Split(new[] { ' ' }, 2).ToList();
-            var ret = ParsePlayerTarget(args, resp);
+            string playerParam = "";
+            if (args.Length == 3)
+            {
+                playerParam = args[1];
+            }
+
+            var ret = ParsePlayerTarget(args[0], playerParam, resp);
             List<Player> players = ret.Item1;
             resp = ret.Item2;
             int argCount = ret.Item3;
@@ -543,18 +528,10 @@ namespace TICMod
                 return resp;
             }
 
-            string reason = "";
-            if (args.Count == 3 && argCount == 0)
-            {
-                reason = args[1] + " " + args[2];
-            }
-            else if (args.Count == 3)
+            string reason = args[1];
+            if (args.Length == 3)
             {
                 reason = args[2];
-            }
-            else if (args.Count == 2)
-            {
-                reason = args[1];
             }
 
             if (execute)

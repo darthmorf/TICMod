@@ -10,19 +10,19 @@ namespace TICMod
 {
     public static partial class CommandHandler
     {
-        private static CommandResponse ParseTrigger(List<String> commandArgs, bool execute, int i, int j)
+        private static CommandResponse ParseTrigger(string command, string[] args, bool execute, int i, int j)
         {
-            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{commandArgs[0]}'.");
-            commandArgs[0] = commandArgs[0].ToLower();
+            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
+            command = command.ToLower();
 
-            switch (commandArgs[0])
+            switch (command)
             {
                 case "time":
-                    resp = TriggerTime(commandArgs, resp, execute, i, j);
+                    resp = TriggerTime(args, resp, execute, i, j);
                     break;
 
                 case "playerdeath":
-                    resp = TriggerPlayerDeath(commandArgs, resp, execute, i, j);
+                    resp = TriggerPlayerDeath(args, resp, execute, i, j);
                     break;
             }
 
@@ -30,8 +30,60 @@ namespace TICMod
         }
 
 
+        private static CommandResponse TriggerTime(string[] args, CommandResponse resp, bool execute, int i, int j)
+        {
+            TICWorld world = ModContent.GetInstance<TICWorld>();
+            TICWorld.Data data = null;
+            if (execute)
+            {
+                data = world.data[(i, j)];
+            }
 
-        private static CommandResponse TriggerPlayerDeath(List<String> commandArgs, CommandResponse resp, bool execute, int i, int j)
+            if (args.Length != 1)
+            {
+                resp.response = $"Takes 1 parameter; Time to activate at";
+                return resp;
+            }
+
+            var ret = ParseTime(args[0], resp);
+            resp = ret.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            string givenTime = args[0];
+            bool triggered = false;
+            if (execute)
+            {
+                data.trigger = () =>
+                {
+                    string currenttime = Utilities.GetTimeAsString(Main.time);
+
+
+                    if (data.enabled && currenttime == givenTime && !triggered)
+                    {
+                        ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(i, j - 1);
+                        triggered = true;
+
+                        if (data.chatOutput)
+                        {
+                            world.SendChatMsg($"Reached time {currenttime}, triggering.", i, j);
+                        }
+                    }
+                    else if (currenttime != givenTime && triggered)
+                    {
+                        triggered = false;
+                    }
+                };
+            }
+
+            resp.valid = true;
+            return resp;
+        }
+
+        private static CommandResponse TriggerPlayerDeath(string[] args, CommandResponse resp, bool execute, int i, int j)
         {
             TICWorld world = ModContent.GetInstance<TICWorld>();
             TICWorld.Data data = null;
@@ -41,16 +93,14 @@ namespace TICMod
             }
 
             string storeName = null;
-            if (commandArgs.Count > 1)
+            if (args.Length > 1)
             {
-                var args = commandArgs[1].Split(new[] { ' ' }).ToList();
+                resp.response = "Takes 1 optional parameter; Datastore name";
+                return resp;
+            }
 
-                if (args.Count > 1)
-                {
-                    resp.response = "Command must have either 0 or 1 parameter.";
-                    return resp;
-                }
-
+            if (args.Length == 1)
+            {
                 storeName = args[0];
             }
 
@@ -75,70 +125,7 @@ namespace TICMod
                         else if (!player.dead && triggeredPlayers.Contains(player))
                         {
                             triggeredPlayers.Remove(player);
-                            //if (mod.playerDataStore.ContainsValue(player))
-                            //    mod.playerDataStore.RemoveItem(storeName);
                         }
-                    }
-                };
-            }
-
-            resp.valid = true;
-            return resp;
-        }
-
-        private static CommandResponse TriggerTime(List<String> commandArgs, CommandResponse resp, bool execute, int i, int j)
-        {
-            TICWorld world = ModContent.GetInstance<TICWorld>();
-            TICWorld.Data data = null;
-            if (execute)
-            {
-                data = world.data[(i, j)];
-            }
-
-            if (commandArgs.Count != 2)
-            {
-                resp.response =
-                    $"Command must contain a time.";
-                return resp;
-            }
-            var posStr = commandArgs[1].Split(new[] { ':' }, 2);
-            List<uint> time = new List<uint>(2);
-            foreach (var str in posStr)
-            {
-                bool success = uint.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out uint posVal);
-                if (!success)
-                {
-                    break;
-                }
-                time.Add(posVal);
-            }
-            if (time.Count != 2 || time[0] > 24 || time[1] > 59)
-            {
-                resp.response =
-                    $"{commandArgs[0]} is not a valid time in format hh:mm.";
-                return resp;
-            }
-
-            string givenTime = commandArgs[1];
-            bool triggered = false;
-            if (execute)
-            {
-                data.trigger = () =>
-                {
-                    string currenttime = Utilities.GetTimeAsString(Main.time);
-
-
-                    if (data.enabled && currenttime == givenTime && !triggered)
-                    {
-                        ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(i, j - 1);
-                        triggered = true;
-
-                        if (data.chatOutput)
-                            world.SendChatMsg($"Reached time {currenttime}, triggering.", i, j);
-                    }
-                    else if (currenttime != givenTime && triggered)
-                    {
-                        triggered = false;
                     }
                 };
             }

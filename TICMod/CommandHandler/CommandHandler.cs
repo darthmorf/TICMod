@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -12,44 +13,62 @@ namespace TICMod
     {
         public static CommandResponse Parse(string command, BlockType blockType, bool execute = true, int i=-1, int j=-1)
         {
-            var commandArgs = command.Split(new[] {' '}, 2).ToList();
+            var commandsplit = command.Split(new[] {' '}, 2).ToList();
+            string commandtype = commandsplit[0];
+            string[] args = new string[0];
+
+            if (commandsplit.Count == 2 && !String.IsNullOrEmpty(commandsplit[1]))
+            {
+                args = SplitArgs(commandsplit[1]);
+            }
 
             CommandResponse resp = new CommandResponse(false, "Unknown Command Block");
             switch (blockType)
             {
                 case BlockType.Trigger:
-                    resp = ParseTrigger(commandArgs, execute, i, j);
+                    resp = ParseTrigger(commandtype, args, execute, i, j);
                     break;
                 case BlockType.Influencer:
-                    resp = ParseInfluencer(commandArgs, execute);
+                    resp = ParseInfluencer(commandtype, args, execute);
                     break;
                 case BlockType.Conditional:
-                    resp = ParseConditional(commandArgs, execute);
+                    resp = ParseConditional(commandtype, args, execute);
                     break;
             }
 
             return resp;
         }
 
-        public static (List<Player>, CommandResponse, int) ParsePlayerTarget(List<string> args, CommandResponse resp)
+        public static string[] SplitArgs(string input)
+        {
+            string escapeMarker = "\u0011"; // Arbitrary non-input character
+            input = input.Replace("\\,", escapeMarker);
+            var split = input.Split(',');
+
+            for (int i = 0; i < split.Length; i++)
+            {
+                split[i] = split[i].Replace(escapeMarker, ",");
+                split[i] = split[i].TrimStart(' ');
+            }
+
+            return split;
+        }
+
+
+        public static (List<Player>, CommandResponse, int) ParsePlayerTarget(string selector, string param, CommandResponse resp)
         {
             List<Player> players = new List<Player>();
             int argCount = 0;
 
-            if (args.Count == 0)
+            if (selector == "@s")
             {
-                resp.response = "Command requires player target";
-                return (players, resp, argCount);
-            }
-            else if (args[0] == "@s")
-            {
-                if (args.Count != 2 || String.IsNullOrWhiteSpace(args[1]))
+                if (String.IsNullOrWhiteSpace(param))
                 {
-                    resp.response = $"{args[0]} requires datastore name parameter";
+                    resp.response = $"{selector} requires 1 parameter; Datastore name";
                     return (players, resp, argCount);
                 }
 
-                Player player = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(args[1]);
+                Player player = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(param);
                 if (player != null)
                 {
                     players.Add(player);
@@ -57,7 +76,7 @@ namespace TICMod
 
                 argCount = 1;
             }
-            else if (args[0] == "@a")
+            else if (selector == "@a")
             {
                 foreach (var player in Main.player)
                 {
@@ -67,19 +86,17 @@ namespace TICMod
                     }
                 }
             }
-            else if (args[0] == "@n")
+            else if (selector == "@n")
             {
-                string name = String.Join(" ", args.Skip(1));
-
-                if (args.Count < 2 || String.IsNullOrWhiteSpace(name))
+                if (String.IsNullOrWhiteSpace(param))
                 {
-                    resp.response = $"{args[0]} requires player name parameter";
+                    resp.response = $"{selector} requires 1 parameter; Player name";
                     return (players, resp, argCount);
                 }
 
                 foreach (var player in Main.player)
                 {
-                    if (player.name == name)
+                    if (player.name == param)
                     {
                         players.Add(player);
                     }
@@ -87,7 +104,7 @@ namespace TICMod
 
                 argCount = 1;
             }
-            else if (args[0] == "@r")
+            else if (selector == "@r")
             {
                 List<Player> validPlayers = new List<Player>();
                 foreach (var player in Main.player)
@@ -105,7 +122,7 @@ namespace TICMod
             }
             else
             {
-                resp.response = $"{args[0]} is not a valid player target.";
+                resp.response = $"{selector} is not a valid player target";
                 return (players, resp, argCount);
             }
 
@@ -113,73 +130,52 @@ namespace TICMod
             return (players, resp, argCount);
         }
 
-        public static (Color, CommandResponse) ParseColor(string args, CommandResponse resp)
+        public static (uint[], CommandResponse) ParseTime(string args, CommandResponse resp)
         {
-            Color color = new Color();
-            
-            var rgbStr = args.Split(new[] { ',' }, 3);
-            List<int> rgb = new List<int>(3);
-            foreach (var str in rgbStr)
-            {
-                bool success = int.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out int rgbVal);
-                if (!success)
-                {
-                    break;
-                }
-                rgb.Add(rgbVal);
-            }
-
-            if (rgb.Count != 3)
-            {
-                resp.response =
-                    $"{args[0]} is not a valid RGB string. Should be in the format r,g,b each in the range 0-255.";
-                return (color, resp);
-            }
-
-            color = new Color(rgb[0], rgb[1], rgb[2]);
-
-            resp.valid = true;
-            return (color, resp);
-        }
-
-        public static (int[], CommandResponse) ParseCoordinate(string args, CommandResponse resp)
-        {
-            var posStr = args.Split(new[] { ',' }, 2);
-            List<int> pos = new List<int>(2);
+            var posStr = args.Split(new[] { ':' }, 2);
+            List<uint> time = new List<uint>(2);
             foreach (var str in posStr)
             {
-                bool success = int.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out int posVal);
+                bool success = uint.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out uint posVal);
                 if (!success)
                 {
                     break;
                 }
-                pos.Add(posVal);
+                time.Add(posVal);
             }
-            if (pos.Count != 2)
+            if (time.Count != 2 || time[0] > 24 || time[1] > 59)
             {
-                resp.response =
-                    $"{args[0]} is not a valid position string.";
-                return (pos.ToArray(), resp);
+                resp.response = $"{args} is not a valid time in format hh:mm.";
+                return (time.ToArray(), resp);
             }
-
-            pos[0] *= 16;
-            pos[1] *= 16;
 
             resp.valid = true;
-            return (pos.ToArray(), resp);
+            return (time.ToArray(), resp);
         }
 
-        public static (int, CommandResponse) ParseInt(string args, CommandResponse resp)
+        public static (int, CommandResponse) ParseInt(string args, CommandResponse resp, int minVal=Int32.MinValue, int maxVal=Int32.MaxValue)
         {
-            bool success = int.TryParse(args, NumberStyles.Integer, CultureInfo.CurrentCulture, out int posVal);
-            if (!success)
+            bool success = int.TryParse(args, NumberStyles.Integer, CultureInfo.CurrentCulture, out int val);
+            
+            string range = "";
+            if (minVal != Int32.MinValue)
+            {
+                range += $" greater than {minVal - 1}";
+            }
+
+            if (maxVal != Int32.MaxValue)
+            {
+                range += $" less than {maxVal + 1}";
+            }
+
+            if (!success || val > maxVal || val < minVal)
             {
                 resp.response = $"{args} is not a valid integer";
                 return (-1, resp);
             }
 
             resp.valid = true;
-            return (posVal, resp);
+            return (val, resp);
         }
 
         public static (double, CommandResponse) ParseDouble(string args, CommandResponse resp)
