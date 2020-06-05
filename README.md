@@ -20,6 +20,11 @@ Functionality is implemented through three seperate tiles; the Trigger, the Infl
     - [Spawn NPC by Name](#spawn-npc-by-name)
     - [Spawn NPC by ID](#spawn-npc-by-id)
     - [Give Item to Player](#give-item-to-player)
+    - [Force Give Item to Player](#force-give-item-to-player)
+    - [Draw World Text](#draw-world-text)
+    - [Draw UI Text](#draw-ui-text)
+    - [Respawn Player](#respawn-player)
+    - [Kill Player](#kill-player)
 - [Conditionals](#conditionals)
   - [Conditional Commands](#conditional-commands)
     - [Is Day?](#is-day)
@@ -43,6 +48,8 @@ If a command is invalid, the text becomes red, and an error code is displayed up
 
 The user interface supports a range of shortcuts to ease the editing of commands. Arrow keys can be used to navigate, along with HOME and END to jump the front and back respectively.
 Ctrl+C, Ctrl+V and Ctrl+X can be used to copy, paste and cut text too. Ctrl+Z can be used to undo changes, and tab can be pressed to navigate between different open TIC UIs.
+
+The `,` character is used to seperate different command parameters. If you need to use one outside of this, such as in a text output command, they can be escaped by typing `\,`, which will be ignored by the interpreter. Whitespace between `,` and the start of the next parameter is also ignored so can be used to make commands easier to read. I like to group things like RGB or Coordinate parameters together without spaces, but leave them for everything else.
 
 The 'show debug output' checkbox determines whether debug output is displayed in the chat when the tile activates, for example:<br/>
 ![](/readme-img/debugout.png)
@@ -82,25 +89,49 @@ Influencers function as the main heavy lifters of the mod; they are the ones tha
 
 ### Influencer Commands
 #### Say
-`say rrr,ggg,bbb message`<br/>
+`say rrr,ggg,bbb, message`<br/>
 Sends a message to the chat with the colour specified by `rrr,ggg,bbb`, in RGB format. Message can contain `\n` which will create a line break in the message.<br/>
-EG: `say 0,160,255 Hello World`
+EG: `say 0,160,255, Hello World`
 
 #### Spawn NPC by Name
-`spawnnpc x,y name`<br/>
+`spawnnpc x,y, name`<br/>
 Spawns the NPC with specified name at world position x,y. [NPC Names can be found on the Wiki](https://terraria.gamepedia.com/NPC_IDs). Note: Some NPCs, like Zombies have multiple variants. To control which one spawns more accurately, use `spawnpcid` instead.<br/>
-EG: `spawnnpc 26,10 Dr Man Fly`
+EG: `spawnnpc 26,10, Dr Man Fly`
 
 #### Spawn NPC by ID
-`spawnnpcid x,y id`<br/>
+`spawnnpcid x,y, id`<br/>
 Spawns the NPC with specified ID at world position x,y. [NPC IDs can be found on the Wiki](https://terraria.gamepedia.com/NPC_IDs).<br/>
-EG: `spawnnpcid 26,10 53`
+EG: `spawnnpcid 26,10, 53`
 
 #### Give Item to Player
-`giveitem id count player(s)`<br/>
+`giveitem id, count, player(s)`<br/>
 Gives [targeted player](#player-selection) the specified count of item with specified id.<br/>
-EG: `giveitem 26 10 @a`
+EG: `giveitem 26, 10, @a`
 
+#### Force Give Item to Player
+`forcegiveitem id, count, player(s)`<br/>
+Gives [targeted player](#player-selection) the specified count of item with specified id. Unlike [giveitem](#give-item-to-player), places the item directly in the inventory, rather than triggering the usual pickup text. Works when players are dead.<br/>
+EG: `forecegiveitem 26, 10, @a`
+
+#### Draw World Text
+`drawworldtext rrr,ggg,bbb, x,y, duration, message`<br/>
+Displays text with specified color at specified world coordinate. Sticks to tiles, acts as if it were part of the world. If given a duration of 0 or less, will last until the world is reloaded.<br/>
+EG: `drawworldtext 0,160,255, 26,10, Hello World!`
+
+#### Draw UI Text
+`drawuitext rrr,ggg,bbb, x,y, duration, message`<br/>
+Displays text with specified color at specified UI % position. Acts as if it were part of the User Interface. If given a duration of 0 or less, will last until the world is reloaded.<br/>
+EG: `drawuitext 0,160,255, 50,10, Hello World!`
+
+#### Respawn Player
+`respawn player`<br/>
+Respawns the current player if they are dead. Does nothing if they are not.<br/>
+EG: `respawn @a`
+
+#### Kill Player
+`kill player, reason`<br/>
+Kills the targeted player, with `reason` as the message displayed in chat. The string `#name` can be included within `reason` to refer to the name of the player that was killed.<br/>
+EG: `kill @n, darthmorf, Killed #name\, they deserved it!`
 
 ## Conditionals
 
@@ -127,12 +158,12 @@ If a command asks for a player as a parameter, a number of options can be put in
 #### All Players
 `@a`<br/>
 Applies TIC effect to all players.<br/>
-EG: `giveitem 26, 10 @a`
+EG: `giveitem 26, 10, @a`
 
 #### Stored Players
-`@s store`<br/>
+`@s, store`<br/>
 Applies TIC effect to the player within specified [datastore](#data-stores).<br/>
-EG: `giveitem 26, 10 @s store`
+EG: `giveitem 26, 10, @s, store`
 
 
 ## Data Stores
@@ -145,13 +176,13 @@ Some commands (mostly Triggers) will allow you to output an effected entity so t
 First, we need a Trigger to trigger when a player dies, and store that player in a [datastore](#data-stores). Let's call this store `deadplayer`. This is achieved by using the [playerdeath](#player-death) command in a trigger:<br/>
 `playerdeath deadplayer`<br/>
 This Trigger's output should then be wired to an Influencer with the [giveitem](#give-item-to-player) command, targeting the [datastore](#data-stores) we created in the the Trigger:<br/>
-`giveitem 28 20 @s deadplayer`<br/>
+`giveitem 28, 20, @s, deadplayer`<br/>
 Now, when a player dies, the trigger will add them to the datastore and send the influencer a signal, which will give them 20 Lesser Healing Potions to the player we just stoed in the datastore!
 
 
 ## Credits
 - Thanks to jopojelly for use of his UI Classes.
-- Thanks to Rartrin and direwolf420 for miscellaneous support.
+- Thanks to jopojelly, Rartrin and direwolf420 for miscellaneous support.
 - Thanks to Khaios for the inspiration!
 
 All other work by darthmorf / Sam Poirier
