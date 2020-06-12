@@ -54,6 +54,14 @@ namespace TICMod
                 case "killnpc":
                     resp = InfluencerKillNPC(args, resp, execute);
                     break;
+
+                case "placetile":
+                    resp = InfluencerPlaceTile(args, resp, execute);
+                    break;
+
+                case "killtile":
+                    resp = InfluencerKillTile(args, resp, execute);
+                    break;
             }
 
             return resp;
@@ -538,6 +546,137 @@ namespace TICMod
             resp.valid = true;
             resp.success = true;
             resp.response = $"Killed {count} NPCs.'";
+            return resp;
+        }
+
+        private static CommandResponse InfluencerPlaceTile(string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length < 5 || args.Length > 6)
+            {
+                resp.response = $"Takes 5-6 parameters; Start X Co-ordinate, Start Y Co-ordinate, End X Co-ordinate, End Y Co-ordinate, Tile ID & Tile Style(optional)";
+                return resp;
+            }
+
+            int[] pos1 = new int[2];
+            for (int i = 0; i < 2; i++)
+            {
+                var ret = ParseInt(args[i], resp, 0);
+                pos1[i] = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            int[] pos2 = new int[2];
+            for (int i = 0; i < 2; i++)
+            {
+                var ret = ParseInt(args[i+2], resp, 0);
+                pos2[i] = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            var ret2 = ParseInt(args[4], resp, 0, TileID.Count);
+            int tileID = ret2.Item1;
+            resp = ret2.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            int style = 0;
+            if (args.Length == 4)
+            {
+                ret2 = ParseInt(args[5], resp, 0, TileID.Count);
+                style = ret2.Item1;
+                resp = ret2.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            int[] startpos = { Math.Min(pos1[0], pos2[0]), Math.Min(pos1[1], pos2[1]) };
+            int[] endpos = { Math.Max(pos1[0], pos2[0]), Math.Max(pos1[1], pos2[1]) };
+
+            if (execute)
+            {
+                for (int x = startpos[0]; x < endpos[0]+1; x++)
+                {
+                    for (int y = startpos[1]; y < endpos[1] + 1; y++)
+                    {
+                        WorldGen.PlaceTile(x, y, tileID, style: style, forced: true);
+                    }
+                }
+            }
+
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully spawned tile ID:{tileID} @ {startpos[0]},{startpos[1]} - {endpos[0]},{endpos[1]}.";
+            return resp;
+        }
+
+        private static CommandResponse InfluencerKillTile(string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length != 4)
+            {
+                resp.response = $"Takes 4 parameters; Start X Co-ordinate, Start Y Co-ordinate, End X Co-ordinate & End Y Co-ordinate";
+                return resp;
+            }
+
+            int[] pos1 = new int[2];
+            for (int i = 0; i < 2; i++)
+            {
+                var ret = ParseInt(args[i], resp, 0);
+                pos1[i] = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            int[] pos2 = new int[2];
+            for (int i = 0; i < 2; i++)
+            {
+                var ret = ParseInt(args[i + 2], resp, 0);
+                pos2[i] = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            int[] startpos = { Math.Min(pos1[0], pos2[0]), Math.Min(pos1[1], pos2[1]) };
+            int[] endpos = { Math.Max(pos1[0], pos2[0]), Math.Max(pos1[1], pos2[1]) };
+
+            if (execute)
+            {
+                for (int x = startpos[0]; x < endpos[0] + 1; x++)
+                {
+                    for (int y = startpos[1]; y < endpos[1] + 1; y++)
+                    {
+                        WorldGen.KillTile(x, y, noItem:true);
+                    }
+                }
+            }
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully cleared tiles @ {startpos[0]},{startpos[1]} - {endpos[0]},{endpos[1]}.";
             return resp;
         }
     }
