@@ -74,6 +74,10 @@ namespace TICMod
                 case "removeitem":
                     resp = InfluencerRemovePlayerItem(args, resp, execute);
                     break;
+
+                case "cleardroppeditems":
+                    resp = InfluencerClearDroppedItems(args, resp, execute);
+                    break;
             }
 
             return resp;
@@ -866,6 +870,28 @@ namespace TICMod
             resp.success = true;
             resp.valid = true;
             resp.response = $"Successfully removed {itemId} x{count} at from {GetPlayerNames(players)}.";
+            return resp;
+        }
+
+        private static CommandResponse InfluencerClearDroppedItems (string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length != 0)
+            {
+                resp.response = $"Takes 0 parameters.";
+                return resp;
+            }
+
+            if (execute)
+            {
+                foreach (var item in Main.item)
+                {
+                    item.TurnToAir();
+                }
+            }
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully Cleared all Dropped Items.";
             return resp;
         }
     }
