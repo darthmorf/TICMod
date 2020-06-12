@@ -70,6 +70,10 @@ namespace TICMod
                 case "dropitem":
                     resp = InfluencerSpawnItem(args, resp, execute);
                     break;
+
+                case "removeitem":
+                    resp = InfluencerRemovePlayerItem(args, resp, execute);
+                    break;
             }
 
             return resp;
@@ -786,6 +790,82 @@ namespace TICMod
             resp.success = true;
             resp.valid = true;
             resp.response = $"Successfully spawned item with ID {itemId} x{count} at ({pos[0] / 16}, {pos[1] / 16}).";
+            return resp;
+        }
+
+        private static CommandResponse InfluencerRemovePlayerItem(string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length < 3 || args.Length > 4)
+            {
+                resp.response = $"Takes 3-4 parameters; Item ID, Count, Player Target";
+                return resp;
+            }
+
+            var ret = ParseInt(args[0], resp, 1, ItemID.Count);
+            int itemId = ret.Item1;
+            resp = ret.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+            resp.valid = false;
+
+            ret = ParseInt(args[1], resp, 1);
+            int count = ret.Item1;
+            resp = ret.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+            resp.valid = false;
+
+            string param = "";
+            if (args.Length == 4)
+            {
+                param = args[3];
+            }
+
+            var ret2 = ParsePlayerTarget(args[2], param, resp);
+            List<Player> players = ret2.Item1;
+            resp = ret2.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+
+            if (execute)
+            {
+                foreach (var player in players)
+                {
+                    int removeCount = 0;
+                    foreach (var item in player.inventory)
+                    {
+                        if (item.netID == itemId)
+                        {
+                            while (item.stack >= 0 && removeCount <= count)
+                            {
+                                item.stack--;
+                                removeCount++;
+                            }
+
+                            if (item.stack <= 0)
+                            {
+                                item.TurnToAir();
+                            }
+
+                            if (removeCount >= count)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully removed {itemId} x{count} at from {GetPlayerNames(players)}.";
             return resp;
         }
     }
