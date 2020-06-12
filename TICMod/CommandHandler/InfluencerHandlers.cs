@@ -62,6 +62,10 @@ namespace TICMod
                 case "killtile":
                     resp = InfluencerKillTile(args, resp, execute);
                     break;
+
+                case "tpplayer":
+                    resp = InfluencerTeleportPlayer(args, resp, execute);
+                    break;
             }
 
             return resp;
@@ -677,6 +681,56 @@ namespace TICMod
             resp.success = true;
             resp.valid = true;
             resp.response = $"Successfully cleared tiles @ {startpos[0]},{startpos[1]} - {endpos[0]},{endpos[1]}.";
+            return resp;
+        }
+
+        private static CommandResponse InfluencerTeleportPlayer(string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length < 3 || args.Length > 4)
+            {
+                resp.response = $"Takes 3-4 parameters; X Co-ordinate, Y Co-ordinate, Player Target";
+                return resp;
+            }
+
+            int[] pos = new int[2];
+            for (int i = 0; i < 2; i++)
+            {
+                var ret = ParseInt(args[i], resp, 0);
+                pos[i] = ret.Item1 * 16;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            string param = "";
+            if (args.Length == 4)
+            {
+                param = args[3];
+            }
+
+            var ret2 = ParsePlayerTarget(args[2], param, resp);
+            List<Player> players = ret2.Item1;
+            resp = ret2.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            if (execute)
+            {
+                foreach (var player in players)
+                {
+                    player.position = new Vector2(pos[0], pos[1]);
+                }
+            }
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully teleported {GetPlayerNames(players)} to ({pos[0]/16}, {pos[1]/16}).";
             return resp;
         }
     }
