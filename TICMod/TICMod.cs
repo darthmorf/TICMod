@@ -31,11 +31,13 @@ namespace TICMod
         internal UITextDisplayer textDisplayer;
 
         internal PlayerDataStore playerDataStore;
+        internal NPCDataStore npcDataStore;
 
         public override void Load()
         {
             commandUis = new List<CommandUI>();
             playerDataStore = new PlayerDataStore();
+            npcDataStore = new NPCDataStore();
 
             if (!Terraria.Main.dedServ)
             {

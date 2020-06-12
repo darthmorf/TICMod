@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace TICMod
@@ -128,6 +129,96 @@ namespace TICMod
 
             resp.valid = true;
             return (players, resp, argCount);
+        }
+
+        public static (List<NPC>, CommandResponse, int) ParseNPCTarget(string selector, string param, CommandResponse resp)
+        {
+            List<NPC> npcs = new List<NPC>();
+            int argCount = 0;
+
+            if (selector == "@s")
+            {
+                if (String.IsNullOrWhiteSpace(param))
+                {
+                    resp.response = $"{selector} requires 1 parameter; Datastore name";
+                    return (npcs, resp, argCount);
+                }
+
+                NPC npc = ModContent.GetInstance<TICMod>().npcDataStore.GetItem(param);
+                if (npc != null)
+                {
+                    npcs.Add(npc);
+                }
+
+                argCount = 1;
+            }
+            else if (selector == "@a")
+            {
+                npcs = Main.npc.ToList();
+            }
+            else if (selector == "@i")
+            {
+                var ret = ParseInt(param, resp, 1, NPCID.Count);
+                int id = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    resp.response = $"{selector} requires 1 parameter; NPC ID";
+                    return (npcs, resp, argCount);
+                }
+
+                resp.valid = false;
+
+                foreach (var npc in Main.npc)
+                {
+                    if (npc.netID == id)
+                    {
+                        npcs.Add(npc);
+                    }
+                }
+
+                argCount = 1;
+            }
+            else if (selector == "@e")
+            {
+                foreach (var npc in Main.npc)
+                {
+                    if (!npc.friendly)
+                    {
+                        npcs.Add(npc);
+                    }
+                }
+            }
+            else if (selector == "@t")
+            {
+                foreach (var npc in Main.npc)
+                {
+                    if (npc.townNPC)
+                    {
+                        npcs.Add(npc);
+                    }
+                }
+            }
+            else if (selector == "@f")
+            {
+                foreach (var npc in Main.npc)
+                {
+                    if (npc.friendly)
+                    {
+                        npcs.Add(npc);
+                    }
+                }
+            }
+            else
+            {
+                resp.response = $"{selector} is not a valid NPC target";
+                return (npcs, resp, argCount);
+            }
+
+
+            resp.valid = true;
+            return (npcs, resp, argCount);
         }
 
         public static (uint[], CommandResponse) ParseTime(string args, CommandResponse resp)

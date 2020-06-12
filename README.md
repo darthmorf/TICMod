@@ -17,14 +17,14 @@ Functionality is implemented through three seperate tiles; the Trigger, the Infl
 - [Influencers](#influencers)
   - [Influencer Commands](#influencer-commands)
     - [Say](#say)
-    - [Spawn NPC by Name](#spawn-npc-by-name)
-    - [Spawn NPC by ID](#spawn-npc-by-id)
+    - [Spawn NPC](#spawn-npc)
     - [Give Item to Player](#give-item-to-player)
     - [Force Give Item to Player](#force-give-item-to-player)
     - [Draw World Text](#draw-world-text)
     - [Draw UI Text](#draw-ui-text)
     - [Respawn Player](#respawn-player)
     - [Kill Player](#kill-player)
+    - [Kill NPC](#kill-npc)
 - [Conditionals](#conditionals)
   - [Conditional Commands](#conditional-commands)
     - [Is Day?](#is-day)
@@ -32,6 +32,12 @@ Functionality is implemented through three seperate tiles; the Trigger, the Infl
   - [Player Selection](#player-selection)
     - [All Players](#all-players)
     - [Stored Players](#stored-players)
+  - [NPC Selection](#npc-selection)
+    - [All NPCs](#all-npcs)
+    - [By ID](#by-id)
+    - [Enemy NPCs](#enemy-npcs)
+    - [Town NPCs](#town-npcs)
+    - [Friendly NPCs](#friendly-npcs)
 - [Data Stores](#data-stores)
 - [Examples](#examples)
     - [Give 20 Lesser Healing Potions to players when they die.](#give-20-lesser-healing-potions-to-players-when-they-die)
@@ -93,15 +99,10 @@ Influencers function as the main heavy lifters of the mod; they are the ones tha
 Sends a message to the chat with the colour specified by `rrr,ggg,bbb`, in RGB format. Message can contain `\n` which will create a line break in the message.<br/>
 EG: `say 0,160,255, Hello World`
 
-#### Spawn NPC by Name
-`spawnnpc x,y, name`<br/>
-Spawns the NPC with specified name at world position x,y. [NPC Names can be found on the Wiki](https://terraria.gamepedia.com/NPC_IDs). Note: Some NPCs, like Zombies have multiple variants. To control which one spawns more accurately, use `spawnpcid` instead.<br/>
-EG: `spawnnpc 26,10, Dr Man Fly`
-
-#### Spawn NPC by ID
-`spawnnpcid x,y, id`<br/>
-Spawns the NPC with specified ID at world position x,y. [NPC IDs can be found on the Wiki](https://terraria.gamepedia.com/NPC_IDs).<br/>
-EG: `spawnnpcid 26,10, 53`
+#### Spawn NPC
+`spawnnpc x,y, id, datastore(optional)`<br/>
+Spawns the NPC with specified ID at world position x,y. Stores it in the specified datastore, if supplied. [NPC IDs can be found on the Wiki](https://terraria.gamepedia.com/NPC_IDs).<br/>
+EG: `spawnnpc 26,10, 53`
 
 #### Give Item to Player
 `giveitem id, count, player(s)`<br/>
@@ -130,8 +131,13 @@ EG: `respawn @a`
 
 #### Kill Player
 `kill player, reason`<br/>
-Kills the targeted player, with `reason` as the message displayed in chat. The string `#name` can be included within `reason` to refer to the name of the player that was killed.<br/>
+Kills the [targeted player](#player-selection), with `reason` as the message displayed in chat. The string `#name` can be included within `reason` to refer to the name of the player that was killed.<br/>
 EG: `kill @n, darthmorf, Killed #name\, they deserved it!`
+
+#### Kill NPC
+`killnpc npc`<br/>
+Kills the [targeted NPC](#npc-selection).<br/>
+EG: `killnpc @e`
 
 ## Conditionals
 
@@ -165,18 +171,47 @@ EG: `giveitem 26, 10, @a`
 Applies TIC effect to the player within specified [datastore](#data-stores).<br/>
 EG: `giveitem 26, 10, @s, store`
 
+### NPC Selection
+
+If a command asks for an NPC as a parameter, a number of options can be passed, depending on what you wish to target.
+
+#### All NPCs
+`@a`<br/>
+Applies TIC effect to all NPCs.<br/>
+EG: `killnpc @a`
+
+#### By ID
+`@i, id`<br/>
+Applies TIC effect to all NPCs with specified id.<br/>
+EG: `killnpc @i, 3`
+
+#### Enemy NPCs
+`@e`<br/>
+Applies TIC effect to all enemy NPCs (IE NPCs that aren't town NPCs or Friendly NPCs).<br/>
+EG: `killnpc @e`
+
+#### Town NPCs
+`@t`<br/>
+Applies TIC effect to all town NPCs.<br/>
+EG: `killnpc @e`
+
+#### Friendly NPCs
+`@f`<br/>
+Applies TIC effect to all friendly NPCs.<br/>
+EG: `killnpc @e`
+
 
 ## Data Stores
 
-Some commands (mostly Triggers) will allow you to output an effected entity so that they can be effected by another TIC block, like an influencer. This is acheived through Data Stores. To create a store, simply reference it in a command that can output to one. Currently supported entity types are: players.
+Some commands will allow you to output an effected entity so that they can be effected by another TIC block. This is acheived through Data Stores. To create a store, simply reference it in a command that can output to one, and to use one refer to the [entity-selection](#entity-selection) guide for the relevant entity. Currently supported entity types are: players, NPCs.
 
 ## Examples
 
 #### Give 20 Lesser Healing Potions to players when they die.
 First, we need a Trigger to trigger when a player dies, and store that player in a [datastore](#data-stores). Let's call this store `deadplayer`. This is achieved by using the [playerdeath](#player-death) command in a trigger:<br/>
 `playerdeath deadplayer`<br/>
-This Trigger's output should then be wired to an Influencer with the [giveitem](#give-item-to-player) command, targeting the [datastore](#data-stores) we created in the the Trigger:<br/>
-`giveitem 28, 20, @s, deadplayer`<br/>
+This Trigger's output should then be wired to an Influencer with the [forcegiveitem](#force-give-item-to-player) command, targeting the [datastore](#data-stores) we created in the the Trigger:<br/>
+`forcegiveitem 28, 20, @s, deadplayer`<br/>
 Now, when a player dies, the trigger will add them to the datastore and send the influencer a signal, which will give them 20 Lesser Healing Potions to the player we just stoed in the datastore!
 
 
