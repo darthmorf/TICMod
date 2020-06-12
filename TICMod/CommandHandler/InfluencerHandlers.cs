@@ -66,6 +66,10 @@ namespace TICMod
                 case "tpplayer":
                     resp = InfluencerTeleportPlayer(args, resp, execute);
                     break;
+
+                case "dropitem":
+                    resp = InfluencerSpawnItem(args, resp, execute);
+                    break;
             }
 
             return resp;
@@ -731,6 +735,57 @@ namespace TICMod
             resp.success = true;
             resp.valid = true;
             resp.response = $"Successfully teleported {GetPlayerNames(players)} to ({pos[0]/16}, {pos[1]/16}).";
+            return resp;
+        }
+
+        private static CommandResponse InfluencerSpawnItem(string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length != 4)
+            {
+                resp.response = $"Takes 4 parameters; X Co-ordinate, Y Co-ordinate, Item ID & Item Count";
+                return resp;
+            }
+
+            int[] pos = new int[2];
+            for (int i = 0; i < 2; i++)
+            {
+                var ret = ParseInt(args[i], resp, 0);
+                pos[i] = ret.Item1 * 16;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            var ret2 = ParseInt(args[2], resp, 1, ItemID.Count);
+            int itemId = ret2.Item1;
+            resp = ret2.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+            resp.valid = false;
+
+            ret2 = ParseInt(args[3], resp, 1);
+            int count = ret2.Item1;
+            resp = ret2.Item2;
+
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            if (execute)
+            {
+                Item.NewItem(new Vector2(pos[0], pos[1]), itemId, Stack: count);
+            }
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully spawned item with ID {itemId} x{count} at ({pos[0] / 16}, {pos[1] / 16}).";
             return resp;
         }
     }
