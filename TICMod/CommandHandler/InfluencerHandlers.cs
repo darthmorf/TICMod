@@ -78,6 +78,10 @@ namespace TICMod
                 case "cleardroppeditems":
                     resp = InfluencerClearDroppedItems(args, resp, execute);
                     break;
+
+                case "copytile":
+                    resp = InfluencerCopyTiles(args, resp, execute);
+                    break;
             }
 
             return resp;
@@ -628,7 +632,7 @@ namespace TICMod
             {
                 for (int x = startpos[0]; x < endpos[0]+1; x++)
                 {
-                    for (int y = startpos[1]; y < endpos[1] + 1; y++)
+                    for (int y = startpos[1]; y < endpos[1]+1; y++)
                     {
                         WorldGen.PlaceTile(x, y, tileID, style: style, forced: true);
                     }
@@ -693,6 +697,74 @@ namespace TICMod
             resp.success = true;
             resp.valid = true;
             resp.response = $"Successfully cleared tiles @ {startpos[0]},{startpos[1]} - {endpos[0]},{endpos[1]}.";
+            return resp;
+        }
+
+        private static CommandResponse InfluencerCopyTiles(string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length != 6)
+            {
+                resp.response = $"Takes 6 parameters; Start X Co-ordinate, Start Y Co-ordinate, End X Co-ordinate, End Y Co-ordinate, Destination X & Destination Y";
+                return resp;
+            }
+
+            int[] pos1 = new int[2];
+            for (int i = 0; i < 2; i++)
+            {
+                var ret = ParseInt(args[i], resp, 0);
+                pos1[i] = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            int[] pos2 = new int[2];
+            for (int i = 0; i < 2; i++)
+            {
+                var ret = ParseInt(args[i + 2], resp, 0);
+                pos2[i] = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            int[] pos3 = new int[2];
+            for (int i = 0; i < 2; i++)
+            {
+                var ret = ParseInt(args[i + 4], resp, 0);
+                pos3[i] = ret.Item1;
+                resp = ret.Item2;
+
+                if (!resp.valid)
+                {
+                    return resp;
+                }
+            }
+
+            int[] startpos = { Math.Min(pos1[0], pos2[0]), Math.Min(pos1[1], pos2[1]) };
+            int[] endpos = { Math.Max(pos1[0], pos2[0]), Math.Max(pos1[1], pos2[1]) };
+
+            if (execute)
+            {
+                for (int x = 0; x < endpos[0] - startpos[0] + 1; x++)
+                {
+                    for (int y = 0; y < endpos[1] - startpos[1] + 1; y++)
+                    {
+                        Main.tile[pos3[0] + x, pos3[1] + y].CopyFrom(Main.tile[startpos[0] + x, startpos[1] + y]);
+                    }
+                }
+            }
+
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully copied tiles @ {startpos[0]},{startpos[1]} - {endpos[0]},{endpos[1]} to {pos3[0]}, {pos3[1]}.";
             return resp;
         }
 
