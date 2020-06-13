@@ -192,7 +192,7 @@ namespace TICMod
 
             if (showOutput && tileOutput)
             {
-                Utils.ChatOutput($"[Trigger@{x},{y}] {text}", Color.Gray);
+                Utils.ChatOutput($"[{data[(x, y)].type}@{x},{y}] {text}", Color.Gray);
             }
         }
 
