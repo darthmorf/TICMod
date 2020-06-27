@@ -40,7 +40,7 @@ namespace TICMod.UI
             base.DrawSelf(spriteBatch);
 
             CalculatedStyle innerDimensions = base.GetInnerDimensions();
-			Vector2 pos = new Vector2(innerDimensions.X - 15, innerDimensions.Y - 5);
+			Vector2 pos = new Vector2(innerDimensions.X, innerDimensions.Y) - new Vector2((int)(Width.Pixels * 0.75f), (int)(Height.Pixels * 0.75f));
 
 
 			spriteBatch.Draw(texture, pos, texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
