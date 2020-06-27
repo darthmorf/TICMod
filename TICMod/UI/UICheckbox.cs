@@ -35,8 +35,14 @@ namespace TICMod.UI
 
 		public UICheckbox(string text, string hoverText, float textScale = 1, bool large = false) : base(text, textScale, large)
 		{
-			checkboxTexture = ModContent.GetTexture("TICMod/UI/checkBox");
-			checkmarkTexture = ModContent.GetTexture("TICMod/UI/checkMark");
+			if (checkboxTexture == null)
+			{
+				checkboxTexture = ModContent.GetTexture("TICMod/UI/checkBox");
+			}
+			if (checkmarkTexture == null)
+			{
+				checkmarkTexture = ModContent.GetTexture("TICMod/UI/checkMark");
+			}
 
 
 			this.Left.Pixels += 20;

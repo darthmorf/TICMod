@@ -18,12 +18,15 @@ namespace TICMod.UI
 
         public UIQuitButton(string hoverText)
 		{
-			texture = ModContent.GetTexture("TICMod/UI/exit");
+			if (texture == null)
+			{
+				texture = ModContent.GetTexture("TICMod/UI/exit");
+			}
             this.hoverText = hoverText;
             this.BackgroundColor = Color.Transparent;
             this.BorderColor = Color.Transparent;
-            this.Width.Set(14f, 0);
-            this.Height.Set(15f, 0);
+            this.Width.Set(texture.Width, 0);
+            this.Height.Set(texture.Height, 0);
             Recalculate();
 		}
 
@@ -37,10 +40,10 @@ namespace TICMod.UI
             base.DrawSelf(spriteBatch);
 
             CalculatedStyle innerDimensions = base.GetInnerDimensions();
-            Vector2 pos = new Vector2(innerDimensions.X-15, innerDimensions.Y - 5);
+			Vector2 pos = new Vector2(innerDimensions.X - 15, innerDimensions.Y - 5);
 
 
-            spriteBatch.Draw(texture, pos, texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+			spriteBatch.Draw(texture, pos, texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             
 
 			if (IsMouseHovering)
