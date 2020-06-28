@@ -65,8 +65,7 @@ namespace TICMod.UI
 
         public override void RightClick(UIMouseEvent evt)
         {
-            base.RightClick(evt);
-            SetText("");
+           Click(evt);
         }
 
         public void SetUnfocusKeys(bool unfocusOnEnter, bool unfocusOnTab)
@@ -138,6 +137,12 @@ namespace TICMod.UI
             return Main.inputText.IsKeyDown(key);
         }
 
+
+        int backspaceThrottle = 0;
+        int deleteThrottle = 0;
+        int leftThrottle = 0;
+        int rightTrottle = 0;
+        int throttle = 6;
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             Rectangle hitbox = GetInnerDimensions().ToRectangle();
@@ -171,21 +176,31 @@ namespace TICMod.UI
                     if (unfocusOnEnter) Unfocus();
                     OnEnterPressed?.Invoke();
                 }
-                else if (JustPressed(Keys.Left))
+                else if (IsPressed(Keys.Left))
                 {
-                    cursorPos -= 1;
-                    if (cursorPos < 0)
+                    if (leftThrottle == 0)
                     {
-                        cursorPos = 0;
+                        cursorPos -= 1;
+                        if (cursorPos < 0)
+                        {
+                            cursorPos = 0;
+                        }
                     }
+
+                    leftThrottle = ++leftThrottle % throttle;
                 }
-                else if (JustPressed(Keys.Right))
+                else if (IsPressed(Keys.Right))
                 {
-                    cursorPos += 1;
-                    if (cursorPos > currentString.Length)
+                    if (rightTrottle == 0)
                     {
-                        cursorPos = currentString.Length;
+                        cursorPos += 1;
+                        if (cursorPos > currentString.Length)
+                        {
+                            cursorPos = currentString.Length;
+                        }
                     }
+
+                    rightTrottle = ++rightTrottle % throttle;
                 }
                 else if (JustPressed(Keys.End))
                 {
@@ -195,18 +210,30 @@ namespace TICMod.UI
                 {
                     cursorPos = 0;
                 }
-                else if (JustPressed(Keys.Back) && cursorPos != 0)
+                else if (IsPressed(Keys.Back) && cursorPos != 0)
                 {
-                    history.Push(currentString);
-                    currentString = currentString.Remove(cursorPos - 1, 1);
-                    OnTextChanged?.Invoke();
-                    cursorPos -= 1;
+                    if (backspaceThrottle == 0)
+                    {
+                        history.Push(currentString);
+                        currentString = currentString.Remove(cursorPos - 1, 1);
+                        OnTextChanged?.Invoke();
+                        cursorPos -= 1;
+                    }
+
+                    backspaceThrottle++;
+                    backspaceThrottle = backspaceThrottle % throttle;
                 }
-                else if (JustPressed(Keys.Delete) && cursorPos != currentString.Length)
+                else if (IsPressed(Keys.Delete) && cursorPos != currentString.Length)
                 {
-                    history.Push(currentString);
-                    currentString = currentString.Remove(cursorPos, 1);
-                    OnTextChanged?.Invoke();
+                    if (deleteThrottle == 0)
+                    {
+                        history.Push(currentString);
+                        currentString = currentString.Remove(cursorPos, 1);
+                        OnTextChanged?.Invoke();
+                    }
+
+                    deleteThrottle++;
+                    deleteThrottle = deleteThrottle % throttle;
                 }
                 else if (IsPressed(Keys.LeftControl) && JustPressed(Keys.C))
                 {
@@ -232,6 +259,11 @@ namespace TICMod.UI
                 {
                     currentString = history.Pop();
                     cursorPos = currentString.Length;
+                }
+                else
+                {
+                    backspaceThrottle = 0;
+                    deleteThrottle = 0;
                 }
 
 
