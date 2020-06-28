@@ -179,6 +179,9 @@ namespace TICMod
             commandInterface = null;
             coordInterface = null;
             textDisplayInterface = null;
+            UIQuitButton.texture = null;
+            UICheckbox.checkboxTexture = null;
+            UICheckbox.checkmarkTexture = null;
         }
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)

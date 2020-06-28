@@ -8,45 +8,48 @@ using Terraria.UI;
 
 namespace TICMod.UI
 {
-	internal class UIQuitButton : UIPanel
-	{
-		public static Texture2D texture;
+    internal class UIQuitButton : UIPanel
+    {
+        public static Texture2D texture;
 
-		public event EventHandler OnSelectedChanged;
+        public event EventHandler OnSelectedChanged;
 
-		internal string hoverText;
+        internal string hoverText;
 
         public UIQuitButton(string hoverText)
-		{
-			texture = ModContent.GetTexture("TICMod/UI/exit");
+        {
+            if (texture == null)
+            {
+                texture = ModContent.GetTexture("TICMod/UI/exit");
+            }
             this.hoverText = hoverText;
             this.BackgroundColor = Color.Transparent;
             this.BorderColor = Color.Transparent;
-            this.Width.Set(14f, 0);
-            this.Height.Set(15f, 0);
+            this.Width.Set(texture.Width, 0);
+            this.Height.Set(texture.Height, 0);
             Recalculate();
-		}
+        }
 
-		public void SetHoverText(string hoverText)
-		{
-			this.hoverText = hoverText;
-		}
+        public void SetHoverText(string hoverText)
+        {
+            this.hoverText = hoverText;
+        }
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
-		{
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+        {
             base.DrawSelf(spriteBatch);
 
             CalculatedStyle innerDimensions = base.GetInnerDimensions();
-            Vector2 pos = new Vector2(innerDimensions.X-15, innerDimensions.Y - 5);
+            Vector2 pos = new Vector2(innerDimensions.X, innerDimensions.Y) - new Vector2((int)(Width.Pixels * 0.75f), (int)(Height.Pixels * 0.75f));
 
 
             spriteBatch.Draw(texture, pos, texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-            
 
-			if (IsMouseHovering)
-			{
-				Main.hoverItemName = hoverText;
-			}
-		}
-	}
+
+            if (IsMouseHovering)
+            {
+                Main.hoverItemName = hoverText;
+            }
+        }
+    }
 }
