@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
@@ -13,32 +13,19 @@ namespace TICMod.UI
     {
         public static Texture2D checkboxTexture;
         public static Texture2D checkmarkTexture;
-
-        public event EventHandler OnSelectedChanged;
-
-        private bool selected = false;
-        private bool disabled = false;
+        private bool disabled;
         internal string hoverText;
 
-        public bool Selected
-        {
-            get { return selected; }
-            set
-            {
-                if (value != selected)
-                {
-                    selected = value;
-                    OnSelectedChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
-        }
+        private bool selected;
 
-        public UICheckbox(string text, string hoverText, float textScale = 1, bool large = false) : base(text, textScale, large)
+        public UICheckbox(string text, string hoverText, float textScale = 1, bool large = false) : base(text,
+            textScale, large)
         {
             if (checkboxTexture == null)
             {
                 checkboxTexture = ModContent.GetTexture("TICMod/UI/checkBox");
             }
+
             if (checkmarkTexture == null)
             {
                 checkmarkTexture = ModContent.GetTexture("TICMod/UI/checkMark");
@@ -54,6 +41,21 @@ namespace TICMod.UI
             Recalculate();
         }
 
+        public bool Selected
+        {
+            get { return selected; }
+            set
+            {
+                if (value != selected)
+                {
+                    selected = value;
+                    OnSelectedChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        public event EventHandler OnSelectedChanged;
+
         private void UICheckbox_onLeftClick(UIMouseEvent evt, UIElement listeningElement)
         {
             if (disabled) return;
@@ -67,8 +69,10 @@ namespace TICMod.UI
             {
                 Selected = false;
             }
+
             TextColor = disabled ? Color.Gray : Color.White;
         }
+
         public void SetHoverText(string hoverText)
         {
             this.hoverText = hoverText;
@@ -84,9 +88,11 @@ namespace TICMod.UI
             //Rectangle hitbox = GetInnerDimensions().ToRectangle();
             //Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Red * 0.6f);
 
-            spriteBatch.Draw(checkboxTexture, pos, null, disabled ? Color.Gray : Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(checkboxTexture, pos, null, disabled ? Color.Gray : Color.White, 0f, Vector2.Zero, 1f,
+                SpriteEffects.None, 0f);
             if (Selected)
-                spriteBatch.Draw(checkmarkTexture, pos, null, disabled ? Color.Gray : Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(checkmarkTexture, pos, null, disabled ? Color.Gray : Color.White, 0f, Vector2.Zero, 1f,
+                    SpriteEffects.None, 0f);
 
             if (IsMouseHovering)
             {

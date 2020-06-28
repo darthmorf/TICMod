@@ -10,130 +10,130 @@ using Terraria.UI;
 
 namespace TICMod.UI
 {
-	// ty jopojelly
-	internal class UIBetterTextBox : UIPanel//UITextPanel<string>
-	{
-		internal bool focused = false;
+    // ty jopojelly
+    internal class UIBetterTextBox : UIPanel//UITextPanel<string>
+    {
+        internal bool focused = false;
 
-		//private int _cursor;
-		//private int _frameCount;
-		private int _maxLength = Int32.MaxValue;
+        //private int _cursor;
+        //private int _frameCount;
+        private int _maxLength = Int32.MaxValue;
 
-		private string hintText;
+        private string hintText;
         internal Stack<String> history = new Stack<string>();
-		internal string currentString = "";
-		private int textBlinkerCount;
-		private int textBlinkerState;
+        internal string currentString = "";
+        private int textBlinkerCount;
+        private int textBlinkerState;
 
         public event Action OnFocus;
 
-		public event Action OnUnfocus;
+        public event Action OnUnfocus;
 
-		public event Action OnTextChanged;
+        public event Action OnTextChanged;
 
-		public event Action OnTabPressed;
+        public event Action OnTabPressed;
 
-		public event Action OnEnterPressed;
+        public event Action OnEnterPressed;
 
         public Color textColor = Color.Black;
 
-		//public event Action OnUpPressed;
-		internal bool unfocusOnEnter = true;
+        //public event Action OnUpPressed;
+        internal bool unfocusOnEnter = true;
 
-		internal bool unfocusOnTab = true;
+        internal bool unfocusOnTab = true;
 
         public string hoverText;
 
         private int cursorPos = 0;
 
-		//public NewUITextBox(string text, float textScale = 1, bool large = false) : base("", textScale, large)
-		public UIBetterTextBox(string hintText, string text = "")
-		{
-			this.hintText = hintText;
-			currentString = text;
-			SetPadding(0);
-			BackgroundColor = Color.White;
-			BorderColor = Color.Black;
+        //public NewUITextBox(string text, float textScale = 1, bool large = false) : base("", textScale, large)
+        public UIBetterTextBox(string hintText, string text = "")
+        {
+            this.hintText = hintText;
+            currentString = text;
+            SetPadding(0);
+            BackgroundColor = Color.White;
+            BorderColor = Color.Black;
             //			keyBoardInput.newKeyEvent += KeyboardInput_newKeyEvent;
         }
 
-		public override void Click(UIMouseEvent evt)
-		{
-			Focus();
-			base.Click(evt);
-		}
+        public override void Click(UIMouseEvent evt)
+        {
+            Focus();
+            base.Click(evt);
+        }
 
-		public override void RightClick(UIMouseEvent evt)
-		{
-			base.RightClick(evt);
-			SetText("");
-		}
+        public override void RightClick(UIMouseEvent evt)
+        {
+            base.RightClick(evt);
+            SetText("");
+        }
 
-		public void SetUnfocusKeys(bool unfocusOnEnter, bool unfocusOnTab)
-		{
-			this.unfocusOnEnter = unfocusOnEnter;
-			this.unfocusOnTab = unfocusOnTab;
-		}
+        public void SetUnfocusKeys(bool unfocusOnEnter, bool unfocusOnTab)
+        {
+            this.unfocusOnEnter = unfocusOnEnter;
+            this.unfocusOnTab = unfocusOnTab;
+        }
 
         public void Unfocus()
-		{
-			if (focused)
-			{
-				focused = false;
-				Main.blockInput = false;
+        {
+            if (focused)
+            {
+                focused = false;
+                Main.blockInput = false;
 
-				OnUnfocus?.Invoke();
-			}
-		}
+                OnUnfocus?.Invoke();
+            }
+        }
 
-		public void Focus()
-		{
-			if (!focused)
-			{
-				Main.clrInput();
-				focused = true;
-				Main.blockInput = true;
+        public void Focus()
+        {
+            if (!focused)
+            {
+                Main.clrInput();
+                focused = true;
+                Main.blockInput = true;
                 cursorPos = currentString.Length;
 
-				OnFocus?.Invoke();
-			}
-		}
+                OnFocus?.Invoke();
+            }
+        }
 
-		public override void Update(GameTime gameTime)
-		{
-			Vector2 MousePosition = new Vector2((float)Main.mouseX, (float)Main.mouseY);
-			if (!ContainsPoint(MousePosition) && (Main.mouseLeft || Main.mouseRight)) // This solution is fine, but we need a way to cleanly "unload" a UIElement
-			{
+        public override void Update(GameTime gameTime)
+        {
+            Vector2 MousePosition = new Vector2((float)Main.mouseX, (float)Main.mouseY);
+            if (!ContainsPoint(MousePosition) && (Main.mouseLeft || Main.mouseRight)) // This solution is fine, but we need a way to cleanly "unload" a UIElement
+            {
                 Unfocus();
-			}
-			base.Update(gameTime);
-		}
+            }
+            base.Update(gameTime);
+        }
 
         public void SetText(string text)
-		{
-			if (text.ToString().Length > this._maxLength)
-			{
-				text = text.ToString().Substring(0, this._maxLength);
-			}
-			if (currentString != text)
-			{
-				currentString = text;
-				OnTextChanged?.Invoke();
-			}
-		}
+        {
+            if (text.ToString().Length > this._maxLength)
+            {
+                text = text.ToString().Substring(0, this._maxLength);
+            }
+            if (currentString != text)
+            {
+                currentString = text;
+                OnTextChanged?.Invoke();
+            }
+        }
 
-		public void SetTextMaxLength(int maxLength)
-		{
-			this._maxLength = maxLength;
-		}
+        public void SetTextMaxLength(int maxLength)
+        {
+            this._maxLength = maxLength;
+        }
 
-		
+
         private static bool JustPressed(Keys key)
-		{
-			return Main.inputText.IsKeyDown(key) && !Main.oldInputText.IsKeyDown(key);
-		}
+        {
+            return Main.inputText.IsKeyDown(key) && !Main.oldInputText.IsKeyDown(key);
+        }
 
-		private static bool IsPressed(Keys key)
+        private static bool IsPressed(Keys key)
         {
             return Main.inputText.IsKeyDown(key);
         }
@@ -241,7 +241,7 @@ namespace TICMod.UI
                     textBlinkerCount = 0;
                 }
 
-                Main.instance.DrawWindowsIMEPanel(new Vector2(98f, (float) (Main.screenHeight - 36)), 0f);
+                Main.instance.DrawWindowsIMEPanel(new Vector2(98f, (float)(Main.screenHeight - 36)), 0f);
             }
 
             string displayString = currentString;
