@@ -4,9 +4,13 @@ using Microsoft.Xna.Framework.Input;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
+using Color = Microsoft.Xna.Framework.Color;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace TICMod.UI
 {
@@ -59,6 +63,37 @@ namespace TICMod.UI
 
         public override void Click(UIMouseEvent evt)
         {
+            // Get the absolute position of this element
+            float absPos = Left.Pixels;
+            UIElement examining = Parent;
+            while (examining != null)
+            {
+                absPos += examining.Left.Pixels;
+                examining = examining.Parent;
+            }
+
+            // Get the distance from the start of this element
+            float leftDistance = evt.MousePosition.X - absPos - 20;
+            
+            // Find the character closest to that position
+            List<float> charPos = new List<float>();
+            charPos.Add(0);
+            string builtString = "";
+            foreach (char c in currentString)
+            {
+                builtString += c;
+                charPos.Add(Main.fontMouseText.MeasureString(builtString).X);
+            }
+            float closest = charPos.OrderBy(x => Math.Abs(leftDistance - x)).First();
+            int index = charPos.IndexOf(closest);
+
+            // Set the cursor to that character, and compensate for cursor char
+            if (cursorPos < index && focused)
+            {
+                index--;
+            }
+            cursorPos = index;
+
             Focus();
             base.Click(evt);
         }
@@ -92,7 +127,7 @@ namespace TICMod.UI
                 Main.clrInput();
                 focused = true;
                 Main.blockInput = true;
-                cursorPos = currentString.Length;
+                //cursorPos = currentString.Length;
 
                 OnFocus?.Invoke();
             }
