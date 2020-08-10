@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MonoMod.Utils;
 using Terraria;
 using Terraria.ID;
@@ -287,6 +288,11 @@ namespace TICMod
         {
             CoordDisplay = false;
             base.ResetEffects();
+        }
+
+        public override void PreUpdate()
+        {
+            base.PreUpdate();
         }
     }
 }

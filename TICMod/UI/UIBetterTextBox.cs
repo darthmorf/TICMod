@@ -161,18 +161,6 @@ namespace TICMod.UI
             this._maxLength = maxLength;
         }
 
-
-        private static bool JustPressed(Keys key)
-        {
-            return Main.inputText.IsKeyDown(key) && !Main.oldInputText.IsKeyDown(key);
-        }
-
-        private static bool IsPressed(Keys key)
-        {
-            return Main.inputText.IsKeyDown(key);
-        }
-
-
         int backspaceThrottle = 0;
         int deleteThrottle = 0;
         int leftThrottle = 0;
@@ -200,18 +188,18 @@ namespace TICMod.UI
                     OnTextChanged?.Invoke();
                 }
 
-                if (JustPressed(Keys.Tab))
+                if (Utils.JustPressed(Keys.Tab))
                 {
                     if (unfocusOnTab) Unfocus();
                     OnTabPressed?.Invoke();
                 }
-                else if (JustPressed(Keys.Enter))
+                else if (Utils.JustPressed(Keys.Enter))
                 {
                     Main.drawingPlayerChat = false;
                     if (unfocusOnEnter) Unfocus();
                     OnEnterPressed?.Invoke();
                 }
-                else if (IsPressed(Keys.Left))
+                else if (Utils.IsPressed(Keys.Left))
                 {
                     if (leftThrottle == 0)
                     {
@@ -224,7 +212,7 @@ namespace TICMod.UI
 
                     leftThrottle = ++leftThrottle % throttle;
                 }
-                else if (IsPressed(Keys.Right))
+                else if (Utils.IsPressed(Keys.Right))
                 {
                     if (rightTrottle == 0)
                     {
@@ -237,15 +225,15 @@ namespace TICMod.UI
 
                     rightTrottle = ++rightTrottle % throttle;
                 }
-                else if (JustPressed(Keys.End))
+                else if (Utils.JustPressed(Keys.End))
                 {
                     cursorPos = currentString.Length;
                 }
-                else if (JustPressed(Keys.Home))
+                else if (Utils.JustPressed(Keys.Home))
                 {
                     cursorPos = 0;
                 }
-                else if (IsPressed(Keys.Back) && cursorPos != 0)
+                else if (Utils.IsPressed(Keys.Back) && cursorPos != 0)
                 {
                     if (backspaceThrottle == 0)
                     {
@@ -258,7 +246,7 @@ namespace TICMod.UI
                     backspaceThrottle++;
                     backspaceThrottle = backspaceThrottle % throttle;
                 }
-                else if (IsPressed(Keys.Delete) && cursorPos != currentString.Length)
+                else if (Utils.IsPressed(Keys.Delete) && cursorPos != currentString.Length)
                 {
                     if (deleteThrottle == 0)
                     {
@@ -270,12 +258,12 @@ namespace TICMod.UI
                     deleteThrottle++;
                     deleteThrottle = deleteThrottle % throttle;
                 }
-                else if (IsPressed(Keys.LeftControl) && JustPressed(Keys.C))
+                else if (Utils.IsPressed(Keys.LeftControl) && Utils.JustPressed(Keys.C))
                 {
                     ReLogic.OS.Platform.Current.Clipboard = currentString;
 
                 }
-                else if (IsPressed(Keys.LeftControl) && JustPressed(Keys.X))
+                else if (Utils.IsPressed(Keys.LeftControl) && Utils.JustPressed(Keys.X))
                 {
                     history.Push(currentString);
                     ReLogic.OS.Platform.Current.Clipboard = currentString;
@@ -283,14 +271,14 @@ namespace TICMod.UI
                     currentString = "";
                     cursorPos = 0;
                 }
-                else if (IsPressed(Keys.LeftControl) && JustPressed(Keys.V))
+                else if (Utils.IsPressed(Keys.LeftControl) && Utils.JustPressed(Keys.V))
                 {
                     history.Push(currentString);
                     currentString = currentString.Insert(cursorPos, ReLogic.OS.Platform.Current.Clipboard);
                     cursorPos += ReLogic.OS.Platform.Current.Clipboard.Length;
                     OnTextChanged?.Invoke();
                 }
-                else if (IsPressed(Keys.LeftControl) && JustPressed(Keys.Z) && history.Count > 0)
+                else if (Utils.IsPressed(Keys.LeftControl) && Utils.JustPressed(Keys.Z) && history.Count > 0)
                 {
                     currentString = history.Pop();
                     cursorPos = currentString.Length;

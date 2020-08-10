@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -22,6 +23,16 @@ namespace TICMod
             {
                 Main.NewText(message, color);
             }
+        }
+
+        public static bool JustPressed(Keys key)
+        {
+            return Main.inputText.IsKeyDown(key) && !Main.oldInputText.IsKeyDown(key);
+        }
+
+        public static bool IsPressed(Keys key)
+        {
+            return Main.inputText.IsKeyDown(key);
         }
     }
 }
