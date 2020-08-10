@@ -82,6 +82,22 @@ namespace TICMod
                 case "copytile":
                     resp = InfluencerCopyTiles(args, resp, execute);
                     break;
+
+                case "setmaxhealth":
+                    resp = InfluencerSetMaxHealth(args, resp, execute);
+                    break;
+
+                case "sethealth":
+                    resp = InfluencerSetHealth(args, resp, execute);
+                    break;
+
+                case "setmaxmana":
+                    resp = InfluencerSetMaxMana(args, resp, execute);
+                    break;
+
+                case "setmana":
+                    resp = InfluencerSetMana(args, resp, execute);
+                    break;
             }
 
             return resp;
@@ -964,6 +980,183 @@ namespace TICMod
             resp.success = true;
             resp.valid = true;
             resp.response = $"Successfully Cleared all Dropped Items.";
+            return resp;
+        }
+
+        // Note - if health > 500, will be reduced to 500 upon world rejoin
+        private static CommandResponse InfluencerSetMaxHealth (string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length != 2)
+            {
+                resp.response = $"Takes 2 parameters; health value, player";
+                return resp;
+            }
+
+            var ret = ParseInt(args[0], resp, 20);
+            int health = ret.Item1;
+            resp = ret.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            string param = "";
+            if (args.Length == 3)
+            {
+                param = args[2];
+            }
+
+            var ret2 = ParsePlayerTarget(args[1], param, resp);
+            List<Player> players = ret2.Item1;
+            resp = ret2.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            if (execute)
+            {
+                foreach (var player in players)
+                {
+                    player.statLifeMax = health;
+                }
+            }
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully set max health of {GetPlayerNames(players)} to {health}.";
+            return resp;
+        }
+
+        private static CommandResponse InfluencerSetHealth(string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length != 2)
+            {
+                resp.response = $"Takes 2 parameters; health value, player";
+                return resp;
+            }
+
+            var ret = ParseInt(args[0], resp, 0);
+            int health = ret.Item1;
+            resp = ret.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            string param = "";
+            if (args.Length == 3)
+            {
+                param = args[2];
+            }
+
+            var ret2 = ParsePlayerTarget(args[1], param, resp);
+            List<Player> players = ret2.Item1;
+            resp = ret2.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            if (execute)
+            {
+                foreach (var player in players)
+                {
+                    player.statLife = health;
+                }
+            }
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully set health of {GetPlayerNames(players)} to {health}.";
+            return resp;
+        }
+
+        private static CommandResponse InfluencerSetMaxMana(string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length != 2)
+            {
+                resp.response = $"Takes 2 parameters; mana value, player";
+                return resp;
+            }
+
+            var ret = ParseInt(args[0], resp, 0);
+            int health = ret.Item1;
+            resp = ret.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            string param = "";
+            if (args.Length == 3)
+            {
+                param = args[2];
+            }
+
+            var ret2 = ParsePlayerTarget(args[1], param, resp);
+            List<Player> players = ret2.Item1;
+            resp = ret2.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            if (execute)
+            {
+                foreach (var player in players)
+                {
+                    player.statManaMax = health;
+                }
+            }
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully set max mana of {GetPlayerNames(players)} to {health}.";
+            return resp;
+        }
+
+        private static CommandResponse InfluencerSetMana(string[] args, CommandResponse resp, bool execute)
+        {
+            if (args.Length != 2)
+            {
+                resp.response = $"Takes 2 parameters; mana value, player";
+                return resp;
+            }
+
+            var ret = ParseInt(args[0], resp, 0);
+            int health = ret.Item1;
+            resp = ret.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            string param = "";
+            if (args.Length == 3)
+            {
+                param = args[2];
+            }
+
+            var ret2 = ParsePlayerTarget(args[1], param, resp);
+            List<Player> players = ret2.Item1;
+            resp = ret2.Item2;
+            if (!resp.valid)
+            {
+                return resp;
+            }
+
+            if (execute)
+            {
+                foreach (var player in players)
+                {
+                    player.statMana = health;
+                }
+            }
+
+            resp.success = true;
+            resp.valid = true;
+            resp.response = $"Successfully set mana of {GetPlayerNames(players)} to {health}.";
             return resp;
         }
     }

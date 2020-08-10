@@ -261,7 +261,7 @@ namespace TICMod
 
             if (!success || val > maxVal || val < minVal)
             {
-                resp.response = $"{args} is not a valid integer";
+                resp.response = $"{args} is not a valid integer{range}";
                 return (-1, resp);
             }
 
