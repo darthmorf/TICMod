@@ -12,6 +12,8 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.UI;
+using TICMod.Commands;
+using TICMod.Commands.Influencers;
 using TICMod.UI;
 using Point16 = Terraria.DataStructures.Point16;
 
@@ -24,6 +26,7 @@ namespace TICMod
         internal UserInterface commandInterface;
         internal UIStateReverse modUiState;
         internal List<CommandUI> commandUis;
+        internal List<Command> commands;
 
         internal UserInterface coordInterface;
         internal UICoordDisplay coordDisplay;
@@ -36,6 +39,9 @@ namespace TICMod
 
         public override void Load()
         {
+            commands = new List<Command>();
+            LoadInfluencerCommands();
+
             commandUis = new List<CommandUI>();
             playerDataStore = new PlayerDataStore();
             npcDataStore = new NPCDataStore();
@@ -277,6 +283,14 @@ namespace TICMod
             packet.WriteVarInt(yPos);
             packet.Write(tileAttach);
             packet.Send();
+        }
+
+        private void LoadInfluencerCommands()
+        {
+            commands.AddRange(new Command[]
+            {
+                new Say(), 
+            });
         }
     }
 

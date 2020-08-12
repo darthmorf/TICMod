@@ -7,15 +7,43 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using TICMod.Commands.Influencers;
 
 namespace TICMod
 {
     public static partial class CommandHandler
     {
+        public static TICMod mod;
         private static CommandResponse ParseInfluencer(string command, string[] args, bool execute)
         {
             CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
-            command = command.ToLower();
+
+            mod = ModContent.GetInstance<TICMod>();
+
+            List<Influencer> influencerCommands = mod.commands.OfType<Influencer>().ToList();
+
+            foreach (Influencer influencer in influencerCommands)
+            {
+                if (influencer.IsAlias(command))
+                {
+                    resp.valid = influencer.ParseArguments(args, out resp.response);
+
+                    if (resp.valid)
+                    {
+                        resp.response = "";
+                        resp.success = true;
+
+                        if (execute)
+                        {
+                            resp.response = influencer.Execute();
+                        }
+                    }
+
+                    return resp;
+                }
+            }
+
+            return resp;
 
             switch (command)
             {

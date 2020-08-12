@@ -2,61 +2,35 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
-using Microsoft.Xna.Framework;
+using System.Text;
+using System.Threading.Tasks;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace TICMod
+namespace TICMod.Commands
 {
-    public static partial class CommandHandler
+    public abstract class Command
     {
-        public static CommandResponse Parse(string command, BlockType blockType, bool execute = true, int i=-1, int j=-1)
+        protected abstract HashSet<String> aliases
         {
-            var commandsplit = command.Split(new[] {' '}, 2).ToList();
-            string commandtype = commandsplit[0];
-            string[] args = new string[0];
-
-            if (commandsplit.Count == 2 && !String.IsNullOrEmpty(commandsplit[1]))
-            {
-                args = SplitArgs(commandsplit[1]);
-            }
-
-            CommandResponse resp = new CommandResponse(false, "Unknown Command Block");
-            switch (blockType)
-            {
-                case BlockType.Trigger:
-                    resp = ParseTrigger(commandtype, args, execute, i, j);
-                    break;
-                case BlockType.Influencer:
-                    resp = ParseInfluencer(commandtype, args, execute);
-                    break;
-                case BlockType.Conditional:
-                    resp = ParseConditional(commandtype, args, execute);
-                    break;
-            }
-
-            return resp;
+            get;
         }
 
-        public static string[] SplitArgs(string input)
+        public bool IsAlias(string alias)
         {
-            string escapeMarker = "\u0011"; // Arbitrary non-input character
-            input = input.Replace("\\,", escapeMarker);
-            var split = input.Split(',');
-
-            for (int i = 0; i < split.Length; i++)
-            {
-                split[i] = split[i].Replace(escapeMarker, ",");
-                split[i] = split[i].TrimStart(' ');
-            }
-
-            return split;
+            return aliases.Contains(alias.ToLower());
         }
 
+        public abstract bool ParseArguments(string[] args, out string err);
 
-        public static (List<Player>, CommandResponse, int) ParsePlayerTarget(string selector, string param, CommandResponse resp)
+        public abstract string Execute();
+
+
+
+
+
+        private static (List<Player>, CommandResponse, int) ParsePlayerTarget(string selector, string param, CommandResponse resp)
         {
             List<Player> players = new List<Player>();
             int argCount = 0;
@@ -115,7 +89,7 @@ namespace TICMod
                         validPlayers.Add(player);
                     }
                 }
-                
+
                 Random rand = new Random();
                 int index = rand.Next(validPlayers.Count);
 
@@ -131,7 +105,7 @@ namespace TICMod
             return (players, resp, argCount);
         }
 
-        public static (List<NPC>, CommandResponse, int) ParseNPCTarget(string selector, string param, CommandResponse resp)
+        protected static (List<NPC>, CommandResponse, int) ParseNPCTarget(string selector, string param, CommandResponse resp)
         {
             List<NPC> npcs = new List<NPC>();
             int argCount = 0;
@@ -158,7 +132,7 @@ namespace TICMod
             }
             else if (selector == "@i")
             {
-                var ret = ParseInt(param, resp, 1, NPCID.Count);
+                var ret = CommandHandler.ParseInt(param, resp, 1, NPCID.Count);
                 int id = ret.Item1;
                 resp = ret.Item2;
 
@@ -221,7 +195,7 @@ namespace TICMod
             return (npcs, resp, argCount);
         }
 
-        public static (uint[], CommandResponse) ParseTime(string args, CommandResponse resp)
+        protected static (uint[], CommandResponse) ParseTime(string args, CommandResponse resp)
         {
             var posStr = args.Split(new[] { ':' }, 2);
             List<uint> time = new List<uint>(2);
@@ -244,10 +218,12 @@ namespace TICMod
             return (time.ToArray(), resp);
         }
 
-        public static (int, CommandResponse) ParseInt(string args, CommandResponse resp, int minVal=Int32.MinValue, int maxVal=Int32.MaxValue)
+        protected static bool ParseInt(string args, out int ret, out string err, int minVal = Int32.MinValue, int maxVal = Int32.MaxValue)
         {
             bool success = int.TryParse(args, NumberStyles.Integer, CultureInfo.CurrentCulture, out int val);
-            
+            err = "";
+            ret = -1;
+
             string range = "";
             if (minVal != Int32.MinValue)
             {
@@ -261,15 +237,15 @@ namespace TICMod
 
             if (!success || val > maxVal || val < minVal)
             {
-                resp.response = $"{args} is not a valid integer{range}";
-                return (-1, resp);
+                err = $"{args} is not a valid integer{range}";
+                return false;
             }
 
-            resp.valid = true;
-            return (val, resp);
+            ret = val;
+            return true;
         }
 
-        public static (double, CommandResponse) ParseDouble(string args, CommandResponse resp)
+        protected static (double, CommandResponse) ParseDouble(string args, CommandResponse resp)
         {
             bool success = double.TryParse(args, NumberStyles.Float, CultureInfo.CurrentCulture, out double posVal);
             if (!success)
@@ -282,7 +258,7 @@ namespace TICMod
             return (posVal, resp);
         }
 
-        public static string GetPlayerNames(List<Player> players)
+        protected static string GetPlayerNames(List<Player> players)
         {
             string playernames = "";
 
@@ -300,21 +276,6 @@ namespace TICMod
             }
 
             return playernames;
-        }
-    }
-
-    
-
-    public class CommandResponse
-    {
-        public bool success;
-        public string response;
-        public bool valid;
-
-        public CommandResponse(bool _success, string _response)
-        {
-            success = _success;
-            response = _response;
         }
     }
 }
