@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -39,8 +40,7 @@ namespace TICMod
 
         public override void Load()
         {
-            commands = new List<Command>();
-            LoadInfluencerCommands();
+            LoadCommands();
 
             commandUis = new List<CommandUI>();
             playerDataStore = new PlayerDataStore();
@@ -285,12 +285,15 @@ namespace TICMod
             packet.Send();
         }
 
-        private void LoadInfluencerCommands()
+        private void LoadCommands()
         {
-            commands.AddRange(new Command[]
+            commands = new List<Command>();
+
+            var commandClasses = Assembly.GetExecutingAssembly().GetTypes().Where(ac => ac.BaseType == typeof(Influencer));
+            foreach (var commandClass in commandClasses)
             {
-                new Say(), new SpawnNpc(), new GiveItem(), 
-            });
+                commands.Add((Influencer)Activator.CreateInstance(commandClass));
+            }
         }
     }
 

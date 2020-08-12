@@ -13,13 +13,7 @@ namespace TICMod.Commands.Influencers
         /*
 
         private HashSet<string> aliases_ = new HashSet<string>() { "" };
-        protected override HashSet<string> aliases
-        {
-            get
-            {
-                return aliases_;
-            }
-        }
+        protected override HashSet<string> aliases { get { return aliases_; } }
 
         public override bool ParseArguments(string[] args, out string err)
         {
@@ -31,7 +25,7 @@ namespace TICMod.Commands.Influencers
         public override string Execute()
         {
             
-            return $"";
+            
         }
          
         */

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,11 +14,7 @@ namespace TICMod.Commands
     public abstract class Command
     {
         protected static TICMod mod;
-
-        protected abstract HashSet<String> aliases
-        {
-            get;
-        }
+        protected abstract HashSet<String> aliases { get; }
 
         public bool IsAlias(string alias)
         {
@@ -279,6 +276,27 @@ namespace TICMod.Commands
                 }
             }
 
+            return true;
+        }
+
+        protected static bool ParseColor(string c1, string c2, string c3, out Color color, out string err)
+        {
+            int[] colors = new int[3];
+            err = "";
+            string[] args = new[] { c1, c2, c3 };
+            color = Color.White;;
+
+            for (int i = 0; i < 3; i++)
+            {
+                bool valid = ParseInt(args[i], out colors[i], out err, 0, 255);
+
+                if (!valid)
+                {
+                    return false;
+                }
+            }
+
+            color = new Color(colors[0], colors[1], colors[2]);
             return true;
         }
 

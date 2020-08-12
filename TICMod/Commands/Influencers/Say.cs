@@ -9,17 +9,11 @@ namespace TICMod.Commands.Influencers
 {
     class Say : Influencer
     {
-        private string message = "";
-        private Color displayColor = Color.White;
+        protected string message = "";
+        protected Color displayColor = Color.White;
 
         private HashSet<string> aliases_ = new HashSet<string>() { "say" };
-        protected override HashSet<string> aliases
-        {
-            get
-            {
-                return aliases_;
-            }
-        }
+        protected override HashSet<string> aliases { get { return aliases_; } }
 
         public override bool ParseArguments(string[] args, out string err)
         {
@@ -31,18 +25,12 @@ namespace TICMod.Commands.Influencers
                 return false;
             }
 
-            int[] colors = new int[3];
-            for (int i = 0; i < 3; i++)
+            bool valid = ParseColor(args[0], args[2], args[3], out displayColor, out err);
+            if (!valid)
             {
-                bool valid = ParseInt(args[i], out colors[i], out err, 0, 255);
-
-                if (!valid)
-                {
-                    return false;
-                }
+                return false;
             }
 
-            displayColor = new Color(colors[0], colors[1], colors[2]);
             message = args[3];
 
             return true;

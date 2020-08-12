@@ -10,18 +10,12 @@ namespace TICMod.Commands.Influencers
 {
     class SpawnNpc : Influencer
     {
-        private int[] pos = new int[2];
-        private int npcID;
-        private string storeName;
+        protected int[] pos = new int[2];
+        protected int npcID;
+        protected string storeName;
 
         private HashSet<string> aliases_ = new HashSet<string>() { "spawnnpc" };
-        protected override HashSet<string> aliases
-        {
-            get
-            {
-                return aliases_;
-            }
-        }
+        protected override HashSet<string> aliases { get { return aliases_; } }
 
         public override bool ParseArguments(string[] args, out string err)
         {
