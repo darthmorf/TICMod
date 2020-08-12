@@ -25,7 +25,7 @@ namespace TICMod.Commands.Influencers
                 return false;
             }
 
-            bool valid = ParseColor(args[0], args[2], args[3], out displayColor, out err);
+            bool valid = ParseColor(args[0], args[1], args[2], out displayColor, out err);
             if (!valid)
             {
                 return false;

@@ -9,24 +9,25 @@ using Terraria.ModLoader;
 
 namespace TICMod.Commands.Influencers
 {
-    class DrawWorldText : Influencer
+    class DrawUIText : Influencer
     {
         protected Color displayColor;
         protected int[] pos;
         protected int duration;
         protected string message;
 
-        private HashSet<string> aliases_ = new HashSet<string>() { "drawworldtext" };
+        private HashSet<string> aliases_ = new HashSet<string>() { "drawuitext" };
         protected override HashSet<string> aliases { get { return aliases_; } }
 
         public override bool ParseArguments(string[] args, out string err)
         {
             err = "";
             bool valid;
+            pos = new int[2];
 
             if (args.Length != 7)
             {
-                err = $"Takes 7 parameters; R value, G value, B value, X Co-ordinate, Y Co-ordinate, Duration & Message";
+                err = $"Takes 7 parameters; R Value, G Value, B Value, Width %, Height %, Time & Message";
                 return false;
             }
 
@@ -36,12 +37,18 @@ namespace TICMod.Commands.Influencers
                 return false;
             }
 
-            valid = ParseCoord(args[3], args[4], out pos, out err);
+            valid = ParseInt(args[3], out pos[0], out err, 0, 100);
             if (!valid)
             {
                 return false;
             }
-            
+
+            valid = ParseInt(args[4], out pos[1], out err, 0, 100);
+            if (!valid)
+            {
+                return false;
+            }
+
             valid = ParseInt(args[5], out duration, out err, 0);
             if (!valid)
             {
@@ -57,15 +64,16 @@ namespace TICMod.Commands.Influencers
         {
             if (Main.dedServ)
             {
-                mod.SendTextDisplayPacket(message, displayColor, duration, pos[0], pos[1], true);
+                mod.SendTextDisplayPacket(message, displayColor, duration, pos[0], pos[1], false);
             }
             else
             {
-                mod.textDisplayer.AddText(message, displayColor, duration, pos[0], pos[1], true);
+                mod.textDisplayer.AddText(message, displayColor, duration, pos[0], pos[1], false);
             }
 
             string timeoutText = (duration < 1) ? "until world restart." : $"for {duration} seconds.";
-            return $"Displaying '{message}' as {displayColor.ToString()} at ({pos[0]}, {pos[1]}) {timeoutText}";
+            return $"Displaying '{message}' as {displayColor.ToString()} at ({pos[0]}%, {pos[1]}%) {timeoutText}";
+
         }
     }
 }
