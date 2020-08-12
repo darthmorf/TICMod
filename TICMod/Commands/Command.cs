@@ -12,6 +12,8 @@ namespace TICMod.Commands
 {
     public abstract class Command
     {
+        protected static TICMod mod;
+
         protected abstract HashSet<String> aliases
         {
             get;
@@ -26,24 +28,27 @@ namespace TICMod.Commands
 
         public abstract string Execute();
 
-
-
-
-
-        private static (List<Player>, CommandResponse, int) ParsePlayerTarget(string selector, string param, CommandResponse resp)
+        public Command()
         {
-            List<Player> players = new List<Player>();
-            int argCount = 0;
+            mod = ModContent.GetInstance<TICMod>();
+        }
+
+
+        protected static bool ParsePlayerTarget(string selector, string param, out List<Player> players, out int argCount, out string err)
+        {
+            players = new List<Player>();
+            err = "";
+            argCount = 0;
 
             if (selector == "@s")
             {
                 if (String.IsNullOrWhiteSpace(param))
                 {
-                    resp.response = $"{selector} requires 1 parameter; Datastore name";
-                    return (players, resp, argCount);
+                    err = $"{selector} requires 1 parameter; Datastore name";
+                    return false;
                 }
 
-                Player player = ModContent.GetInstance<TICMod>().playerDataStore.GetItem(param);
+                Player player = mod.playerDataStore.GetItem(param);
                 if (player != null)
                 {
                     players.Add(player);
@@ -65,8 +70,8 @@ namespace TICMod.Commands
             {
                 if (String.IsNullOrWhiteSpace(param))
                 {
-                    resp.response = $"{selector} requires 1 parameter; Player name";
-                    return (players, resp, argCount);
+                    err = $"{selector} requires 1 parameter; Player name";
+                    return false;
                 }
 
                 foreach (var player in Main.player)
@@ -97,12 +102,11 @@ namespace TICMod.Commands
             }
             else
             {
-                resp.response = $"{selector} is not a valid player target";
-                return (players, resp, argCount);
+                err = $"{selector} is not a valid player target";
+                return false;
             }
 
-            resp.valid = true;
-            return (players, resp, argCount);
+            return true;
         }
 
         protected static (List<NPC>, CommandResponse, int) ParseNPCTarget(string selector, string param, CommandResponse resp)
@@ -256,6 +260,26 @@ namespace TICMod.Commands
 
             resp.valid = true;
             return (posVal, resp);
+        }
+
+        protected static bool ParseCoord(string pos1, string pos2, out int[] pos, out string err)
+        {
+            pos = new int[2];
+            err = "";
+            string[] args = new[] {pos1, pos2};
+
+            for (int i = 0; i < 2; i++)
+            {
+                bool valid = ParseInt(args[i], out pos[i], out err, 0);
+                pos[i] *= 16;
+
+                if (!valid)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         protected static string GetPlayerNames(List<Player> players)

@@ -53,6 +53,5 @@ namespace TICMod.Commands.Influencers
             message.Split(new String[] { "\\n" }, StringSplitOptions.None).ToList().ForEach(line => Utils.ChatOutput(line, displayColor));
             return $"Displaying '{message}' as color {displayColor.ToString()}.";
         }
-
     }
 }

@@ -289,7 +289,7 @@ namespace TICMod
         {
             commands.AddRange(new Command[]
             {
-                new Say(), 
+                new Say(), new SpawnNpc(), new GiveItem(), 
             });
         }
     }
