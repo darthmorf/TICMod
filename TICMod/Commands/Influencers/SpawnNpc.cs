@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 
@@ -10,7 +11,7 @@ namespace TICMod.Commands.Influencers
 {
     class SpawnNpc : Influencer
     {
-        protected int[] pos = new int[2];
+        protected Point pos;
         protected int npcID;
         protected string storeName;
 
@@ -28,7 +29,7 @@ namespace TICMod.Commands.Influencers
                 return false;
             }
 
-            valid = ParseCoord(args[0], args[1], out pos, out err);
+            valid = ParseCoord(args[0], args[1], out pos, out err, true);
             if (!valid)
             {
                 return false;
@@ -54,7 +55,7 @@ namespace TICMod.Commands.Influencers
         {
             NPC npc = new NPC();
             npc.SetDefaults(npcID);
-            int index = NPC.NewNPC(pos[0], pos[1], npc.type);
+            int index = NPC.NewNPC(pos.X, pos.Y, npc.type);
             Main.npc[index].SetDefaults(npc.netID);
 
             if (storeName != null)
@@ -62,7 +63,7 @@ namespace TICMod.Commands.Influencers
                 mod.npcDataStore.AddItem(storeName, Main.npc[index]);
             }
 
-            return $"Successfully spawned {npc.GivenOrTypeName}, ID:{npc.netID} @ {pos[0] / 16},{pos[1] / 16}.";
+            return $"Successfully spawned {npc.GivenOrTypeName}, ID:{npc.netID} @ {pos.X / 16},{pos.Y / 16}.";
         }
     }
 }

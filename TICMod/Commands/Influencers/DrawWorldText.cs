@@ -12,7 +12,7 @@ namespace TICMod.Commands.Influencers
     class DrawWorldText : Influencer
     {
         protected Color displayColor;
-        protected int[] pos;
+        protected Point pos;
         protected int duration;
         protected string message;
 
@@ -36,7 +36,7 @@ namespace TICMod.Commands.Influencers
                 return false;
             }
 
-            valid = ParseCoord(args[3], args[4], out pos, out err);
+            valid = ParseCoord(args[3], args[4], out pos, out err, true);
             if (!valid)
             {
                 return false;
@@ -57,15 +57,15 @@ namespace TICMod.Commands.Influencers
         {
             if (Main.dedServ)
             {
-                mod.SendTextDisplayPacket(message, displayColor, duration, pos[0], pos[1], true);
+                mod.SendTextDisplayPacket(message, displayColor, duration, pos.X, pos.Y, true);
             }
             else
             {
-                mod.textDisplayer.AddText(message, displayColor, duration, pos[0], pos[1], true);
+                mod.textDisplayer.AddText(message, displayColor, duration, pos.X, pos.Y, true);
             }
 
             string timeoutText = (duration < 1) ? "until world restart." : $"for {duration} seconds.";
-            return $"Displaying '{message}' as {displayColor.ToString()} at ({pos[0]}, {pos[1]}) {timeoutText}";
+            return $"Displaying '{message}' as {displayColor.ToString()} at ({pos.X/16}, {pos.Y/16}) {timeoutText}";
         }
     }
 }

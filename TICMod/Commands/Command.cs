@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -259,16 +260,20 @@ namespace TICMod.Commands
             return (posVal, resp);
         }
 
-        protected static bool ParseCoord(string pos1, string pos2, out int[] pos, out string err)
+        protected static bool ParseCoord(string pos1, string pos2, out Point position, out string err, bool multiplier=false)
         {
-            pos = new int[2];
+            int[] pos = new int[2];
             err = "";
             string[] args = new[] {pos1, pos2};
+            position = Point.Zero;
 
             for (int i = 0; i < 2; i++)
             {
                 bool valid = ParseInt(args[i], out pos[i], out err, 0);
-                pos[i] *= 16;
+                if (multiplier)
+                {
+                    pos[i] *= 16;
+                }
 
                 if (!valid)
                 {
@@ -276,6 +281,7 @@ namespace TICMod.Commands
                 }
             }
 
+            position = new Point(pos[0], pos[1]);
             return true;
         }
 

@@ -12,7 +12,7 @@ namespace TICMod.Commands.Influencers
     class DrawUIText : Influencer
     {
         protected Color displayColor;
-        protected int[] pos;
+        protected Point pos;
         protected int duration;
         protected string message;
 
@@ -23,7 +23,6 @@ namespace TICMod.Commands.Influencers
         {
             err = "";
             bool valid;
-            pos = new int[2];
 
             if (args.Length != 7)
             {
@@ -37,13 +36,13 @@ namespace TICMod.Commands.Influencers
                 return false;
             }
 
-            valid = ParseInt(args[3], out pos[0], out err, 0, 100);
+            valid = ParseInt(args[3], out pos.Y, out err, 0, 100);
             if (!valid)
             {
                 return false;
             }
 
-            valid = ParseInt(args[4], out pos[1], out err, 0, 100);
+            valid = ParseInt(args[4], out pos.Y, out err, 0, 100);
             if (!valid)
             {
                 return false;
@@ -64,15 +63,15 @@ namespace TICMod.Commands.Influencers
         {
             if (Main.dedServ)
             {
-                mod.SendTextDisplayPacket(message, displayColor, duration, pos[0], pos[1], false);
+                mod.SendTextDisplayPacket(message, displayColor, duration, pos.Y, pos.Y, false);
             }
             else
             {
-                mod.textDisplayer.AddText(message, displayColor, duration, pos[0], pos[1], false);
+                mod.textDisplayer.AddText(message, displayColor, duration, pos.Y, pos.Y, false);
             }
 
             string timeoutText = (duration < 1) ? "until world restart." : $"for {duration} seconds.";
-            return $"Displaying '{message}' as {displayColor.ToString()} at ({pos[0]}%, {pos[1]}%) {timeoutText}";
+            return $"Displaying '{message}' as {displayColor.ToString()} at ({pos.Y}%, {pos.Y}%) {timeoutText}";
 
         }
     }
