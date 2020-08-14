@@ -107,17 +107,18 @@ namespace TICMod.Commands
             return true;
         }
 
-        protected static (List<NPC>, CommandResponse, int) ParseNPCTarget(string selector, string param, CommandResponse resp)
+        protected static bool ParseNPCTarget(string selector, string param, out List<NPC> npcs, out int argCount, out string err)
         {
-            List<NPC> npcs = new List<NPC>();
-            int argCount = 0;
+            npcs = new List<NPC>();
+            argCount = 0;
+            err = "";
 
             if (selector == "@s")
             {
                 if (String.IsNullOrWhiteSpace(param))
                 {
-                    resp.response = $"{selector} requires 1 parameter; Datastore name";
-                    return (npcs, resp, argCount);
+                    err = $"{selector} requires 1 parameter; Datastore name";
+                    return false;
                 }
 
                 NPC npc = ModContent.GetInstance<TICMod>().npcDataStore.GetItem(param);
@@ -134,17 +135,12 @@ namespace TICMod.Commands
             }
             else if (selector == "@i")
             {
-                var ret = CommandHandler.ParseInt(param, resp, 1, NPCID.Count);
-                int id = ret.Item1;
-                resp = ret.Item2;
-
-                if (!resp.valid)
+                bool valid = ParseInt(param, out int id, out err, 1, NPCID.Count);
+                if (!valid)
                 {
-                    resp.response = $"{selector} requires 1 parameter; NPC ID";
-                    return (npcs, resp, argCount);
+                    err = $"{selector} requires 1 parameter; NPC ID";
+                    return false;
                 }
-
-                resp.valid = false;
 
                 foreach (var npc in Main.npc)
                 {
@@ -188,13 +184,11 @@ namespace TICMod.Commands
             }
             else
             {
-                resp.response = $"{selector} is not a valid NPC target";
-                return (npcs, resp, argCount);
+                err = $"{selector} is not a valid NPC target";
+                return false;
             }
 
-
-            resp.valid = true;
-            return (npcs, resp, argCount);
+            return true;
         }
 
         protected static (uint[], CommandResponse) ParseTime(string args, CommandResponse resp)
