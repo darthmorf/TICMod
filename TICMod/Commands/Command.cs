@@ -19,6 +19,11 @@ namespace TICMod.Commands
 
         public bool IsAlias(string alias)
         {
+            if (aliases == null)
+            {
+                return false;
+            }
+
             return aliases.Contains(alias.ToLower());
         }
 

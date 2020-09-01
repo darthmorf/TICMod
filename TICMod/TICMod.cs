@@ -289,11 +289,26 @@ namespace TICMod
         {
             commands = new List<Command>();
 
-            var commandClasses = Assembly.GetExecutingAssembly().GetTypes().Where(ac => ac.BaseType == typeof(Influencer));
+            var commandClasses = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Influencer), ac));
             foreach (var commandClass in commandClasses)
             {
                 commands.Add((Influencer)Activator.CreateInstance(commandClass));
             }
+        }
+
+        // Recursively check if based off of type
+        private bool IsTypeOf(Type type, Type thisType)
+        {
+            if (thisType.BaseType == null)
+            {
+                return false;
+            }
+            else if (thisType.BaseType == type)
+            {
+                return true;
+            }
+
+            return IsTypeOf(type, thisType.BaseType);
         }
     }
 
