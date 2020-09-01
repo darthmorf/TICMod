@@ -120,7 +120,7 @@ EG: `spawnnpc 26,10, 53`
 Gives [targeted player(s)](#player-selection) the specified count of item with specified id.<br/>
 EG: `giveitem 26, 10, @a`
 
-#### Force Give Item to Player
+#### Force Give Item To Player
 `forcegiveitem id, count, player(s)`<br/>
 Gives [targeted player(s)](#player-selection) the specified count of item with specified id. Unlike [giveitem](#give-item-to-player), places the item directly in the inventory, rather than triggering the usual pickup text. Works when players are dead.<br/>
 EG: `forecegiveitem 26, 10, @a`
@@ -161,7 +161,12 @@ Copies the tiles within the region (startX,startY) - (endX,endY) to (destination
 EG: `copytile 10,15, 50,60, 100,16`
 
 #### Destroy Tiles
-`destroytile startX,startY, endX,endY`<br/>
+`destroytile startX,startY, endX,endY, id, style (optional)`<br/>
+Places tiles of specified id and style within the region (startX,startY) - (endX,endY). Can have difficulty placing non-valid tile or furniture parts.<br/>
+EG: `destroytile 10,15, 50,60`
+
+#### Place Tiles
+`placetile startX,startY, endX,endY`<br/>
 Destroys the tiles within the specified region. No items are dropped.<br/>
 EG: `destroytile 10,15, 50,60`
 
@@ -211,7 +216,7 @@ Conditionals check whether something is true or false, and then give an output d
 - Once activated, if the condition is false a signal is sent through OUT 2. 
 
 ### Conditional Commands
-#### Is Day?
+#### Is Day
 `day`<br/>
 Checks to see if it is currently Day.
 
@@ -268,7 +273,7 @@ Some commands will allow you to output an effected entity so that they can be ef
 
 ## Examples
 
-#### Give 20 Lesser Healing Potions to players when they die.
+#### Give 20 Lesser Healing Potions to players when they die
 First, we need a Trigger to trigger when a player dies, and store that player in a [datastore](#data-stores). Let's call this store `deadplayer`. This is achieved by using the [playerdeath](#player-death) command in a trigger:<br/>
 `playerdeath deadplayer`<br/>
 This Trigger's output should then be wired to an Influencer with the [forcegiveitem](#force-give-item-to-player) command, targeting the [datastore](#data-stores) we created in the the Trigger:<br/>
