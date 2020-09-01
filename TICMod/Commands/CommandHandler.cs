@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using TICMod.Commands.Conditionals;
 using TICMod.Commands.Influencers;
 
 namespace TICMod
@@ -17,6 +18,7 @@ namespace TICMod
 
         public static CommandResponse Parse(string command, BlockType blockType, bool execute = true, int i = -1, int j = -1)
         {
+            mod = ModContent.GetInstance<TICMod>();
             var commandsplit = command.Split(new[] {' '}, 2).ToList();
             string commandtype = commandsplit[0];
             string[] args = new string[0];
@@ -37,7 +39,6 @@ namespace TICMod
                     resp = ParseInfluencer(commandtype, args, execute);
                     break;
                 case BlockType.Conditional:
-                    break;
                     resp = ParseConditional(commandtype, args, execute);
                     break;
             }
@@ -63,8 +64,6 @@ namespace TICMod
         private static CommandResponse ParseInfluencer(string command, string[] args, bool execute)
         {
             CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
-
-            mod = ModContent.GetInstance<TICMod>();
 
             List<Influencer> influencerCommands = mod.commands.OfType<Influencer>().ToList();
 
@@ -92,7 +91,34 @@ namespace TICMod
             return resp;
         }
 
+        private static CommandResponse ParseConditional(string command, string[] args, bool execute)
+        {
+            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
 
+            List<Conditional> conditionalCommands = mod.commands.OfType<Conditional>().ToList();
+
+            foreach (Conditional conditional in conditionalCommands)
+            {
+                if (conditional.IsAlias(command))
+                {
+                    resp.valid = conditional.ParseArguments(args, out resp.response);
+
+                    if (resp.valid)
+                    {
+                        resp.response = "";
+
+                        if (execute)
+                        {
+                            resp.response = conditional.Execute(out resp.success);
+                        }
+                    }
+
+                    return resp;
+                }
+            }
+
+            return resp;
+        }
 
         public static (uint[], CommandResponse) ParseTime(string args, CommandResponse resp)
         {

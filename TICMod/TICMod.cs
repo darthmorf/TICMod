@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.UI;
 using TICMod.Commands;
+using TICMod.Commands.Conditionals;
 using TICMod.Commands.Influencers;
 using TICMod.UI;
 using Point16 = Terraria.DataStructures.Point16;
@@ -289,10 +290,16 @@ namespace TICMod
         {
             commands = new List<Command>();
 
-            var commandClasses = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Influencer), ac));
-            foreach (var commandClass in commandClasses)
+            var enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Influencer), ac));
+            foreach (var commandClass in enumerable)
             {
                 commands.Add((Influencer)Activator.CreateInstance(commandClass));
+            }
+
+            enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Conditional), ac));
+            foreach (var commandClass in enumerable)
+            {
+                commands.Add((Conditional)Activator.CreateInstance(commandClass));
             }
         }
 
