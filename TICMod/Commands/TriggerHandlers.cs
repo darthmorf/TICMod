@@ -59,7 +59,7 @@ namespace TICMod
             {
                 data.trigger = () =>
                 {
-                    string currenttime = Utilities.GetTimeAsString(Main.time);
+                    string currenttime = Utils.GetTimeAsString(Main.time);
 
 
                     if (data.enabled && currenttime == givenTime && !triggered)
