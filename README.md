@@ -25,6 +25,17 @@ Functionality is implemented through three seperate tiles; the Trigger, the Infl
     - [Respawn Player](#respawn-player)
     - [Kill Player](#kill-player)
     - [Kill NPC](#kill-npc)
+    - [Clear Dropped Items](#clear-dropped-items)
+    - [Copy Tiles](#copy-tiles)
+    - [Destroy Tiles](#destroy-tiles)
+    - [Place Tiles](#place-tiles)
+    - [Remove Inventory Item](#remove-inventory-item)
+    - [Set Health](#set-health)
+    - [Set Max Health](#set-max-health)
+    - [Set Mana](#set-mana)
+    - [Set Max Mana](#set-max-mana)
+    - [Spawn World Item](#spawn-world-item)
+    - [Teleport Player](#teleport-player)
 - [Conditionals](#conditionals)
   - [Conditional Commands](#conditional-commands)
     - [Is Day?](#is-day)
@@ -138,6 +149,51 @@ EG: `kill @n, darthmorf, Killed #name\, they deserved it!`
 `killnpc npc`<br/>
 Kills the [targeted NPC](#npc-selection).<br/>
 EG: `killnpc @e`
+
+#### Clear Dropped Items
+`cleardroppeditems`<br/>
+Removes all items that are dropped in the world.<br/>
+EG: `cleardroppeditems`
+
+#### Copy Tiles
+`copytile startX,startY, endX,endY, destinationX,destionationY`<br/>
+Copies the tiles within the region (startX,startY) - (endX,endY) to (destinationX,destinationY) where the destination coordinates are the new top-right of the tiles.<br/>
+EG: `copytile 10,15, 50,60, 100,16`
+
+#### Destroy Tiles
+`destroytile startX,startY, endX,endY`<br/>
+Destroys the tiles within the specified region. No items are dropped.<br/>
+EG: `destroytile 10,15, 50,60`
+
+#### Remove Inventory Item
+`removeitem id, count, player(s)`<br/>
+Removes items from the player inventory, up to count.<br/>
+EG: `removeitem 26, 10, @r`
+
+#### Set Health
+`sethealth value, player(2)`<br/>
+Sets the current health of specified players to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
+EG: `sethealth 10, @a`
+
+#### Set Max Health
+`setmaxhealth value, player(s)`<br/>
+Sets the maximum health of specified players to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
+EG: `setmaxhealth 200, @a`
+
+#### Set Mana
+`setmana value, player(2)`<br/>
+Sets the current mana of specified players to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
+EG: `setmana 0, @a`
+
+#### Set Max Mana
+`setmaxmana value, player(s)`<br/>
+Sets the maximum mana of specified players to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
+EG: `setmaxmana 200, @a`
+
+#### Spawn World Item
+`spawnitem x, y, id, count`<br/>
+Spawns an item in the world at coordinates x,y with specified id and count.<br/>
+EG: `spawnitem 26,10, 31, 20`
 
 ## Conditionals
 
