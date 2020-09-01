@@ -290,7 +290,13 @@ namespace TICMod
         {
             commands = new List<Command>();
 
-            var enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Influencer), ac));
+            var enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Trigger), ac));
+            foreach (var commandClass in enumerable)
+            {
+                commands.Add((Trigger)Activator.CreateInstance(commandClass));
+            }
+
+            enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Influencer), ac));
             foreach (var commandClass in enumerable)
             {
                 commands.Add((Influencer)Activator.CreateInstance(commandClass));

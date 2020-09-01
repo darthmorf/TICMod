@@ -33,7 +33,7 @@ namespace TICMod.Commands.Conditionals
 
         public override string Execute()
         {
-            return Execute(out bool conditionMet);
+           throw new Exception("Conditionals must only be executed with a passed out boolean to mark success");
         }
     }
 }

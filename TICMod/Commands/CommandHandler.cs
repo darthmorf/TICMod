@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using TICMod.Commands;
 using TICMod.Commands.Conditionals;
 using TICMod.Commands.Influencers;
 
@@ -32,7 +33,6 @@ namespace TICMod
             switch (blockType)
             {
                 case BlockType.Trigger:
-                    break;
                     resp = ParseTrigger(commandtype, args, execute, i, j);
                     break;
                 case BlockType.Influencer:
@@ -59,6 +59,36 @@ namespace TICMod
             }
 
             return split;
+        }
+
+        private static CommandResponse ParseTrigger(string command, string[] args, bool execute, int i, int j)
+        {
+            TICWorld world = ModContent.GetInstance<TICWorld>();
+            CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
+
+            List<Trigger> triggerCommands = mod.commands.OfType<Trigger>().ToList();
+
+            foreach (Trigger trigger in triggerCommands)
+            {
+                if (trigger.IsAlias(command))
+                {
+                    resp.valid = trigger.ParseArguments(args, out resp.response);
+
+                    if (resp.valid)
+                    {
+                        resp.response = "";
+
+                        if (execute)
+                        {
+                            trigger.Execute(i, j, world);
+                        }
+                    }
+
+                    return resp;
+                }
+            }
+
+            return resp;
         }
 
         private static CommandResponse ParseInfluencer(string command, string[] args, bool execute)
@@ -118,31 +148,6 @@ namespace TICMod
             }
 
             return resp;
-        }
-
-        public static (uint[], CommandResponse) ParseTime(string args, CommandResponse resp)
-        {
-            var posStr = args.Split(new[] {':'}, 2);
-            List<uint> time = new List<uint>(2);
-            foreach (var str in posStr)
-            {
-                bool success = uint.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out uint posVal);
-                if (!success)
-                {
-                    break;
-                }
-
-                time.Add(posVal);
-            }
-
-            if (time.Count != 2 || time[0] > 24 || time[1] > 59)
-            {
-                resp.response = $"{args} is not a valid time in format hh:mm.";
-                return (time.ToArray(), resp);
-            }
-
-            resp.valid = true;
-            return (time.ToArray(), resp);
         }
     }
 

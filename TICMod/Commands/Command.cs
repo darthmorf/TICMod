@@ -305,6 +305,31 @@ namespace TICMod.Commands
             return true;
         }
 
+        public static bool ParseTime(string args, out List<uint> time, out string err)
+        {
+            var posStr = args.Split(new[] { ':' }, 2);
+            err = "";
+            time = new List<uint>(2);
+            foreach (var str in posStr)
+            {
+                bool success = uint.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out uint posVal);
+                if (!success)
+                {
+                    break;
+                }
+
+                time.Add(posVal);
+            }
+
+            if (time.Count != 2 || time[0] > 24 || time[1] > 59)
+            {
+                err = $"{args} is not a valid time in format hh:mm.";
+                return false;
+            }
+
+            return true;
+        }
+
         protected static string GetPlayerNames(List<Player> players)
         {
             string playernames = "";
