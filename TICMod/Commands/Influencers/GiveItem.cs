@@ -14,7 +14,7 @@ namespace TICMod.Commands.Influencers
         protected int itemId;
         protected int itemCount;
 
-        private HashSet<string> aliases_ = new HashSet<string>() { "giveitem", "give", "spawnitem" };
+        private HashSet<string> aliases_ = new HashSet<string>() { "giveitem", "give" };
         protected override HashSet<string> aliases { get { return aliases_; } }
 
         public override bool ParseArguments(string[] args, out string err)
