@@ -117,12 +117,12 @@ EG: `spawnnpc 26,10, 53`
 
 #### Give Item to Player
 `giveitem id, count, player(s)`<br/>
-Gives [targeted player](#player-selection) the specified count of item with specified id.<br/>
+Gives [targeted player(s)](#player-selection) the specified count of item with specified id.<br/>
 EG: `giveitem 26, 10, @a`
 
 #### Force Give Item to Player
 `forcegiveitem id, count, player(s)`<br/>
-Gives [targeted player](#player-selection) the specified count of item with specified id. Unlike [giveitem](#give-item-to-player), places the item directly in the inventory, rather than triggering the usual pickup text. Works when players are dead.<br/>
+Gives [targeted player(s)](#player-selection) the specified count of item with specified id. Unlike [giveitem](#give-item-to-player), places the item directly in the inventory, rather than triggering the usual pickup text. Works when players are dead.<br/>
 EG: `forecegiveitem 26, 10, @a`
 
 #### Draw World Text
@@ -136,13 +136,13 @@ Displays text with specified color at specified UI % position. Acts as if it wer
 EG: `drawuitext 0,160,255, 50,10, Hello World!`
 
 #### Respawn Player
-`respawn player`<br/>
-Respawns the current player if they are dead. Does nothing if they are not.<br/>
+`respawn player(s)`<br/>
+Respawns the [targeted player(s)](#player-selection) if they are dead. Does nothing if they are not.<br/>
 EG: `respawn @a`
 
 #### Kill Player
-`kill player, reason`<br/>
-Kills the [targeted player](#player-selection), with `reason` as the message displayed in chat. The string `#name` can be included within `reason` to refer to the name of the player that was killed.<br/>
+`kill player(s), reason`<br/>
+Kills the [targeted player(s)](#player-selection), with `reason` as the message displayed in chat. The string `#name` can be included within `reason` to refer to the name of the player that was killed.<br/>
 EG: `kill @n, darthmorf, Killed #name\, they deserved it!`
 
 #### Kill NPC
@@ -167,33 +167,38 @@ EG: `destroytile 10,15, 50,60`
 
 #### Remove Inventory Item
 `removeitem id, count, player(s)`<br/>
-Removes items from the player inventory, up to count.<br/>
+Removes items from the [targeted player(s)](#player-selection)'s inventory, up to count.<br/>
 EG: `removeitem 26, 10, @r`
 
 #### Set Health
-`sethealth value, player(2)`<br/>
-Sets the current health of specified players to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
+`sethealth value, player(s)`<br/>
+Sets the current health of [targeted player(s)](#player-selection) to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
 EG: `sethealth 10, @a`
 
 #### Set Max Health
 `setmaxhealth value, player(s)`<br/>
-Sets the maximum health of specified players to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
+Sets the maximum health of [targeted player(s)](#player-selection) to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
 EG: `setmaxhealth 200, @a`
 
 #### Set Mana
-`setmana value, player(2)`<br/>
-Sets the current mana of specified players to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
+`setmana value, player(s)`<br/>
+Sets the current mana of [targeted player(s)](#player-selection) to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
 EG: `setmana 0, @a`
 
 #### Set Max Mana
 `setmaxmana value, player(s)`<br/>
-Sets the maximum mana of specified players to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
+Sets the maximum mana of [targeted player(s)](#player-selection) to value. Unusual values may not persist after world save/rejoin to preserve vanilla compatibility.<br/>
 EG: `setmaxmana 200, @a`
 
 #### Spawn World Item
 `spawnitem x, y, id, count`<br/>
 Spawns an item in the world at coordinates x,y with specified id and count.<br/>
 EG: `spawnitem 26,10, 31, 20`
+
+#### Teleport Player
+`teleport x, y, player(s)`<br/>
+Teleports [targeted player(s)](#player-selection) to x,y.<br/>
+EG: `teleport 26,10, @a`
 
 ## Conditionals
 
