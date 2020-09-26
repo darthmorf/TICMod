@@ -26,10 +26,20 @@ def parseAnchors(content):
             if anchor in content[i]:
                 content[i] = content[i].replace("(#" + anchor + ")", "")
                 title = content[i].replace("-", "").replace("[", "").replace("]", "").strip()
-                print(title)
+                #print(title)
+                if "Force" in title:
+                    print("ERR")
                 content[i] = content[i].replace("[" + title + "]", "[goto=" + anchor + "]" + title + "[/goto]")
                 break
+        
     return content    
+
+def parseImages(content):
+    for i in range(len(content)):
+        if "![](" in content[i]:
+            content[i] = content[i].replace("![](", "[IMG]https://raw.githubusercontent.com/darthmorf/TICMod/master/")
+            content[i] = content[i].replace(")", "[/IMG]")
+    return content
     
 def rebuildContent(content):
     rebuilt = ""
@@ -52,6 +62,7 @@ readme = parseHeaders("### ", "[SIZE=6][B]", "[/B][/SIZE]", readme)
 readme = parseHeaders("#### ", "[SIZE=5][B]", "[/B][/SIZE]", readme)
 readme = parseCode(readme)
 readme = parseAnchors(readme)
+readme = parseImages(readme)
 readme = rebuildContent(readme)
 
 print(readme)
