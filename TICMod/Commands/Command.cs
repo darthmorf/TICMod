@@ -15,6 +15,7 @@ namespace TICMod.Commands
     public abstract class Command
     {
         protected static TICMod mod;
+        protected static TICSystem modSystem;
         protected abstract HashSet<String> aliases { get; }
 
         public bool IsAlias(string alias)
@@ -34,6 +35,7 @@ namespace TICMod.Commands
         public Command()
         {
             mod = ModContent.GetInstance<TICMod>();
+            modSystem = ModContent.GetInstance<TICSystem>();
         }
 
 
@@ -51,7 +53,7 @@ namespace TICMod.Commands
                     return false;
                 }
 
-                Player player = mod.playerDataStore.GetItem(param);
+                Player player = modSystem.playerDataStore.GetItem(param);
                 if (player != null)
                 {
                     players.Add(player);
@@ -126,7 +128,7 @@ namespace TICMod.Commands
                     return false;
                 }
 
-                NPC npc = ModContent.GetInstance<TICMod>().npcDataStore.GetItem(param);
+                NPC npc = modSystem.npcDataStore.GetItem(param);
                 if (npc != null)
                 {
                     npcs.Add(npc);

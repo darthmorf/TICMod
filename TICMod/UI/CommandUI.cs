@@ -18,7 +18,7 @@ namespace TICMod.UI
     {
         private UIText titleText;
         private UIBetterTextBox commandInput;
-        private TICWorld world;
+        private TICSystem world;
         private UIPanel button;
         private UICheckbox outputCheckbox;
 
@@ -68,13 +68,13 @@ namespace TICMod.UI
             UIQuitButton quitButton = new UIQuitButton("Close Menu");
             quitButton.Top.Set(-6, 0f);
             quitButton.Left.Set(0, 0.983f);
-            quitButton.OnClick += (evt, element) => { ModContent.GetInstance<TICMod>().ToggleCommandUI(i, j, uiType,true);};
+            quitButton.OnClick += (evt, element) => { ModContent.GetInstance<TICSystem>().ToggleCommandUI(i, j, uiType,true);};
             this.Append(quitButton);
         }
 
         public void InitValues(int i, int j, BlockType type)
         {
-            world = ModContent.GetInstance<TICWorld>();
+            world = ModContent.GetInstance<TICSystem>();
             this.i = i;
             this.j = j;
             uiType = type;
@@ -85,7 +85,7 @@ namespace TICMod.UI
             commandInput.SetText(world.data[(i, j)].command);
             outputCheckbox.Selected = world.data[(i, j)].chatOutput;
 
-            commandInput.OnTabPressed += () => ModContent.GetInstance<TICMod>().CycleCommandUIFocus(i, j);
+            commandInput.OnTabPressed += () => ModContent.GetInstance<TICSystem>().CycleCommandUIFocus(i, j);
 
         }
 

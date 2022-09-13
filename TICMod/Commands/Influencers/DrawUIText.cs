@@ -67,7 +67,7 @@ namespace TICMod.Commands.Influencers
             }
             else
             {
-                mod.textDisplayer.AddText(message, displayColor, duration, pos.Y, pos.Y, false);
+                modSystem.textDisplayer.AddText(message, displayColor, duration, pos.Y, pos.Y, false);
             }
 
             string timeoutText = (duration < 1) ? "until world restart." : $"for {duration} seconds.";

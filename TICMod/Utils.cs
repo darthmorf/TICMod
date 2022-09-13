@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
+using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
 
@@ -17,7 +18,7 @@ namespace TICMod
         {
             if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.MultiplayerClient)
             {
-                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(message), color);
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(message), color);
             }
             else if (Main.netMode == NetmodeID.SinglePlayer)
             {

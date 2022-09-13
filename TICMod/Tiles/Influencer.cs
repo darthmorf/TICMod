@@ -3,6 +3,7 @@ using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -15,8 +16,8 @@ namespace TICMod.Tiles
 {
 	public class Influencer : ModTile
     {
-        private TICWorld world;
-        public override void SetDefaults()
+        private TICSystem world;
+        public override void SetStaticDefaults()
 		{
             Main.tileSolid[Type] = false;
 			Main.tileBlockLight[Type] = false;
@@ -24,14 +25,14 @@ namespace TICMod.Tiles
             Main.tileNoAttach[Type] = true;
             Main.tileSolidTop[Type] = true;
             TileID.Sets.HasOutlines[Type] = true;
-            dustType = 202;
+            DustType = 202;
             TileObjectData.newTile.CopyFrom(TileObjectData.StyleSwitch);
             TileObjectData.addTile(Type);
 
-            world = ModContent.GetInstance<TICWorld>();
+            world = ModContent.GetInstance<TICSystem>();
         }
 
-        public override bool HasSmartInteract() => true;
+        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
         public override bool Drop(int i, int j)
 		{
@@ -58,9 +59,9 @@ namespace TICMod.Tiles
             world.SendChatMsg(command, i, j);
         }
 
-        public override bool NewRightClick(int i, int j)
+        public override bool RightClick(int i, int j)
         {
-            GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Influencer);
+            GetInstance<TICSystem>().ToggleCommandUI(i, j, BlockType.Influencer);
             
             return true;
         }
@@ -69,8 +70,8 @@ namespace TICMod.Tiles
         {
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
-            player.showItemIcon = true;
-            player.showItemIcon2 = ItemType<Items.Influencer>();
+            player.cursorItemIconEnabled = true;
+            player.cursorItemIconID = ItemType<Items.Influencer>();
         }
 
         public override void PlaceInWorld(int i, int j, Item item)
@@ -82,7 +83,7 @@ namespace TICMod.Tiles
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             world.data.Remove((i, j));
-            GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Influencer, true);
+            GetInstance<TICSystem>().ToggleCommandUI(i, j, BlockType.Influencer, true);
            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 

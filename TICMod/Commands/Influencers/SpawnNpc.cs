@@ -60,7 +60,7 @@ namespace TICMod.Commands.Influencers
 
             if (storeName != null)
             {
-                mod.npcDataStore.AddItem(storeName, Main.npc[index]);
+                modSystem.npcDataStore.AddItem(storeName, Main.npc[index]);
             }
 
             return $"Successfully spawned {npc.GivenOrTypeName}, ID:{npc.netID} @ {pos.X / 16},{pos.Y / 16}.";

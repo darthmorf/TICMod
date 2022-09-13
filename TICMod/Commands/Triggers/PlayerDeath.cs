@@ -35,7 +35,7 @@ namespace TICMod.Commands.Triggers
 
         public override Action GetTrigger()
         {
-            TICWorld.Data data = this.data;
+            TICSystem.Data data = this.data;
             List<Player> triggeredPlayers = new List<Player>();
 
             return () =>
@@ -45,7 +45,7 @@ namespace TICMod.Commands.Triggers
                     if (player.dead && data.enabled && !triggeredPlayers.Contains(player))
                     {
                         triggeredPlayers.Add(player);
-                        mod.playerDataStore.AddItem(storeName, player);
+                        modSystem.playerDataStore.AddItem(storeName, player);
                         ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(data.x, data.y - 1);
 
                         if (data.chatOutput)

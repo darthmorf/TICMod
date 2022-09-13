@@ -40,7 +40,7 @@ namespace TICMod.Commands.Triggers
         {
             bool triggered = this.triggered;
             string givenTime = this.givenTime;
-            TICWorld.Data data = this.data;
+            TICSystem.Data data = this.data;
 
             return () =>
             {

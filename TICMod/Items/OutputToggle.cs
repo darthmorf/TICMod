@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -22,13 +24,13 @@ namespace TICMod.Items
 
         public override void SetDefaults()
 		{
-			item.width = 20;
-			item.height = 20;
-			item.maxStack = 1;
-			item.value = 0;
-            item.rare = ItemRarityID.Cyan;
-            item.useStyle = 5;
-            item.useAnimation = 5;
+			Item.width = 20;
+			Item.height = 20;
+			Item.maxStack = 1;
+			Item.value = 0;
+            Item.rare = ItemRarityID.Cyan;
+            Item.useStyle = 5;
+            Item.useAnimation = 5;
 
             UpdateState();
         }
@@ -38,26 +40,26 @@ namespace TICMod.Items
             if (Main.dedServ == false)
             {
                 if (enableTexture == null)
-                    enableTexture = mod.GetTexture("Items/OutputToggleOn");
+                    enableTexture = Mod.GetTexture("Items/OutputToggleOn");
                 if (disableTexture == null)
-                    disableTexture = mod.GetTexture("Items/OutputToggleOff");
+                    disableTexture = Mod.GetTexture("Items/OutputToggleOff");
 
-                bool output = ModContent.GetInstance<TICWorld>().tileOutput;
+                bool output = ModContent.GetInstance<TICSystem>().tileOutput;
                 if (output)
                 {
-                    Main.itemTexture[item.type] = disableTexture;
+                    TextureAssets.Item[Item.type].Value = disableTexture;
                 }
                 else
                 {
-                    Main.itemTexture[item.type] = enableTexture;
+                    TextureAssets.Item[Item.type].Value = enableTexture;
                 }
             }
         }
 
-        public override bool UseItem(Player player)
+        public override Nullable<bool> UseItem(Player player)
         {
-            bool output = ModContent.GetInstance<TICWorld>().tileOutput;
-            ModContent.GetInstance<TICWorld>().tileOutput = !output;
+            bool output = ModContent.GetInstance<TICSystem>().tileOutput;
+            ModContent.GetInstance<TICSystem>().tileOutput = !output;
 
             if (!output)
             {
@@ -75,7 +77,7 @@ namespace TICMod.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            bool output = ModContent.GetInstance<TICWorld>().tileOutput;
+            bool output = ModContent.GetInstance<TICSystem>().tileOutput;
             string tt = "";
             if (output)
             {
@@ -90,12 +92,12 @@ namespace TICMod.Items
             {
                 if (tooltip.Name == "Tooltip#0")
                 {
-                    tooltip.text = tt;
+                    tooltip.Text = tt;
                     return;
                 }
             }
 
-            tooltips.Add(new TooltipLine(mod, "Tooltip#0", tt));
+            tooltips.Add(new TooltipLine(Mod, "Tooltip#0", tt));
         }
     }
 }

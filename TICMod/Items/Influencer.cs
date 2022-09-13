@@ -17,19 +17,19 @@ namespace TICMod.Items
 
 		public override void SetDefaults()
 		{
-			item.useStyle = 1;
-			item.useTurn = true;
-			item.useAnimation = 15;
-			item.useTime = 10;
-			item.autoReuse = true;
-			item.maxStack = 9999;
-			item.consumable = true;
-			item.createTile = TileType<Tiles.Influencer>();
-			item.width = 12;
-			item.height = 12;
-			item.value = 0;
-			item.mech = true;
-            item.rare = ItemRarityID.Cyan;
+			Item.useStyle = 1;
+			Item.useTurn = true;
+			Item.useAnimation = 15;
+			Item.useTime = 10;
+			Item.autoReuse = true;
+			Item.maxStack = 9999;
+			Item.consumable = true;
+			Item.createTile = TileType<Tiles.Influencer>();
+			Item.width = 12;
+			Item.height = 12;
+			Item.value = 0;
+			Item.mech = true;
+            Item.rare = ItemRarityID.Cyan;
 		}
     }
 }

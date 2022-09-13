@@ -6,6 +6,7 @@ using On.Terraria.Chat;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -19,8 +20,8 @@ namespace TICMod.Tiles
 {
 	public class Trigger : ModTile
     {
-        private TICWorld world;
-		public override void SetDefaults()
+        private TICSystem world;
+		public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = false;
 			Main.tileBlockLight[Type] = false;
@@ -28,7 +29,7 @@ namespace TICMod.Tiles
 			Main.tileNoAttach[Type] = false;
 			Main.tileSolidTop[Type] = true;
             TileID.Sets.HasOutlines[Type] = true;
-            dustType = 145;
+            DustType = 145;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.newTile.AnchorTop = new AnchorData(AnchorType.None, 0, 0);
@@ -36,10 +37,10 @@ namespace TICMod.Tiles
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.addTile(Type);
 
-            world = ModContent.GetInstance<TICWorld>();
+            world = ModContent.GetInstance<TICSystem>();
         }
 
-        public override bool HasSmartInteract() => true;
+        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
@@ -49,7 +50,7 @@ namespace TICMod.Tiles
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             world.data.Remove((i, j));
-            GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Conditional, true);
+            GetInstance<TICSystem>().ToggleCommandUI(i, j, BlockType.Conditional, true);
             base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 
@@ -65,7 +66,7 @@ namespace TICMod.Tiles
             Tile tile = Main.tile[i, j];
 
             // Check if the base of the block was triggered by wire
-            if (tile.frameY / 18 == 1)
+            if (tile.TileFrameY / 18 == 1)
             {
                 isBottom = true;
             }
@@ -75,9 +76,9 @@ namespace TICMod.Tiles
                 
                 world.data.TryGetValue((i, j), out var data);
                 world.data[(i, j)].enabled = !world.data[(i, j)].enabled;
-                short frameAdjustment = (short)(tile.frameX > 0 ? -18 : 18);
-                Main.tile[i, j].frameX += frameAdjustment;
-                Main.tile[i, j-1].frameX += frameAdjustment;
+                short frameAdjustment = (short)(tile.TileFrameX > 0 ? -18 : 18);
+                Main.tile[i, j].TileFrameX += frameAdjustment;
+                Main.tile[i, j-1].TileFrameX += frameAdjustment;
                 NetMessage.SendTileSquare(-1, i, j - 1, 2, TileChangeType.None);
                 string state = world.data[(i, j)].enabled ? "Disabled" : "Enabled";
                 world.SendChatMsg($"{state}", i, j);
@@ -88,13 +89,13 @@ namespace TICMod.Tiles
         {
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
-            player.showItemIcon = true;
-            player.showItemIcon2 = ItemType<Items.Trigger>();
+            player.cursorItemIconEnabled = true;
+            player.cursorItemIconID = ItemType<Items.Trigger>();
         }
 
-        public override bool NewRightClick(int i, int j)
+        public override bool RightClick(int i, int j)
         {
-            GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Trigger);
+            GetInstance<TICSystem>().ToggleCommandUI(i, j, BlockType.Trigger);
 
             return true;
         }

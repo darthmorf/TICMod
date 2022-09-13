@@ -3,6 +3,7 @@ using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -14,8 +15,8 @@ namespace TICMod.Tiles
 {
 	public class Conditional : ModTile
 	{
-        private TICWorld world;
-        public override void SetDefaults()
+        private TICSystem world;
+        public override void SetStaticDefaults()
 		{
 			Main.tileSolid[Type] = false;
 			Main.tileBlockLight[Type] = false;
@@ -23,7 +24,7 @@ namespace TICMod.Tiles
 			Main.tileNoAttach[Type] = true;
 			Main.tileSolidTop[Type] = true;
             TileID.Sets.HasOutlines[Type] = true;
-            dustType = 233;
+            DustType = 233;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
             TileObjectData.newTile.Height = 3;
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
@@ -34,10 +35,10 @@ namespace TICMod.Tiles
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.addTile(Type);
 
-            world = ModContent.GetInstance<TICWorld>();
+            world = ModContent.GetInstance<TICSystem>();
         }
 
-        public override bool HasSmartInteract() => true;
+        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
@@ -50,7 +51,7 @@ namespace TICMod.Tiles
             Tile tile = Main.tile[i, j];
 
             // Check if the base of the block was triggered by wire
-            if (tile.frameY / 18 == 2)
+            if (tile.TileFrameY / 18 == 2)
             {
                 isBottom = true;
             }
@@ -87,7 +88,7 @@ namespace TICMod.Tiles
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             world.data.Remove((i, j));
-            GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Conditional, true);
+            GetInstance<TICSystem>().ToggleCommandUI(i, j, BlockType.Conditional, true);
             base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
 
@@ -95,13 +96,13 @@ namespace TICMod.Tiles
         {
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
-            player.showItemIcon = true;
-            player.showItemIcon2 = ItemType<Items.Conditional>();
+            player.cursorItemIconEnabled = true;
+            player.cursorItemIconID = ItemType<Items.Conditional>();
         }
 
-        public override bool NewRightClick(int i, int j)
+        public override bool RightClick(int i, int j)
         {
-            GetInstance<TICMod>().ToggleCommandUI(i, j, BlockType.Conditional);
+            GetInstance<TICSystem>().ToggleCommandUI(i, j, BlockType.Conditional);
 
             return true;
         }

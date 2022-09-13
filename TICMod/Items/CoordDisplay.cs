@@ -20,11 +20,11 @@ namespace TICMod.Items
 
         public override void SetDefaults()
         {
-            item.width = 20;
-            item.height = 20;
-            item.accessory = true;
-            item.value = 0;
-            item.rare = ItemRarityID.Cyan;
+            Item.width = 20;
+            Item.height = 20;
+            Item.accessory = true;
+            Item.value = 0;
+            Item.rare = ItemRarityID.Cyan;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

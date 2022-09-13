@@ -16,10 +16,12 @@ namespace TICMod
     public static partial class CommandHandler
     {
         public static TICMod mod;
+        public static TICSystem modSystem;
 
         public static CommandResponse Parse(string command, BlockType blockType, bool execute = true, int i = -1, int j = -1)
         {
             mod = ModContent.GetInstance<TICMod>();
+            modSystem = ModContent.GetInstance<TICSystem>();
             var commandsplit = command.Split(new[] {' '}, 2).ToList();
             string commandtype = commandsplit[0];
             string[] args = new string[0];
@@ -63,10 +65,10 @@ namespace TICMod
 
         private static CommandResponse ParseTrigger(string command, string[] args, bool execute, int i, int j)
         {
-            TICWorld world = ModContent.GetInstance<TICWorld>();
+            TICSystem world = ModContent.GetInstance<TICSystem>();
             CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
 
-            List<Trigger> triggerCommands = mod.commands.OfType<Trigger>().ToList();
+            List<Trigger> triggerCommands = modSystem.commands.OfType<Trigger>().ToList();
 
             foreach (Trigger trigger in triggerCommands)
             {
@@ -95,7 +97,7 @@ namespace TICMod
         {
             CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
 
-            List<Influencer> influencerCommands = mod.commands.OfType<Influencer>().ToList();
+            List<Influencer> influencerCommands = modSystem.commands.OfType<Influencer>().ToList();
 
             foreach (Influencer influencer in influencerCommands)
             {
@@ -125,7 +127,7 @@ namespace TICMod
         {
             CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
 
-            List<Conditional> conditionalCommands = mod.commands.OfType<Conditional>().ToList();
+            List<Conditional> conditionalCommands = modSystem.commands.OfType<Conditional>().ToList();
 
             foreach (Conditional conditional in conditionalCommands)
             {

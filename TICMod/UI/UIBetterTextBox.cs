@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 using Color = Microsoft.Xna.Framework.Color;
@@ -82,7 +83,7 @@ namespace TICMod.UI
             foreach (char c in currentString)
             {
                 builtString += c;
-                charPos.Add(Main.fontMouseText.MeasureString(builtString).X);
+                charPos.Add(FontAssets.MouseText.Value.MeasureString(builtString).X);
             }
             float closest = charPos.OrderBy(x => Math.Abs(leftDistance - x)).First();
             int index = charPos.IndexOf(closest);
@@ -322,12 +323,12 @@ namespace TICMod.UI
             {
                 color *= 0.5f;
                 //Utils.DrawBorderString(spriteBatch, hintText, new Vector2(space.X, space.Y), Color.Gray, 1f);
-                spriteBatch.DrawString(Main.fontMouseText, hintText, drawPos, color);
+                spriteBatch.DrawString(FontAssets.MouseText.Value, hintText, drawPos, color);
             }
             else
             {
                 //Utils.DrawBorderString(spriteBatch, displayString, drawPos, Color.White, 1f);
-                spriteBatch.DrawString(Main.fontMouseText, displayString, drawPos, color);
+                spriteBatch.DrawString(FontAssets.MouseText.Value, displayString, drawPos, color);
             }
 
             if (IsMouseHovering)

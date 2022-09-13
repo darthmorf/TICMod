@@ -25,171 +25,9 @@ namespace TICMod
 
     public class TICMod : Mod
     {
-        internal UserInterface commandInterface;
-        internal UIStateReverse modUiState;
-        internal List<CommandUI> commandUis;
-        internal List<Command> commands;
-
-        internal UserInterface coordInterface;
-        internal UICoordDisplay coordDisplay;
-
-        internal UserInterface textDisplayInterface;
-        internal UITextDisplayer textDisplayer;
-
-        internal PlayerDataStore playerDataStore;
-        internal NPCDataStore npcDataStore;
-
         public override void Load()
         {
-            LoadCommands();
-
-            commandUis = new List<CommandUI>();
-            playerDataStore = new PlayerDataStore();
-            npcDataStore = new NPCDataStore();
-
-            if (!Terraria.Main.dedServ)
-            {
-                // Load UI
-                commandInterface = new UserInterface();
-                modUiState = new UIStateReverse();
-                modUiState.Activate();
-                commandInterface?.SetState(modUiState);
-
-                coordInterface = new UserInterface();
-                coordDisplay = new UICoordDisplay();
-                coordDisplay.Activate();
-                coordInterface?.SetState(coordDisplay);
-
-                textDisplayInterface = new UserInterface();
-                textDisplayer = new UITextDisplayer();
-                textDisplayer.Activate();
-                textDisplayInterface?.SetState(textDisplayer);
-            }
             base.Load();
-        }
-
-        private GameTime _lastUpdateUiGameTime;
-
-        public override void UpdateUI(GameTime gameTime)
-        {
-            _lastUpdateUiGameTime = gameTime;
-            if (commandInterface?.CurrentState != null)
-            {
-                commandInterface.Update(gameTime);
-            }
-
-            if (coordInterface?.CurrentState != null)
-            {
-                coordInterface.Update(gameTime);
-            }
-
-            if (textDisplayInterface?.CurrentState != null)
-            {
-                textDisplayInterface.Update(gameTime);
-            }
-        }
-
-        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
-        {
-            int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
-            int nameIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: MP Player Names"));
-            int inventoryIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
-            if (mouseTextIndex != -1)
-            {
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                "TICMod: CoordDisplayUI",
-                delegate
-                {
-                    if (_lastUpdateUiGameTime != null && coordInterface?.CurrentState != null)
-                    {
-                        coordInterface.Draw(Terraria.Main.spriteBatch, _lastUpdateUiGameTime);
-                    }
-                    return true;
-                },
-                InterfaceScaleType.UI));
-
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                "TICMod: TICUI",
-                delegate
-                {
-                    if (_lastUpdateUiGameTime != null && commandInterface?.CurrentState != null)
-                    {
-                        commandInterface.Draw(Terraria.Main.spriteBatch, _lastUpdateUiGameTime);
-                    }
-                    return true;
-                },
-                InterfaceScaleType.UI));
-            }
-
-            if (nameIndex != -1)
-            {
-                layers.Insert(nameIndex, new LegacyGameInterfaceLayer(
-                "TICMod: TICTextDisplay",
-                delegate
-                {
-                    if (_lastUpdateUiGameTime != null && textDisplayInterface?.CurrentState != null)
-                    {
-                        textDisplayInterface.Draw(Terraria.Main.spriteBatch, _lastUpdateUiGameTime);
-                    }
-                    return true;
-                },
-                InterfaceScaleType.Game));
-            }
-        }
-
-        // Show/Hide individual instance of UI, tied to specific tile
-        internal void ToggleCommandUI(int i, int j, BlockType uiType, bool onlyClose=false)
-        {
-            foreach (var commandUi in commandUis)
-            {
-                if (commandUi.i == i && commandUi.j == j) // UI is open
-                {
-                    modUiState.RemoveChild(commandUi);
-                    commandUis.Remove(commandUi);
-                    return;
-                }
-            }
-
-            if (!onlyClose)
-            {
-                CommandUI cUI = new CommandUI();
-                modUiState.Append(cUI);
-                commandUis.Add(cUI);
-                cUI.InitValues(i, j, uiType);
-            }
-        }
-
-        public void CycleCommandUIFocus(int i, int j)
-        {
-            int index = 0;
-            foreach (var commandUi in commandUis)
-            {
-                index++;
-                if (commandUi.i == i && commandUi.j == j)
-                {
-                    break;
-                }
-            }
-
-            index = index % commandUis.Count;
-            commandUis[index].FocusText();
-        }
-
-        public override void PreSaveAndQuit()
-        {
-            modUiState.RemoveAllChildren();
-            textDisplayer.RemoveAllChildren();
-            base.PreSaveAndQuit();
-        }
-
-        public override void Unload()
-        {
-            commandInterface = null;
-            coordInterface = null;
-            textDisplayInterface = null;
-            UIQuitButton.texture = null;
-            UICheckbox.checkboxTexture = null;
-            UICheckbox.checkmarkTexture = null;
         }
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
@@ -199,8 +37,8 @@ namespace TICMod
                 byte msgType = reader.ReadByte();
                 if (msgType == 0) // Command tile updated
                 {
-                    Dictionary<(int x, int y), TICWorld.Data> data = ModContent.GetInstance<TICWorld>().data;
-                    TICWorld.Data tile;
+                    Dictionary<(int x, int y), TICSystem.Data> data = ModContent.GetInstance<TICSystem>().data;
+                    TICSystem.Data tile;
                     int byteCount = reader.ReadInt32();
                     byte[] byteData = reader.ReadBytes(byteCount);
 
@@ -209,7 +47,7 @@ namespace TICMod
                         var binForm = new BinaryFormatter();
                         memStream.Write(byteData, 0, byteData.Length);
                         memStream.Seek(0, SeekOrigin.Begin);
-                        tile = (TICWorld.Data)binForm.Deserialize(memStream);
+                        tile = (TICSystem.Data)binForm.Deserialize(memStream);
                     }
 
                     if (data.ContainsKey((tile.x, tile.y)))
@@ -241,20 +79,20 @@ namespace TICMod
                 if (msgType == 1)
                 {
                     string message = reader.ReadNullTerminatedString();
-                    int r = reader.ReadVarInt();
-                    int g = reader.ReadVarInt();
-                    int b = reader.ReadVarInt();
-                    int timeout = reader.ReadVarInt();
-                    int xPos = reader.ReadVarInt();
-                    int yPos = reader.ReadVarInt();
+                    int r = reader.Read7BitEncodedInt(); // TODO: Verify that this is the right int reading method
+                    int g = reader.Read7BitEncodedInt();
+                    int b = reader.Read7BitEncodedInt();
+                    int timeout = reader.Read7BitEncodedInt();
+                    int xPos = reader.Read7BitEncodedInt();
+                    int yPos = reader.Read7BitEncodedInt();
                     bool tileAttach = reader.ReadBoolean();
 
-                    ModContent.GetInstance<TICMod>().textDisplayer.AddText(message, new Color(r,g,b), timeout, xPos, yPos, tileAttach);
+                    ModContent.GetInstance<TICSystem>().textDisplayer.AddText(message, new Color(r,g,b), timeout, xPos, yPos, tileAttach);
                 }
             }
         }
 
-        public void SendTICTileUpdatePacket(TICWorld.Data data) // Client -> Server
+        public void SendTICTileUpdatePacket(TICSystem.Data data) // Client -> Server
         {
             ModPacket packet = GetPacket();
             packet.Write((byte)0);
@@ -276,52 +114,14 @@ namespace TICMod
             ModPacket packet = GetPacket();
             packet.Write((byte)1);
             packet.WriteNullTerminatedString(message);
-            packet.WriteVarInt(color.R);
-            packet.WriteVarInt(color.G);
-            packet.WriteVarInt(color.B);
-            packet.WriteVarInt(timeout);
-            packet.WriteVarInt(xPos);
-            packet.WriteVarInt(yPos);
+            packet.Write7BitEncodedInt(color.R);
+            packet.Write7BitEncodedInt(color.G);
+            packet.Write7BitEncodedInt(color.B);
+            packet.Write7BitEncodedInt(timeout);
+            packet.Write7BitEncodedInt(xPos);
+            packet.Write7BitEncodedInt(yPos);
             packet.Write(tileAttach);
             packet.Send();
-        }
-
-        private void LoadCommands()
-        {
-            commands = new List<Command>();
-
-            var enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Trigger), ac));
-            foreach (var commandClass in enumerable)
-            {
-                commands.Add((Trigger)Activator.CreateInstance(commandClass));
-            }
-
-            enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Influencer), ac));
-            foreach (var commandClass in enumerable)
-            {
-                commands.Add((Influencer)Activator.CreateInstance(commandClass));
-            }
-
-            enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Conditional), ac));
-            foreach (var commandClass in enumerable)
-            {
-                commands.Add((Conditional)Activator.CreateInstance(commandClass));
-            }
-        }
-
-        // Recursively check if based off of type
-        private bool IsTypeOf(Type type, Type thisType)
-        {
-            if (thisType.BaseType == null)
-            {
-                return false;
-            }
-            else if (thisType.BaseType == type)
-            {
-                return true;
-            }
-
-            return IsTypeOf(type, thisType.BaseType);
         }
     }
 

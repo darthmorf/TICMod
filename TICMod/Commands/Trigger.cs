@@ -8,10 +8,10 @@ namespace TICMod.Commands
 {
     public abstract class Trigger : Command
     {
-        protected TICWorld.Data data;
-        protected TICWorld world;
+        protected TICSystem.Data data;
+        protected TICSystem world;
 
-        public virtual string Execute(int i, int j, TICWorld world)
+        public virtual string Execute(int i, int j, TICSystem world)
         {
             this.world = world;
             this.data = world.data[(i, j)];
