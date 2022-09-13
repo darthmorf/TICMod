@@ -20,7 +20,7 @@ namespace TICMod.UI
         {
             if (texture == null)
             {
-                texture = ModContent.GetTexture("TICMod/UI/exit");
+                texture = ModContent.Request<Texture2D>("TICMod/UI/exit").Value;
             }
             this.hoverText = hoverText;
             this.BackgroundColor = Color.Transparent;

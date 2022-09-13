@@ -52,7 +52,7 @@ namespace TICMod.Commands.Influencers
 
         public override string Execute()
         {
-            Item.NewItem(new Vector2(position.X, position.Y), itemId, Stack: count);
+            Item.NewItem(null, new Vector2(position.X, position.Y), itemId, Stack: count); // TODO: Look into creating a custom entity source for Influencer Blocks
             return $"Successfully spawned item ID {itemId} x{count} at ({position.X / 16}, {position.Y / 16}).";
         }
     }

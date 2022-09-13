@@ -23,12 +23,12 @@ namespace TICMod.UI
         {
             if (checkboxTexture == null)
             {
-                checkboxTexture = ModContent.GetTexture("TICMod/UI/checkBox");
+                checkboxTexture = ModContent.Request<Texture2D>("TICMod/UI/checkBox").Value;
             }
 
             if (checkmarkTexture == null)
             {
-                checkmarkTexture = ModContent.GetTexture("TICMod/UI/checkMark");
+                checkmarkTexture = ModContent.Request<Texture2D>("TICMod/UI/checkMark").Value;
             }
 
 

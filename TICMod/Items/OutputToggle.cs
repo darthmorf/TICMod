@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using IL.Terraria.GameContent;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -7,6 +8,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TextureAssets = Terraria.GameContent.TextureAssets;
 
 namespace TICMod.Items
 {
@@ -40,9 +42,9 @@ namespace TICMod.Items
             if (Main.dedServ == false)
             {
                 if (enableTexture == null)
-                    enableTexture = Mod.GetTexture("Items/OutputToggleOn");
+                    enableTexture = ModContent.Request<Texture2D>("Items/OutputToggleOn").Value;
                 if (disableTexture == null)
-                    disableTexture = Mod.GetTexture("Items/OutputToggleOff");
+                    disableTexture = ModContent.Request<Texture2D>("Items/OutputToggleOff").Value;
 
                 bool output = ModContent.GetInstance<TICSystem>().tileOutput;
                 if (output)

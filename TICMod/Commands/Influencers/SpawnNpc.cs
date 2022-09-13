@@ -55,7 +55,7 @@ namespace TICMod.Commands.Influencers
         {
             NPC npc = new NPC();
             npc.SetDefaults(npcID);
-            int index = NPC.NewNPC(pos.X, pos.Y, npc.type);
+            int index = NPC.NewNPC(null, pos.X, pos.Y, npc.type); // TODO: Look into creating a custom entity source for Influencer Blocks
             Main.npc[index].SetDefaults(npc.netID);
 
             if (storeName != null)

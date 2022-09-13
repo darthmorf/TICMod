@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ReLogic.Graphics;
+using ReLogic.OS;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -261,13 +262,12 @@ namespace TICMod.UI
                 }
                 else if (Utils.IsPressed(Keys.LeftControl) && Utils.JustPressed(Keys.C))
                 {
-                    ReLogic.OS.Platform.Current.Clipboard = currentString;
-
+                    ReLogic.OS.Platform.Get<IClipboard>().Value = currentString;
                 }
                 else if (Utils.IsPressed(Keys.LeftControl) && Utils.JustPressed(Keys.X))
                 {
                     history.Push(currentString);
-                    ReLogic.OS.Platform.Current.Clipboard = currentString;
+                    ReLogic.OS.Platform.Get<IClipboard>().Value = currentString;
                     OnTextChanged?.Invoke();
                     currentString = "";
                     cursorPos = 0;
@@ -275,8 +275,8 @@ namespace TICMod.UI
                 else if (Utils.IsPressed(Keys.LeftControl) && Utils.JustPressed(Keys.V))
                 {
                     history.Push(currentString);
-                    currentString = currentString.Insert(cursorPos, ReLogic.OS.Platform.Current.Clipboard);
-                    cursorPos += ReLogic.OS.Platform.Current.Clipboard.Length;
+                    currentString = currentString.Insert(cursorPos, ReLogic.OS.Platform.Get<IClipboard>().Value);
+                    cursorPos += ReLogic.OS.Platform.Get<IClipboard>().Value.Length;
                     OnTextChanged?.Invoke();
                 }
                 else if (Utils.IsPressed(Keys.LeftControl) && Utils.JustPressed(Keys.Z) && history.Count > 0)

@@ -18,7 +18,6 @@ using Terraria.UI;
 using TICMod.Commands;
 using TICMod.Items;
 using TICMod.UI;
-using Terraria.UI;
 using TICMod.Commands.Conditionals;
 using TICMod.Commands.Influencers;
 using Influencer = TICMod.Commands.Influencers.Influencer;

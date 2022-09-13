@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 
 namespace TICMod.Commands.Influencers
@@ -59,7 +60,7 @@ namespace TICMod.Commands.Influencers
         {
             foreach (var player in players)
             {
-                player.QuickSpawnItem(itemId, itemCount);
+                player.QuickSpawnItem(null, itemId, itemCount); // TODO: Look into creating a custom entity source for Influencer Blocks
             }
 
             string playernames = GetPlayerNames(players);

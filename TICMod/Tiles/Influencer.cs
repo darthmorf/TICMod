@@ -36,8 +36,8 @@ namespace TICMod.Tiles
 
         public override bool Drop(int i, int j)
 		{
-			Item.NewItem(i * 16, j * 16, 16, 16, ItemType<Items.Influencer>());
-			return base.Drop(i, j);
+			Item.NewItem(null, i * 16, j * 16, 16, 16, ItemType<Items.Influencer>()); // TODO: Look into creating a custom entity source for Influencer Blocks
+            return base.Drop(i, j);
 		}
 
         public override void HitWire(int i, int j)

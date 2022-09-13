@@ -44,7 +44,7 @@ namespace TICMod.Tiles
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            Item.NewItem(i * 16, j * 16, 16, 32, ItemType<Items.Trigger>());
+            Item.NewItem(null,i * 16, j * 16, 16, 32, ItemType<Items.Trigger>()); // TODO: Look into creating a custom entity source for Influencer Blocks
         }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
