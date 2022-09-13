@@ -61,5 +61,41 @@ namespace TICMod
             if (!accurate) minutes = (!(doubleminutes < 30.0)) ? "30" : "00";
             return $"{hours}:{minutes}";
         }
+
+        // this function took me too long to work out
+        public static double TimeToMainTime(uint hours, uint mins, out bool dayTime)
+        {
+            dayTime = (hours == 4  && mins >= 30 || hours >= 5) &&
+                      (hours == 19 && mins < 30  || hours <= 18);
+            uint hrOffset = 8;
+
+            if (dayTime)
+            {
+                hrOffset = 5;
+            }
+            else
+            {
+                if (hours < 12)
+                {
+                    hours += 12;
+                }
+                else if (hours > 12)
+                {
+                    hours -= 12;
+                }
+            }
+
+            uint halfHrOffset = 0;
+
+            if (mins >= 30)
+            {
+                halfHrOffset = 1;
+            }
+
+            uint deltaH = hours - hrOffset + halfHrOffset;
+            uint deltaM = (60 + mins - 30) % 60;
+
+            return deltaH * 3600 + deltaM * 60;
+        }
     }
 }

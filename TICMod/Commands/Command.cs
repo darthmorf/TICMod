@@ -198,29 +198,6 @@ namespace TICMod.Commands
             return true;
         }
 
-        protected static (uint[], CommandResponse) ParseTime(string args, CommandResponse resp)
-        {
-            var posStr = args.Split(new[] { ':' }, 2);
-            List<uint> time = new List<uint>(2);
-            foreach (var str in posStr)
-            {
-                bool success = uint.TryParse(str, NumberStyles.Integer, CultureInfo.CurrentCulture, out uint posVal);
-                if (!success)
-                {
-                    break;
-                }
-                time.Add(posVal);
-            }
-            if (time.Count != 2 || time[0] > 24 || time[1] > 59)
-            {
-                resp.response = $"{args} is not a valid time in format hh:mm.";
-                return (time.ToArray(), resp);
-            }
-
-            resp.valid = true;
-            return (time.ToArray(), resp);
-        }
-
         protected static bool ParseInt(string args, out int ret, out string err, int minVal = Int32.MinValue, int maxVal = Int32.MaxValue)
         {
             bool success = int.TryParse(args, NumberStyles.Integer, CultureInfo.CurrentCulture, out int val);
@@ -325,7 +302,7 @@ namespace TICMod.Commands
 
             if (time.Count != 2 || time[0] > 24 || time[1] > 59)
             {
-                err = $"{args} is not a valid time in format hh:mm.";
+                err = $"{args} is not a valid time in 24 hour format hh:mm.";
                 return false;
             }
 
