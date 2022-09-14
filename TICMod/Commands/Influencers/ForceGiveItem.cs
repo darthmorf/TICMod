@@ -17,7 +17,8 @@ namespace TICMod.Commands.Influencers
             {
                 for (int i = 0; i < itemCount; i++)
                 {
-                    player.PutItemInInventory(itemId);
+                    //player.PutItemInInventory(itemId);
+                    player.PutItemInInventoryFromItemUsage(itemId);
                 }
             }
 

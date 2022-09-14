@@ -41,19 +41,21 @@ namespace TICMod.Items
         {
             if (Main.dedServ == false)
             {
-                if (enableTexture == null)
+               /* if (enableTexture == null)
                     enableTexture = ModContent.Request<Texture2D>("Items/OutputToggleOn").Value;
                 if (disableTexture == null)
-                    disableTexture = ModContent.Request<Texture2D>("Items/OutputToggleOff").Value;
+                    disableTexture = ModContent.Request<Texture2D>("Items/OutputToggleOff").Value;*/
+
+                // TODO: This method for updating sprites no longer works. A new method needs to be investigated
 
                 bool output = ModContent.GetInstance<TICSystem>().tileOutput;
                 if (output)
                 {
-                    TextureAssets.Item[Item.type].Value = disableTexture;
+                    //TextureAssets.Item[Item.type].Value = disableTexture;
                 }
                 else
                 {
-                    TextureAssets.Item[Item.type].Value = enableTexture;
+                   // TextureAssets.Item[Item.type].Value = enableTexture;
                 }
             }
         }
