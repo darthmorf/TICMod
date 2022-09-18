@@ -70,6 +70,21 @@ namespace TICMod.UI
             quitButton.Left.Set(0, 0.983f);
             quitButton.OnClick += (evt, element) => { ModContent.GetInstance<TICSystem>().ToggleCommandUI(i, j, uiType,true);};
             this.Append(quitButton);
+
+            switch (uiType)
+            {
+                case BlockType.Trigger:
+                    BackgroundColor = new Color(99, 57, 100, 178);
+                    return;
+
+                case BlockType.Influencer:
+                    BackgroundColor = new Color(0, 84, 78, 178);
+                    return;
+
+                case BlockType.Conditional:
+                    BackgroundColor = new Color(75, 74, 22, 178);
+                    return;
+            }
         }
 
         public void InitValues(int i, int j, BlockType type)
