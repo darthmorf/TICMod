@@ -122,7 +122,7 @@ EG: `giveitem 26, 10, @a`
 
 #### Force Give Item To Player
 `forcegiveitem id, count, player(s)`<br/>
-Gives [targeted player(s)](#player-selection) the specified count of item with specified id. Unlike [giveitem](#give-item-to-player), places the item directly in the inventory, rather than triggering the usual pickup text. Works when players are dead.<br/>
+Gives [targeted player(s)](#player-selection) the specified count of item with specified id. Unlike [giveitem](#give-item-to-player), places the item directly in the inventory, rather than triggering the usual pickup text. Also works when players are dead.<br/>
 EG: `forecegiveitem 26, 10, @a`
 
 #### Draw World Text
@@ -160,13 +160,13 @@ EG: `cleardroppeditems`
 Copies the tiles within the region (startX,startY) - (endX,endY) to (destinationX,destinationY) where the destination coordinates are the new top-right of the tiles.<br/>
 EG: `copytile 10,15, 50,60, 100,16`
 
-#### Destroy Tiles
-`destroytile startX,startY, endX,endY, id, style (optional)`<br/>
+#### Place Tiles
+`placetile startX,startY, endX,endY, id, style (optional)`<br/>
 Places tiles of specified id and style within the region (startX,startY) - (endX,endY). Can have difficulty placing non-valid tile or furniture parts.<br/>
 EG: `destroytile 10,15, 50,60`
 
-#### Place Tiles
-`placetile startX,startY, endX,endY`<br/>
+#### Destroy Tiles
+`destroytile startX,startY, endX,endY`<br/>
 Destroys the tiles within the specified region. No items are dropped.<br/>
 EG: `destroytile 10,15, 50,60`
 
