@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using IL.Terraria.GameContent;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -14,8 +15,8 @@ namespace TICMod.Items
 {
 	public class OutputToggle : ModItem
     {
-        internal Texture2D enableTexture;
-        internal Texture2D disableTexture;
+        internal Asset<Texture2D> enableTexture;
+        internal Asset<Texture2D> disableTexture;
 
         internal string name = "Tile Output Toggler";
 
@@ -31,8 +32,9 @@ namespace TICMod.Items
 			Item.maxStack = 1;
 			Item.value = 0;
             Item.rare = ItemRarityID.Cyan;
-            Item.useStyle = 5;
+            Item.useStyle = ItemUseStyleID.None;
             Item.useAnimation = 5;
+            Item.useTime = 0;
 
             UpdateState();
         }
@@ -41,21 +43,24 @@ namespace TICMod.Items
         {
             if (Main.dedServ == false)
             {
-               /* if (enableTexture == null)
-                    enableTexture = ModContent.Request<Texture2D>("Items/OutputToggleOn").Value;
+                if (enableTexture == null)
+                {
+                    enableTexture = ModContent.Request<Texture2D>("TICMod/Items/OutputToggleOn");
+                }
                 if (disableTexture == null)
-                    disableTexture = ModContent.Request<Texture2D>("Items/OutputToggleOff").Value;*/
-
-                // TODO: This method for updating sprites no longer works. A new method needs to be investigated
+                {
+                    disableTexture = ModContent.Request<Texture2D>("TICMod/Items/OutputToggleOff");
+                }
 
                 bool output = ModContent.GetInstance<TICSystem>().tileOutput;
+
                 if (output)
                 {
-                    //TextureAssets.Item[Item.type].Value = disableTexture;
+                    TextureAssets.Item[Item.type] = enableTexture;
                 }
                 else
                 {
-                   // TextureAssets.Item[Item.type].Value = enableTexture;
+                    TextureAssets.Item[Item.type] = disableTexture;
                 }
             }
         }
