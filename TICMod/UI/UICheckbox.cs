@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
@@ -23,12 +24,12 @@ namespace TICMod.UI
         {
             if (checkboxTexture == null)
             {
-                checkboxTexture = ModContent.Request<Texture2D>("TICMod/UI/checkBox").Value;
+                checkboxTexture = ModContent.Request<Texture2D>("TICMod/UI/checkBox", AssetRequestMode.ImmediateLoad).Value;
             }
 
             if (checkmarkTexture == null)
             {
-                checkmarkTexture = ModContent.Request<Texture2D>("TICMod/UI/checkMark").Value;
+                checkmarkTexture = ModContent.Request<Texture2D>("TICMod/UI/checkMark", AssetRequestMode.ImmediateLoad).Value;
             }
 
 
@@ -59,6 +60,7 @@ namespace TICMod.UI
         private void UICheckbox_onLeftClick(UIMouseEvent evt, UIElement listeningElement)
         {
             if (disabled) return;
+
             this.Selected = !Selected;
         }
 
@@ -90,9 +92,13 @@ namespace TICMod.UI
 
             spriteBatch.Draw(checkboxTexture, pos, null, disabled ? Color.Gray : Color.White, 0f, Vector2.Zero, 1f,
                 SpriteEffects.None, 0f);
+
             if (Selected)
+            {
                 spriteBatch.Draw(checkmarkTexture, pos, null, disabled ? Color.Gray : Color.White, 0f, Vector2.Zero, 1f,
                     SpriteEffects.None, 0f);
+
+            }
 
             if (IsMouseHovering)
             {

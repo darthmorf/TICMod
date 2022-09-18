@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
@@ -20,7 +21,7 @@ namespace TICMod.UI
         {
             if (texture == null)
             {
-                texture = ModContent.Request<Texture2D>("TICMod/UI/exit").Value;
+                texture = ModContent.Request<Texture2D>("TICMod/UI/exit", AssetRequestMode.ImmediateLoad).Value;
             }
             this.hoverText = hoverText;
             this.BackgroundColor = Color.Transparent;
