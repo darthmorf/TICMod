@@ -30,7 +30,7 @@ namespace TICMod.UI
                 return;
             }
 
-            text.SetText($"({Math.Round(Main.MouseWorld.X/16)}, {Math.Round(Main.MouseWorld.Y/16)})");
+            text.SetText($"({Player.tileTargetX}, {Player.tileTargetY})");
             text.Left.Pixels = Main.mouseX;
             text.Top.Pixels = Main.mouseY - 20;
             Recalculate();

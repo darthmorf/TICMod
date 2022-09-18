@@ -15,7 +15,7 @@ namespace TICMod.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Mouse Coordinate Display");
-            Tooltip.SetDefault("When equipped, shows a tile coordinate display above the mouse.");
+            Tooltip.SetDefault("When equipped, shows a tile coordinate display above the mouse. If smart cursor is enabled, will use that tile instead!");
         }
 
         public override void SetDefaults()
