@@ -1,4 +1,4 @@
 displayName = T.I.C. Mod (Command Blocks)
 author = darthmorf
 version = 0.1
-includePDB = true
+homepage = https://forums.terraria.org/index.php?threads/t-i-c-mod-command-blocks-for-terraria.114588/
