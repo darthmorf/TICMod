@@ -26,7 +26,6 @@ using Conditional = TICMod.Commands.Conditionals.Conditional;
 
 namespace TICMod
 {
-    // Handles all data that's tied to a specific Tile
     public class TICSystem : ModSystem
     {
         // One instance applies to one specific tile
@@ -35,7 +34,7 @@ namespace TICMod
         {
             public int x;
             public int y;
-            public bool enabled;
+            public bool enabled = true;
             public bool chatOutput;
             public string command;
             [NonSerialized()]  public Action trigger;
@@ -392,11 +391,16 @@ namespace TICMod
                 tile.Value.trigger?.Invoke();
             }
         }
-        }
 
-        public void SendChatMsg(string text, int x = -1, int y = -1)
+        public void SendChatMsg(string text, int x = -1, int y = -1, bool debug = false)
         {
-            bool showOutput = true;
+            if (debug)
+            {
+                Utils.ChatOutput(text, Color.Magenta);
+                return;
+            }
+
+            bool showOutput = false;
             if (data.ContainsKey((x, y)))
             {
                 showOutput = data[(x, y)].chatOutput;
