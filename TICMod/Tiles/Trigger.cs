@@ -80,7 +80,7 @@ namespace TICMod.Tiles
                 Main.tile[i, j].TileFrameX += frameAdjustment;
                 Main.tile[i, j-1].TileFrameX += frameAdjustment;
                 NetMessage.SendTileSquare(-1, i, j - 1, 2, TileChangeType.None);
-                string state = world.data[(i, j)].enabled ? "Disabled" : "Enabled";
+                string state = world.data[(i, j)].enabled ? "Enabled" : "Disabled";
                 world.SendChatMsg($"{state}", i, j);
             }
         }
