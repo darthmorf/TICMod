@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TICMod.Commands.Conditionals
+namespace TICMod.Commands.Influencers
 {
-    public abstract class Conditional : Command
+    public abstract class InfluencerCommand : Command
     {
         // Nothing here for now - might need it in the future
 
@@ -22,18 +22,11 @@ namespace TICMod.Commands.Conditionals
             
         }
 
-        *
-        public override string Execute(out bool conditionMet)
+        public override string Execute()
         {
                         
         }
          
         */
-        public abstract string Execute(out bool conditionMet);
-
-        public override string Execute()
-        {
-           throw new Exception("Conditionals must only be executed with a passed out boolean to mark success");
-        }
     }
 }

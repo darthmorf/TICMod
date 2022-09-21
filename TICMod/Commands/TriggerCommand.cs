@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TICMod.Commands
 {
-    public abstract class Trigger : Command
+    public abstract class TriggerCommand : Command
     {
         protected TICSystem.Data data;
         protected TICSystem world;

@@ -20,9 +20,9 @@ using TICMod.Items;
 using TICMod.UI;
 using TICMod.Commands.Conditionals;
 using TICMod.Commands.Influencers;
-using Influencer = TICMod.Commands.Influencers.Influencer;
-using Trigger = TICMod.Commands.Trigger;
-using Conditional = TICMod.Commands.Conditionals.Conditional;
+using InfluencerCommand = TICMod.Commands.Influencers.InfluencerCommand;
+using TriggerCommand = TICMod.Commands.TriggerCommand;
+using ConditionalCommand = TICMod.Commands.Conditionals.ConditionalCommand;
 
 namespace TICMod
 {
@@ -276,22 +276,22 @@ namespace TICMod
         {
             commands = new List<Command>();
 
-            var enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Trigger), ac));
+            var enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(TriggerCommand), ac));
             foreach (var commandClass in enumerable)
             {
-                commands.Add((Trigger)Activator.CreateInstance(commandClass));
+                commands.Add((TriggerCommand)Activator.CreateInstance(commandClass));
             }
 
-            enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Influencer), ac));
+            enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(InfluencerCommand), ac));
             foreach (var commandClass in enumerable)
             {
-                commands.Add((Influencer)Activator.CreateInstance(commandClass));
+                commands.Add((InfluencerCommand)Activator.CreateInstance(commandClass));
             }
 
-            enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(Conditional), ac));
+            enumerable = Assembly.GetExecutingAssembly().GetTypes().Where(ac => IsTypeOf(typeof(ConditionalCommand), ac));
             foreach (var commandClass in enumerable)
             {
-                commands.Add((Conditional)Activator.CreateInstance(commandClass));
+                commands.Add((ConditionalCommand)Activator.CreateInstance(commandClass));
             }
         }
 

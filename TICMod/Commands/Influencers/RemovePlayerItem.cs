@@ -8,7 +8,7 @@ using Terraria.ID;
 
 namespace TICMod.Commands.Influencers
 {
-    class RemovePlayerItem : Influencer
+    class RemovePlayerItem : InfluencerCommand
     {
         protected int itemId;
         protected int count;

@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace TICMod.Commands.Triggers
 {
-    class PlayerDeath : Trigger
+    class PlayerDeath : TriggerCommand
     {
         protected string storeName = "";
 

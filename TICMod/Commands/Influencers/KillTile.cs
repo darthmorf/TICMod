@@ -8,7 +8,7 @@ using Terraria;
 
 namespace TICMod.Commands.Influencers
 {
-    class KillTile : Influencer
+    class KillTile : InfluencerCommand
     {
         protected Point start;
         protected Point end;

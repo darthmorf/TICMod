@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace TICMod.Commands.Influencers
 {
-    class Say : Influencer
+    class Say : InfluencerCommand
     {
         protected string message = "";
         protected Color displayColor = Color.White;

@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace TICMod.Commands.Triggers
 {
-    public class Timer : Trigger
+    public class Timer : TriggerCommand
     {
         protected bool triggered = false;
         protected int seconds;
@@ -66,7 +66,7 @@ namespace TICMod.Commands.Triggers
                         world.SendChatMsg($"{seconds} seconds passed since last activation, triggering.", data.x, data.y);
                     }
                 }
-                else if (DateTime.Compare(lastTriggered.AddSeconds(seconds), DateTime.Now) > 0 && triggered)
+                else if (DateTime.Compare(lastTriggered.AddSeconds(seconds), DateTime.Now) >= 0)
                 {
                     triggered = false;
                 }

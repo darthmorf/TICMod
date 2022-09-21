@@ -8,7 +8,7 @@ using Terraria;
 
 namespace TICMod.Commands.Influencers
 {
-    class CopyTile : Influencer
+    class CopyTile : InfluencerCommand
     {
         protected Point start;
         protected Point end;

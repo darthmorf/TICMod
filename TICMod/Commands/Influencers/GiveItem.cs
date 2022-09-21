@@ -9,7 +9,7 @@ using Terraria.ID;
 
 namespace TICMod.Commands.Influencers
 {
-    class GiveItem : Influencer
+    class GiveItem : InfluencerCommand
     {
         protected List<Player> players = new List<Player>();
         protected int itemId;

@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace TICMod.Commands.Triggers
 {
-    class Time : Trigger
+    class Time : TriggerCommand
     {
         protected string givenTime;
         protected bool triggered = false;

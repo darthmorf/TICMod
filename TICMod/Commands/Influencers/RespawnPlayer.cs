@@ -7,7 +7,7 @@ using Terraria;
 
 namespace TICMod.Commands.Influencers
 {
-    class RespawnPlayer : Influencer
+    class RespawnPlayer : InfluencerCommand
     {
         protected List<Player> players;
 

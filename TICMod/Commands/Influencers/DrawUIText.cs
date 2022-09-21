@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace TICMod.Commands.Influencers
 {
-    class DrawUIText : Influencer
+    class DrawUIText : InfluencerCommand
     {
         protected Color displayColor;
         protected Point pos;

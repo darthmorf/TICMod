@@ -68,9 +68,9 @@ namespace TICMod
             TICSystem world = ModContent.GetInstance<TICSystem>();
             CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
 
-            List<Trigger> triggerCommands = modSystem.commands.OfType<Trigger>().ToList();
+            List<TriggerCommand> triggerCommands = modSystem.commands.OfType<TriggerCommand>().ToList();
 
-            foreach (Trigger trigger in triggerCommands)
+            foreach (TriggerCommand trigger in triggerCommands)
             {
                 if (trigger.IsAlias(command))
                 {
@@ -97,9 +97,9 @@ namespace TICMod
         {
             CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
 
-            List<Influencer> influencerCommands = modSystem.commands.OfType<Influencer>().ToList();
+            List<InfluencerCommand> influencerCommands = modSystem.commands.OfType<InfluencerCommand>().ToList();
 
-            foreach (Influencer influencer in influencerCommands)
+            foreach (InfluencerCommand influencer in influencerCommands)
             {
                 if (influencer.IsAlias(command))
                 {
@@ -127,9 +127,9 @@ namespace TICMod
         {
             CommandResponse resp = new CommandResponse(false, $"Unknown Command '{command}'");
 
-            List<Conditional> conditionalCommands = modSystem.commands.OfType<Conditional>().ToList();
+            List<ConditionalCommand> conditionalCommands = modSystem.commands.OfType<ConditionalCommand>().ToList();
 
-            foreach (Conditional conditional in conditionalCommands)
+            foreach (ConditionalCommand conditional in conditionalCommands)
             {
                 if (conditional.IsAlias(command))
                 {

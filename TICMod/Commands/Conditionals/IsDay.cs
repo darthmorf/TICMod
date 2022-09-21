@@ -8,7 +8,7 @@ using Main = Terraria.Main;
 
 namespace TICMod.Commands.Conditionals
 {
-    class IsDay : Conditional
+    class IsDay : ConditionalCommand
     {
         private HashSet<string> aliases_ = new HashSet<string>() { "day", "isday" };
         protected override HashSet<string> aliases { get { return aliases_; } }

@@ -7,7 +7,7 @@ using Terraria;
 
 namespace TICMod.Commands.Influencers
 {
-    class ClearDroppedItems : Influencer
+    class ClearDroppedItems : InfluencerCommand
     {
 
         private HashSet<string> aliases_ = new HashSet<string>() { "cleardroppeditems" };

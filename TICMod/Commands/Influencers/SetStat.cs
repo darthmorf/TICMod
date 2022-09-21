@@ -7,7 +7,7 @@ using Terraria;
 
 namespace TICMod.Commands.Influencers
 {
-    class SetStat : Influencer
+    class SetStat : InfluencerCommand
     {
         protected int value;
         protected List<Player> players;

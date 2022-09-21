@@ -7,7 +7,7 @@ using Terraria;
 
 namespace TICMod.Commands.Influencers
 {
-    class KillNPC : Influencer
+    class KillNPC : InfluencerCommand
     {
         protected List<NPC> npcs;
 

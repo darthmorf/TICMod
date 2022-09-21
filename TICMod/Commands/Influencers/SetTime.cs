@@ -9,7 +9,7 @@ using Player = On.Terraria.Player;
 
 namespace TICMod.Commands.Influencers
 {
-    class SetTime : Influencer
+    class SetTime : InfluencerCommand
     {
         protected List<uint> time;
 

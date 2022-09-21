@@ -8,7 +8,7 @@ using Terraria.DataStructures;
 
 namespace TICMod.Commands.Influencers
 {
-    class KillPlayer : Influencer
+    class KillPlayer : InfluencerCommand
     {
         protected List<Player> players;
         protected string message;

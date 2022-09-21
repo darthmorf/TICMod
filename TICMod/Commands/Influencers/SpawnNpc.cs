@@ -9,7 +9,7 @@ using Terraria.ID;
 
 namespace TICMod.Commands.Influencers
 {
-    class SpawnNpc : Influencer
+    class SpawnNpc : InfluencerCommand
     {
         protected Point pos;
         protected int npcID;

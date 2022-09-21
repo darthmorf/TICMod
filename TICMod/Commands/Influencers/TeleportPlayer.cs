@@ -8,7 +8,7 @@ using Terraria;
 
 namespace TICMod.Commands.Influencers
 {
-    class TeleportPlayer : Influencer
+    class TeleportPlayer : InfluencerCommand
     {
         protected Point destination;
         protected List<Player> players;

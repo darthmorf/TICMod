@@ -9,7 +9,7 @@ using Terraria.ID;
 
 namespace TICMod.Commands.Influencers
 {
-    class PlaceTile : Influencer
+    class PlaceTile : InfluencerCommand
     {
         protected Point start;
         protected Point end;
