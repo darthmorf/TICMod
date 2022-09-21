@@ -14,7 +14,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace TICMod.Tiles
 {
-	public class Influencer : ModTile
+	public class InfluencerTile : ModTile
     {
         private TICSystem world;
         public override void SetStaticDefaults()

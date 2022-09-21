@@ -13,7 +13,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace TICMod.Tiles
 {
-	public class Conditional : ModTile
+	public class ConditionalTile : ModTile
 	{
         private TICSystem world;
         public override void SetStaticDefaults()

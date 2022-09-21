@@ -26,7 +26,7 @@ namespace TICMod.Items
             Item.autoReuse = true;
             Item.maxStack = 9999;
             Item.consumable = true;
-            Item.createTile = TileType<Tiles.Trigger>();
+            Item.createTile = TileType<Tiles.TriggerTile>();
             Item.width = 12;
             Item.height = 12;
             Item.value = 0;

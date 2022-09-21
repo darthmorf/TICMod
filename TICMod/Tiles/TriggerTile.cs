@@ -18,7 +18,7 @@ using ChatMessage = Terraria.Chat.ChatMessage;
 
 namespace TICMod.Tiles
 {
-	public class Trigger : ModTile
+	public class TriggerTile : ModTile
     {
         private TICSystem world;
 		public override void SetStaticDefaults()
