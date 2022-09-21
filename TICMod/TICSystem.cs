@@ -389,11 +389,9 @@ namespace TICMod
             // Execute any trigger methods
             foreach (var tile in data)
             {
-                if (tile.Value.enabled)
-                {
-                    tile.Value.trigger?.Invoke();
-                }
+                tile.Value.trigger?.Invoke();
             }
+        }
         }
 
         public void SendChatMsg(string text, int x = -1, int y = -1)
