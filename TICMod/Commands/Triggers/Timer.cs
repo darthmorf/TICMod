@@ -1,6 +1,7 @@
 ﻿using IL.Terraria.GameContent.UI.States;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ namespace TICMod.Commands.Triggers
     {
         protected bool triggered = false;
         protected int seconds;
-        protected DateTime lastTriggered;
 
         private HashSet<string> aliases_ = new HashSet<string>() { "timer", "repeat" };
         protected override HashSet<string> aliases { get { return aliases_; } }
@@ -34,8 +34,6 @@ namespace TICMod.Commands.Triggers
                 return false;
             }
 
-            lastTriggered = DateTime.Now;
-
             return true;
         }
 
@@ -44,29 +42,29 @@ namespace TICMod.Commands.Triggers
             bool triggered = this.triggered;
             int seconds = this.seconds;
             TICSystem.Data data = this.data;
-            lastTriggered = DateTime.Now;
+
+            Stopwatch stopWatch = Stopwatch.StartNew();
 
             return () =>
             {
-                string currenttime = Utils.GetTimeAsString(Main.time);
-
                 if (!data.enabled)
                 {
-                    lastTriggered = DateTime.Now;
+                    stopWatch.Restart();
                 }
 
-                if (data.enabled && DateTime.Compare(lastTriggered.AddSeconds(seconds), DateTime.Now) <= 0 && !triggered)
+                // TODO: support milliseconds rather than seconds
+                if (data.enabled && stopWatch.ElapsedMilliseconds / 1000 >= seconds && !triggered)
                 {
                     ModContent.GetInstance<ExtraWireTrips>().AddWireUpdate(data.x, data.y - 1);
                     triggered = true;
-                    lastTriggered = DateTime.Now;
+                    stopWatch.Restart();
 
                     if (data.chatOutput)
                     {
                         world.SendChatMsg($"{seconds} seconds passed since last activation, triggering.", data.x, data.y);
                     }
                 }
-                else if (DateTime.Compare(lastTriggered.AddSeconds(seconds), DateTime.Now) >= 0)
+                else if (stopWatch.ElapsedMilliseconds / 1000 >= seconds && triggered)
                 {
                     triggered = false;
                 }
